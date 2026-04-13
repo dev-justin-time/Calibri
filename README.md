@@ -12,6 +12,16 @@
 > **Calibri** is a parameter-efficient approach that optimally calibrates Diffusion Transformer (DiT) components to elevate generative quality. By framing DiT calibration as a black-box reward optimization problem solved using the CMA-ES evolutionary algorithm, Calibri modifies just **~100 parameters**. This lightweight calibration not only consistently improves generation quality across various models but also significantly reduces the required inference steps (NFE) while maintaining high-quality outputs.
 
 # 📄 Changelog
+
+ <details open>
+<summary><strong>2026-04-13</strong></summary>
+
+
+* Released **open calibration weights** for **FLUX.1-dev** and **Qwen-Image**.
+* The calibrated checkpoints are now publicly available for inference at `weights/`.
+
+</details>
+
 <details open>
 <summary><strong>2026-03-24</strong></summary>
 
@@ -94,6 +104,42 @@ Track your calibration progress, reward metrics, and generated image samples in 
 ```bash
 tensorboard --logdir=<exp_logdir>
 ```
+
+## Inference
+
+We provide a script to easily run inference for custom prompts or evaluate the calibrated checkpoints across your validation datasets.
+
+**1. Custom Prompt Generation**
+
+For Flux:
+
+```bash
+accelerate launch scripts/inference.py \
+    --config configs/calibri.py:cmaes_hpsv3_flux_gates \
+    --checkpoint_path ./weights/flux_gates.json \
+    --prompt "a futuristic city at sunset" \
+    --save_dir ./outputs/custom_gens
+```
+
+For Qwen:
+```bash
+accelerate launch scripts/inference.py \
+    --config configs/calibri.py:cmaes_qwen_clean_hpsv3_2models_cfg \
+    --checkpoint_path ./weights/qwenimage.json \
+    --prompt "a futuristic city at sunset" \
+    --save_dir ./outputs/custom_gens
+```
+
+This mode generates an image for your specific text prompt. It bypasses metrics calculation and outputs the result directly to `--save_dir`. 
+
+**2. Data Evaluation**
+```bash
+accelerate launch scripts/inference.py \
+    --config configs/calibri.py:cmaes_hpsv3_flux_gates \
+    --checkpoint_path ./weights/flux_gates.json \
+    --save_dir ./outputs/val_evaluation
+```
+If `--prompt` is not provided, the script runs a full evaluation on the validation dataset specified in your config (`cfg.data.val_dataset`). Distributed across multiple GPUs via `accelerate`, it generates all images and computes the human-preference reward metrics.
 
 # 🤗 Acknowledgements
 
