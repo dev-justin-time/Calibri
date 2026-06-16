@@ -52,7 +52,7 @@ Calibri optimizes text-to-image models by maximizing human-preference rewards. I
 # 🚀 Quick start
 
 ## Environment Set Up
-The framework is build with [uv](https://github.com/astral-sh/uv) — an extremely fast Python package and project manager. Installation guide is at uv [docs](https://docs.astral.sh/uv/getting-started/installation/)
+The framework is built with [uv](https://github.com/astral-sh/uv) — an extremely fast Python package and project manager. Installation guide is at uv [docs](https://docs.astral.sh/uv/getting-started/installation/)
 
 **1. Clone the repository**
 ```bash
