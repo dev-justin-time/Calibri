@@ -41,7 +41,6 @@ dependencies = [
 [tool.uv]
 package = false
 
-# Указываем uv откуда скачивать PyTorch для CUDA 11.8
 [[tool.uv.index]]
 name = "pytorch-cu118"
 url = "https://download.pytorch.org/whl/cu118"
