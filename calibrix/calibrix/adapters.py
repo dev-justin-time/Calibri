@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix adapter layer.
 #
 # An Adapter is anything that can be modulated (kernel gains applied) and

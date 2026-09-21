@@ -1,0 +1,208 @@
+{
+  "generated_at": "2026-09-21 06:25:14",
+  "adapter": "uc2",
+  "scorers": [
+    "PromptAdherence",
+    "LengthDrift",
+    "EmptyRate",
+    "DiversityDrop"
+  ],
+  "baseline_train": {
+    "PromptAdherence": 0.0,
+    "LengthDrift": 0.0,
+    "EmptyRate": 0.0,
+    "DiversityDrop": 1.0
+  },
+  "baseline_holdout": {
+    "PromptAdherence": 0.0,
+    "LengthDrift": 0.0,
+    "EmptyRate": 0.0,
+    "DiversityDrop": 1.0
+  },
+  "n_params": 12,
+  "n_evals": 12,
+  "elapsed_seconds": 0.01,
+  "overfit": {
+    "flagged": false,
+    "details": [],
+    "margin": 0.15,
+    "note": "holdout gap exceeds margin: selection overfit the train split; increase holdout_fraction or reduce n_trials"
+  },
+  "best": {
+    "trial": 1,
+    "fitness": -0.215469,
+    "objectives": {
+      "PromptAdherence": 0.0,
+      "LengthDrift": 0.875469,
+      "EmptyRate": 0.0,
+      "DiversityDrop": 0.66
+    },
+    "holdout": {
+      "PromptAdherence": 0.0,
+      "LengthDrift": 0.875469,
+      "EmptyRate": 0.0,
+      "DiversityDrop": 0.868293
+    },
+    "steps_used": 18,
+    "vector": [
+      1.07322,
+      0.822784,
+      1000000.154145,
+      1.067325,
+      -0.114518,
+      0.218841,
+      0.906381,
+      1.08766,
+      1000000.695494,
+      0.825162,
+      0.437588,
+      0.043342
+    ]
+  },
+  "trials": [
+    {
+      "trial": 1,
+      "generation": 0,
+      "fitness": -0.215469,
+      "objectives": {
+        "PromptAdherence": 0.0,
+        "LengthDrift": 0.875469,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.66
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 2,
+      "generation": 0,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 3,
+      "generation": 0,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 4,
+      "generation": 0,
+      "fitness": -0.466483,
+      "objectives": {
+        "PromptAdherence": 0.0,
+        "LengthDrift": 1.05315,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.586667
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 5,
+      "generation": 0,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 6,
+      "generation": 0,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 7,
+      "generation": 1,
+      "fitness": -26.431316,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 23.431316,
+        "EmptyRate": 1.0,
+        "DiversityDrop": 0.0
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 8,
+      "generation": 1,
+      "fitness": -0.215469,
+      "objectives": {
+        "PromptAdherence": 0.0,
+        "LengthDrift": 0.875469,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.66
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 9,
+      "generation": 1,
+      "fitness": -0.466483,
+      "objectives": {
+        "PromptAdherence": 0.0,
+        "LengthDrift": 1.05315,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.586667
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 10,
+      "generation": 1,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 11,
+      "generation": 1,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    },
+    {
+      "trial": 12,
+      "generation": 1,
+      "fitness": -1.924539,
+      "objectives": {
+        "PromptAdherence": 1.0,
+        "LengthDrift": 0.064539,
+        "EmptyRate": 0.0,
+        "DiversityDrop": 0.14
+      },
+      "steps_used": 18
+    }
+  ]
+}

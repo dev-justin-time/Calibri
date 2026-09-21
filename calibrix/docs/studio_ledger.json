@@ -1,0 +1,600 @@
+{
+  "schema": "calibrix.architecture-ledger/1.0",
+  "generated_at": "2026-09-21T14:19:46Z",
+  "provenance": {
+    "spdx": [
+      "MIT"
+    ],
+    "cleanroom": {
+      "clean": false,
+      "contaminated_files": [
+        "calibrix/ablation.py"
+      ],
+      "missing_spdx": [
+        "calibrix/studio/governance.py"
+      ],
+      "allowlisted": [
+        "calibrix/studio/governance.py"
+      ],
+      "files_scanned": 32,
+      "verdict": "CONTAMINATION-REVIEW-REQUIRED"
+    }
+  },
+  "tests": {
+    "total": 0,
+    "per_file": {
+      "test_ablation.py": 0,
+      "test_engine_budget.py": 0,
+      "test_kernel.py": 0,
+      "test_marketplace.py": 0,
+      "test_metering.py": 0,
+      "test_scorers.py": 0,
+      "test_studio.py": 0
+    },
+    "unattributed": 0
+  },
+  "coverage": {
+    "expected": 108,
+    "implemented": 93,
+    "missing": [
+      "F015",
+      "F016",
+      "F020",
+      "F030",
+      "F032",
+      "F072",
+      "F097",
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+    ],
+    "percent": 86.1
+  },
+  "domains": [
+    {
+      "module": "steering",
+      "id": "D1",
+      "title": "Model Steering & Gate Hooks",
+      "span": "F001-F014",
+      "path": "calibrix/studio/steering.py",
+      "sha256_12": "75fdd34d41b3",
+      "loc": 377,
+      "symbols": {
+        "functions": 24,
+        "classes": 1
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F001",
+          "name": "Q/K Matrix Gain Modulation"
+        },
+        {
+          "id": "F002",
+          "name": "MLP Residual Ratio Shifter"
+        },
+        {
+          "id": "F003",
+          "name": "LayerNorm Epsilon Clamping"
+        },
+        {
+          "id": "F004",
+          "name": "Cross-Attention Bias Gate"
+        },
+        {
+          "id": "F005",
+          "name": "Skip-Connection Alpha Damping"
+        },
+        {
+          "id": "F006",
+          "name": "Rotary Position (RoPE) Angle Perturbation"
+        },
+        {
+          "id": "F007",
+          "name": "SwiGLU Gate Projection Trim"
+        },
+        {
+          "id": "F008",
+          "name": "Zero Weight-Mod Bypass Tap"
+        },
+        {
+          "id": "F009",
+          "name": "GQA Head Replication Router"
+        },
+        {
+          "id": "F010",
+          "name": "DiT Double-Stream Synchronizer"
+        },
+        {
+          "id": "F011",
+          "name": "Dynamic Text-Pooling Injection"
+        },
+        {
+          "id": "F012",
+          "name": "Softmax Temperature Annealer"
+        },
+        {
+          "id": "F013",
+          "name": "Output Projection Gamma Damper"
+        },
+        {
+          "id": "F014",
+          "name": "Multi-LoRA Dynamic Arbiter"
+        }
+      ]
+    },
+    {
+      "module": "scoring",
+      "id": "D2",
+      "title": "Scorer Panels & Reward Functions",
+      "span": "F015-F028",
+      "path": "calibrix/studio/scoring.py",
+      "sha256_12": "997ee5a4f792",
+      "loc": 267,
+      "symbols": {
+        "functions": 13,
+        "classes": 1
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F019",
+          "name": "CIELAB Delta-E Gamut Scorer"
+        },
+        {
+          "id": "F022",
+          "name": "SSIM Structural Preserver"
+        },
+        {
+          "id": "F025",
+          "name": "Style-Consistency Patch Distance (LPIPS proxy)"
+        },
+        {
+          "id": "F023",
+          "name": "OCR Typographic Sharpness (gradient energy)"
+        },
+        {
+          "id": "F018",
+          "name": "Refusal-direction classifier hook"
+        },
+        {
+          "id": "F021",
+          "name": "Face/Hand Geometry L2 (deterministic ROI proxy)"
+        },
+        {
+          "id": "F024",
+          "name": "VRAM Peak Footprint Scorer (host-side metering)"
+        },
+        {
+          "id": "F017",
+          "name": "NFETrap (studio-side, composable with calibrix.scorers.NFETrap)"
+        },
+        {
+          "id": "F027",
+          "name": "Normalized Weight Auto-Sum"
+        },
+        {
+          "id": "F026",
+          "name": "Zero-Shot Safety Boundary Gate"
+        },
+        {
+          "id": "F028",
+          "name": "Custom Python Scorer Hook (sandboxed)"
+        }
+      ]
+    },
+    {
+      "module": "optim",
+      "id": "D3",
+      "title": "Optimizers & Pareto Frontiers",
+      "span": "F029-F040",
+      "path": "calibrix/studio/optim.py",
+      "sha256_12": "1ea774f667e8",
+      "loc": 354,
+      "symbols": {
+        "functions": 10,
+        "classes": 6
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F031",
+          "name": "NSGA-II non-dominated sorting"
+        },
+        {
+          "id": "F039",
+          "name": "Pareto Knee-Point Selector"
+        },
+        {
+          "id": "F029",
+          "name": "CMA-ES is in calibrix/optimizers.py; here: the missing solvers"
+        },
+        {
+          "id": "F033",
+          "name": "Successive Halving / Hyperband pruner"
+        },
+        {
+          "id": "F034",
+          "name": "Tiny GP-UCB"
+        },
+        {
+          "id": "F035",
+          "name": "Random Subspace Projector"
+        },
+        {
+          "id": "F036",
+          "name": "Step-size adaptive decayer (1/5th rule, classic ES)"
+        },
+        {
+          "id": "F038",
+          "name": "Exploration Entropy Booster"
+        },
+        {
+          "id": "F037",
+          "name": "Population Island Migrator"
+        },
+        {
+          "id": "F040",
+          "name": "Warm-Start Run Clone Importer"
+        }
+      ]
+    },
+    {
+      "module": "proof",
+      "id": "D4",
+      "title": "Overfit Detection & Proof Engines",
+      "span": "F041-F052",
+      "path": "calibrix/studio/proof.py",
+      "sha256_12": "99fbb33fe1b8",
+      "loc": 284,
+      "symbols": {
+        "functions": 14,
+        "classes": 3
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F041",
+          "name": "80/20 Holdout Splitter (deterministic, stratified option)"
+        },
+        {
+          "id": "F042",
+          "name": "Holdout Delta Gap Alarm"
+        },
+        {
+          "id": "F043",
+          "name": "Blind Cross-Validation Fold"
+        },
+        {
+          "id": "F044",
+          "name": "SHA-256 Checkpoint Seal"
+        },
+        {
+          "id": "F048",
+          "name": "Gradient Bleed Leak Probe"
+        },
+        {
+          "id": "F045",
+          "name": "Out-of-Distribution Stressor"
+        },
+        {
+          "id": "F046",
+          "name": "Auto-Rollback Snapshotter"
+        },
+        {
+          "id": "F047",
+          "name": "Semantic Divergence Monitor (embedding-free)"
+        },
+        {
+          "id": "F049",
+          "name": "Generalization Bounds Bounder"
+        },
+        {
+          "id": "F050",
+          "name": "Prompt Memorization Canary"
+        },
+        {
+          "id": "F051",
+          "name": "Early Stop Patience Watchdog"
+        },
+        {
+          "id": "F052",
+          "name": "Auditable Dossier Generator"
+        }
+      ]
+    },
+    {
+      "module": "billing",
+      "id": "D5",
+      "title": "Billing, Metering & Compute Arb",
+      "span": "F053-F065",
+      "path": "calibrix/studio/billing.py",
+      "sha256_12": "f694484f777e",
+      "loc": 298,
+      "symbols": {
+        "functions": 8,
+        "classes": 9
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F053",
+          "name": "plan_budget Verification Core"
+        },
+        {
+          "id": "F059",
+          "name": "Hard Cost Limit Circuit Breaker"
+        },
+        {
+          "id": "F054",
+          "name": "RunPod Spot Instance Bidder (provider-agnostic pricing core)"
+        },
+        {
+          "id": "F055",
+          "name": "Retainer Margin Arbitrage"
+        },
+        {
+          "id": "F063",
+          "name": "Dynamic Gainshare Calculator"
+        },
+        {
+          "id": "F056",
+          "name": "Per-Trial Token Cost Ticker"
+        },
+        {
+          "id": "F057",
+          "name": "Spot Eviction Failover Gate"
+        },
+        {
+          "id": "F058",
+          "name": "Lambda Labs BYOC Key Relay (credential hygiene core)"
+        },
+        {
+          "id": "F060",
+          "name": "SaaS Multi-Tenant Quota Guard"
+        },
+        {
+          "id": "F061",
+          "name": "VRAM Idle Reclaim Automator"
+        },
+        {
+          "id": "F062",
+          "name": "CO2 Emissions Carbon Ticker"
+        },
+        {
+          "id": "F064",
+          "name": "Net-30 Invoice Generator"
+        },
+        {
+          "id": "F065",
+          "name": "Credit Balance Auto-Debit"
+        }
+      ]
+    },
+    {
+      "module": "runtime",
+      "id": "D6",
+      "title": "Runtime Engines & Artifact Packing",
+      "span": "F066-F078",
+      "path": "calibrix/studio/runtime.py",
+      "sha256_12": "7a8e6b850172",
+      "loc": 255,
+      "symbols": {
+        "functions": 13,
+        "classes": 2
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F066",
+          "name": "ComfyUI Native Node Exporter"
+        },
+        {
+          "id": "F078",
+          "name": "Safetensors Metadata Injector"
+        },
+        {
+          "id": "F069",
+          "name": "FP8 Quantization Gate Preserver"
+        },
+        {
+          "id": "F074",
+          "name": "Hot-Swappable Gate Server"
+        },
+        {
+          "id": "F075",
+          "name": "ONNX Runtime Serialization (metadata side; graph export needs torch)"
+        },
+        {
+          "id": "F071",
+          "name": "Apple Metal / F072 \u2014 Triton: gain precompute helpers"
+        },
+        {
+          "id": "F076",
+          "name": "Edge TPU Quantization Clamp"
+        },
+        {
+          "id": "F070",
+          "name": "REST API Endpoint Dispatcher (routing plan; HTTP layer is server.py)"
+        },
+        {
+          "id": "F077",
+          "name": "Kubernetes Cluster Auto-Scaler (HPA math)"
+        },
+        {
+          "id": "F073",
+          "name": "Diffusers Pipeline Adapter (monkeypatch-free hook spec)"
+        },
+        {
+          "id": "F067",
+          "name": "vLLM PagedAttention Hook (gain table contract)"
+        },
+        {
+          "id": "F068",
+          "name": "TensorRT-LLM Engine Builder (plan spec; compile happens in TRT)"
+        }
+      ]
+    },
+    {
+      "module": "governance",
+      "id": "D7",
+      "title": "Governance, IP Warranty & Compliance",
+      "span": "F079-F090",
+      "path": "calibrix/studio/governance.py",
+      "sha256_12": "43117c3bfb5c",
+      "loc": 314,
+      "symbols": {
+        "functions": 13,
+        "classes": 2
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F079",
+          "name": "MIT Cleanroom Verification"
+        },
+        {
+          "id": "F081",
+          "name": "Weight Modification Zero-Leak"
+        },
+        {
+          "id": "F080",
+          "name": "EU AI Act Annex IV technical documentation"
+        },
+        {
+          "id": "F082",
+          "name": "Data Lineage Provenance Stamp"
+        },
+        {
+          "id": "F083",
+          "name": "SOC2-style Audit Log Chain"
+        },
+        {
+          "id": "F086",
+          "name": "Adversarial Prompt Sanitizer"
+        },
+        {
+          "id": "F088",
+          "name": "PII Masking & Anonymizer"
+        },
+        {
+          "id": "F085",
+          "name": "Toxic Output Watermarking (deterministic latent-bit watermark)"
+        },
+        {
+          "id": "F087",
+          "name": "Role-Based Permission Gate"
+        },
+        {
+          "id": "F089",
+          "name": "Export Encryption Vault (envelope encryption, stdlib AES-free)"
+        },
+        {
+          "id": "F090",
+          "name": "Keystore (interface for HSM/KMS backends)"
+        },
+        {
+          "id": "F084",
+          "name": "IP Indemnity Policy Seal (contract metadata)"
+        }
+      ]
+    },
+    {
+      "module": "settlement",
+      "id": "D8",
+      "title": "Commercial Settlement & Royalties",
+      "span": "F091-F100",
+      "path": "calibrix/studio/settlement.py",
+      "sha256_12": "0b66c84fd6f6",
+      "loc": 237,
+      "symbols": {
+        "functions": 7,
+        "classes": 5
+      },
+      "tests": 0,
+      "features": [
+        {
+          "id": "F091",
+          "name": "25% Savings Gainshare Engine (contract-bound)"
+        },
+        {
+          "id": "F092",
+          "name": "Escrow Hold (authorize \u2192 capture \u2192 release)"
+        },
+        {
+          "id": "F093",
+          "name": "Automated Royalty Splitter"
+        },
+        {
+          "id": "F094",
+          "name": "Tokenized Calibration License (signable, portable)"
+        },
+        {
+          "id": "F095",
+          "name": "Pay-Per-Inference Micro-Royalty"
+        },
+        {
+          "id": "F096",
+          "name": "Monthly Retainer Burn Tracker"
+        },
+        {
+          "id": "F098",
+          "name": "Multi-Currency Settlement (published reference-rate conversion)"
+        },
+        {
+          "id": "F099",
+          "name": "Enterprise SLA Uptime Credit"
+        },
+        {
+          "id": "F100",
+          "name": "Zero-Knowledge-style License Attestation"
+        }
+      ]
+    }
+  ],
+  "services": {
+    "path": "calibrix/studio/services.py",
+    "sha256_12": "a6f483ca857b",
+    "entries": [
+      {
+        "id": "S1",
+        "name": "Challenger Watch (kernel invalidation monitoring)"
+      },
+      {
+        "id": "S2",
+        "name": "Compat Scanner (instant quoting for arbitrary models)"
+      },
+      {
+        "id": "S3",
+        "name": "Drift Sentinel (production monitoring subscription)"
+      },
+      {
+        "id": "S4",
+        "name": "KernelOps (versioning, staged rollout, rollback)"
+      },
+      {
+        "id": "S5",
+        "name": "Benchmark Harmonizer (cross-reward normalization)"
+      },
+      {
+        "id": "S6",
+        "name": "Prompt Pack Curator (active-selection for calibration budgets)"
+      },
+      {
+        "id": "S7",
+        "name": "Kernel Transfer (cross-model warm start)"
+      },
+      {
+        "id": "S8",
+        "name": "SLO Governor (marginal-utility early stop)"
+      }
+    ],
+    "tests": 0
+  },
+  "build_digest": "1afb44e1eedfbedde46d2022d056ede33cb106145d04568789932047c0617371"
+}

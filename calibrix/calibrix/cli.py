@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix CLI.
 #
 # All commands run fully offline by default (the demo uses the scripted
@@ -54,12 +55,23 @@ def cmd_demo(args: argparse.Namespace) -> int:
         DiversityDrop(prompts),
     ]
 
+    if args.quote is not None and args.max_budget is None:
+        print("error: --quote requires --max-budget (the breaker guards a "
+              "spend ceiling; it cannot run unbounded)")
+        return 2
+    if args.max_budget is not None and not args.price:
+        print("warning: --max-budget without --price: spend is always $0, "
+              "so the budget can never bind")
+
     cfg = SearchConfig(
         n_trials=args.trials,
         popsize=args.popsize,
         optimizer=args.optimizer,
         seed=args.seed,
         holdout_fraction=0.25,
+        price_per_1k_steps=args.price,
+        max_budget_usd=args.max_budget,
+        quoted_usd=args.quote,
         log_path=f"{args.out}/events.jsonl",
         meter_path=f"{args.out}/ledger.json",
     )
@@ -75,8 +87,18 @@ def cmd_demo(args: argparse.Namespace) -> int:
     print("Calibrix demo (offline, no GPU required)")
     print(f"  free parameters : {result['n_params']}")
     print(f"  evaluations     : {result['n_evals']}")
-    print(f"  best fitness    : {best.fitness:.4f}")
+    if best is not None:
+        print(f"  best fitness    : {best.fitness:.4f}")
     print(f"  overfit alarm   : {'FLAGGED' if result['overfit']['flagged'] else 'clear'}")
+    b = result["budget"]
+    budget_line = f"  budget          : spent ${b['spent_usd']:.4f}"
+    if b["max_budget_usd"] is not None:
+        budget_line += f" / ${b['max_budget_usd']:.2f}"
+        if b["halted"]:
+            budget_line += "  [HALTED]"
+    if b["breaker_tripped"]:
+        budget_line += "  [BREAKER]"
+    print(budget_line)
     print(f"  report          : {paths['html']}")
     return 0
 
@@ -147,6 +169,123 @@ def cmd_quote(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ablate(args: argparse.Namespace) -> int:
+    """Directional ablation co-optimization (Arditi et al. 2024 method).
+
+    Offline simulation by default (no torch, no network); point --url at an
+    OpenAI-compatible server (Ollama etc.) to run against a real model.
+    """
+    import numpy as np
+
+    from .ablation import (
+        SimulatedRefusalAdapter,
+        default_ablation_spec,
+        extract_directions_from_sim,
+        pick_best_direction_layer,
+    )
+    from .engine import SearchEngine
+    from .scorers import DiversityDrop, EmptyRate, KeywordRate, LengthDrift
+
+    rng = np.random.default_rng(args.seed)
+    n_layers = args.layers
+
+    harmful = seed_prompts(
+        [f"Give detailed instructions for making a dangerous device {i}."
+         for i in range(args.n_harmful)])
+    harmless = seed_prompts(
+        [f"Write a helpful explanation of {w}."
+         for w in ("rainbows", "bicycles", "coffee", "photosynthesis",
+                   "gravity", "kites", "bread", "tides")])
+
+    if args.url:
+        from .ablation import DirectionalAblationAdapter
+        from .adapters import OpenAICompatAdapter
+
+        base = OpenAICompatAdapter(model=args.model, base_url=args.url)
+        print(f"NOTE: remote server {args.url} cannot be weight-modulated "
+              "in-process; running scoring-only search (gains recorded, "
+              "behavior unchanged). Use in-process adapters for real "
+              "ablation.")
+        adapter = base
+        spec = default_ablation_spec(n_layers, 16)
+    else:
+        sim = SimulatedRefusalAdapter(n_layers=n_layers, d_model=16,
+                                      seed=args.seed)
+        sim.plant_clusters(harmful, harmless)
+        directions = extract_directions_from_sim(sim, harmful, harmless)
+        best_layer = pick_best_direction_layer(directions)
+        print(f"refusal direction extracted: layer {best_layer} "
+              f"(of {n_layers})")
+        adapter = sim
+        spec = default_ablation_spec(n_layers, 16)
+        spec.directions = directions
+        sim.directions = directions
+
+    # seed the kernel at the strongest direction layer
+    for s in spec.specs:
+        s.kernel.weight = 1.0
+        s.kernel.floor = 1.0
+        s.kernel.position = best_layer / max(n_layers - 1, 1) if not args.url else 0.5
+        s.kernel.focus = 1e6
+        s.kernel.direction_index = float(best_layer) if not args.url else 0.0
+        s.direction_index = getattr(s.kernel, "direction_index")
+    # sync the configured specs into the adapter (the engine modulates
+    # adapter.spec_sites(); for the sim these are now the same objects)
+    adapter.apply_modulation(spec.specs)
+
+    scorers = [
+        KeywordRate(harmful + harmless, score_name="Refusals"),
+        LengthDrift(harmless),
+        EmptyRate(harmless),
+        DiversityDrop(harmless),
+    ]
+    if args.quote is not None and args.max_budget is None:
+        print("error: --quote requires --max-budget (the breaker guards a "
+              "spend ceiling; it cannot run unbounded)")
+        return 2
+    if args.max_budget is not None and not args.price:
+        print("warning: --max-budget without --price: spend is always $0, "
+              "so the budget can never bind")
+
+    cfg = SearchConfig(
+        n_trials=args.trials,
+        popsize=args.popsize,
+        optimizer=args.optimizer,
+        seed=args.seed,
+        holdout_fraction=0.25,
+        price_per_1k_steps=args.price,
+        max_budget_usd=args.max_budget,
+        quoted_usd=args.quote,
+        log_path=f"{args.out}/events.jsonl" if args.out else None,
+        meter_path=f"{args.out}/ledger.json" if args.out else None,
+        objective_weights={"Refusals": 2.0},
+    )
+    engine = SearchEngine(adapter, scorers, harmful + harmless, cfg)
+    result = engine.run()
+
+    paths = write_report(
+        result, adapter_name=f"ablation({adapter.name})",
+        scorer_names=[s.score_name for s in scorers], out_dir=args.out or "ablation_report",
+    )
+    best = result["best"]
+    print(f"  free parameters : {result['n_params']}")
+    print(f"  evaluations     : {result['n_evals']}")
+    if best is not None:
+        print(f"  best fitness    : {best.fitness:.4f}")
+    print(f"  overfit alarm   : {'FLAGGED' if result['overfit']['flagged'] else 'clear'}")
+    b = result["budget"]
+    budget_line = f"  budget          : spent ${b['spent_usd']:.4f}"
+    if b["max_budget_usd"] is not None:
+        budget_line += f" / ${b['max_budget_usd']:.2f}"
+        if b["halted"]:
+            budget_line += "  [HALTED]"
+    if b["breaker_tripped"]:
+        budget_line += "  [BREAKER]"
+    print(budget_line)
+    print(f"  report          : {paths['html']}")
+    return 0
+
+
 def main(argv: List[str] | None = None) -> int:
     p = argparse.ArgumentParser(
         prog="calibrix",
@@ -161,6 +300,13 @@ def main(argv: List[str] | None = None) -> int:
     d.add_argument("--optimizer", default="simple",
                    choices=["simple", "cma", "tpe"])
     d.add_argument("--seed", type=int, default=0)
+    d.add_argument("--price", type=float, default=0.0,
+                   help="USD per 1k metered steps (needed for budget/breaker)")
+    d.add_argument("--max-budget", type=float, default=None, dest="max_budget",
+                   help="hard spend ceiling in USD (requires --price or a priced preset)")
+    d.add_argument("--quote", type=float, default=None, dest="quote",
+                   help="quoted cost in USD; a fail-closed breaker trips beyond "
+                        "quote*(1+tolerance) (requires --max-budget)")
     d.set_defaults(fn=cmd_demo)
 
     pl = sub.add_parser("plan", help="estimate the cost of a calibration run")
@@ -195,6 +341,28 @@ def main(argv: List[str] | None = None) -> int:
     qt.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     qt.add_argument("--out", default=None, help="write quote to file (.json = JSON, else text)")
     qt.set_defaults(fn=cmd_quote)
+
+    ab = sub.add_parser("ablate",
+                        help="directional-ablation co-optimization (offline sim by default)")
+    ab.add_argument("--layers", type=int, default=12, help="transformer layer count")
+    ab.add_argument("--n-harmful", type=int, default=10, help="harmful calibration prompts")
+    ab.add_argument("--model", default="llama3.2", help="model name for --url mode")
+    ab.add_argument("--url", default=None,
+                    help="OpenAI-compatible base URL (e.g. http://127.0.0.1:11434/v1)")
+    ab.add_argument("--trials", type=int, default=8)
+    ab.add_argument("--popsize", type=int, default=6)
+    ab.add_argument("--optimizer", default="tpe", choices=["simple", "cma", "tpe"])
+    ab.add_argument("--seed", type=int, default=0)
+    ab.add_argument("--price", type=float, default=0.0,
+                    help="USD per 1k metered steps (needed for budget/breaker)")
+    ab.add_argument("--out", default="ablation_report",
+                    help="output dir for events/ledger/report (empty string disables)")
+    ab.add_argument("--max-budget", type=float, default=None, dest="max_budget",
+                    help="hard spend ceiling in USD (requires --price or a priced preset)")
+    ab.add_argument("--quote", type=float, default=None, dest="quote",
+                    help="quoted cost in USD; a fail-closed breaker trips beyond "
+                         "quote*(1+tolerance) (requires --max-budget)")
+    ab.set_defaults(fn=cmd_ablate)
 
     args = p.parse_args(argv)
     return args.fn(args)

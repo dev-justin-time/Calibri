@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix metering: explicit, monotizable compute accounting.
 
 # "Monetizable functions" (the user's term) implemented as: every search run

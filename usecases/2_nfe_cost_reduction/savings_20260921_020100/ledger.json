@@ -1,0 +1,390 @@
+{
+  "cost_model": {
+    "steps_cost": 1.0,
+    "price_per_1k_steps": 0.0,
+    "currency": "USD"
+  },
+  "totals": {
+    "steps": 684,
+    "seconds": 0.3451739000156522,
+    "price": 0.0,
+    "scorer_calls": 176,
+    "trials": 37
+  },
+  "by_phase": {
+    "baseline": {
+      "steps": 0.0,
+      "seconds": 0.0,
+      "price": 0.0
+    },
+    "search": {
+      "steps": 648.0,
+      "seconds": 0.014002899988554418,
+      "price": 0.0
+    },
+    "validation": {
+      "steps": 36.0,
+      "seconds": 0.0,
+      "price": 0.0
+    },
+    "run": {
+      "steps": 0.0,
+      "seconds": 0.33117100002709776,
+      "price": 0.0
+    }
+  },
+  "records": [
+    {
+      "trial": 0,
+      "phase": "baseline",
+      "steps": 0,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 8
+    },
+    {
+      "trial": 1,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0008996999822556973,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 2,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00040499994065612555,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 3,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00025699997786432505,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 4,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0007432000711560249,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 5,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00026050000451505184,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 6,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00025189993903040886,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 7,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00017800007481127977,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 8,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0008104000007733703,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 9,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.000745000084862113,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 10,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002609000075608492,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 11,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002519999397918582,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 12,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002807999262586236,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 13,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002093000803142786,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 14,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002711999695748091,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 15,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002606000052765012,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 16,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00073490000795573,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 17,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00015499989967793226,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 18,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00025679997634142637,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 19,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00030519999563694,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 20,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00041470001451671124,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 21,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0007594999624416232,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 22,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0004560999805107713,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 23,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00034120003692805767,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 24,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00022160005755722523,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 25,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00020540005061775446,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 26,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002733999863266945,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 27,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00025289994664490223,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 28,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0007376000285148621,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 29,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00026430003345012665,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 30,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00025210005696862936,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 31,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0007848999230191112,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 32,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00014800007920712233,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 33,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00014350004494190216,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 34,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0007045000093057752,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 35,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002543999580666423,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 36,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0002513999352231622,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 1,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 4,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 8,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 9,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 16,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 28,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 0,
+      "phase": "run",
+      "steps": 0,
+      "seconds": 0.33117100002709776,
+      "price": 0.0,
+      "scorer_calls": 0
+    }
+  ]
+}

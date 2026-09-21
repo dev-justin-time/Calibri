@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Calibrix kernel marketplace: sell calibration kernels as portable artifacts.
 
 The ComfyUI node (`comfyui_nodes/calibrix_node.py`) is the client: paste a

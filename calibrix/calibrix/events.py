@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix event log: reproducibility + audit trail (repurposed from Heretic's
 # reproduce.py philosophy: everything needed to re-run and to audit a run).
 

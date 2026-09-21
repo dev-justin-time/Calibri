@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix report generation: JSON + self-contained HTML dashboard.
 #
 # The HTML is a single file with inline JS that works from file:// with no

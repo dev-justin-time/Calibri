@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix research probes.
 #
 # Repurposed from Heretic's --print-residual-geometry: quantitative analysis

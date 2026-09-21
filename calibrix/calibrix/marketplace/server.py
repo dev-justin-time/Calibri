@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix marketplace HTTP server (stdlib only).
 #
 # Routes:

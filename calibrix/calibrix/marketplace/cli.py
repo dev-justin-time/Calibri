@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Marketplace CLI: `calibrix-marketplace <command>`.
 #
 # Offline-first: `seed` + `serve` work with the mock provider and zero keys;

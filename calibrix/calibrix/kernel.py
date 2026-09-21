@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix — generalized modulation kernel.
 #
 # Repurposed logic:
@@ -81,7 +82,7 @@ class KernelParams:
         stores position normalized to [0, 1] so specs are model-agnostic.
         """
         last = max(n_sites - 1, 1)
-        return KernelParams(
+        k = KernelParams(
             weight=max_weight,
             position=max_weight_position / last,
             focus=max(min_weight_distance, 1e-6) / last,
@@ -89,9 +90,25 @@ class KernelParams:
             ripple=0.0,
             phase=0.0,
         )
+        k.site_count = int(n_sites)  # denormalization basis for to_heretic()
+        return k
 
-    def to_heretic(self) -> Dict[str, float]:
-        """Round-trip back to Heretic parameter names (ripple/phase lost)."""
+    def to_heretic(self, n_sites: Optional[int] = None) -> Dict[str, float]:
+        """Round-trip back to Heretic parameter names (ripple/phase lost).
+
+        Absolute layer indices are restored using `n_sites` when given,
+        else the `site_count` remembered by `from_heretic`; with neither,
+        the normalized values are returned unchanged.
+        """
+        basis = n_sites if n_sites is not None else getattr(self, "site_count", None)
+        if basis:
+            last = max(int(basis) - 1, 1)
+            return {
+                "max_weight": self.weight,
+                "max_weight_position": self.position * last,
+                "min_weight": self.floor,
+                "min_weight_distance": self.focus * last,
+            }
         return {
             "max_weight": self.weight,
             "max_weight_position": self.position,

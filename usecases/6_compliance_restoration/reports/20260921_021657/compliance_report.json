@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-09-21 02:16:59",
+  "model_surface": "scripted 12-layer transformer (offline demo)",
+  "policy_refusal_rate_holdout": 0.0,
+  "drift_total_holdout": 1.0,
+  "drift_budget": 0.2,
+  "within_budget": false,
+  "overfit_flagged": false,
+  "best_fitness": 1.0,
+  "certification": "REVIEW",
+  "report_html": "reports\\20260921_021657\\report.html"
+}

@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-09-21 02:24:35",
+  "price_per_1k_steps": 1.5,
+  "baseline_reward": 1.0,
+  "sweep": [
+    {
+      "nfe": 15,
+      "quality": 0.25,
+      "steps_used": 18
+    },
+    {
+      "nfe": 10,
+      "quality": 0.25,
+      "steps_used": 18
+    },
+    {
+      "nfe": 7,
+      "quality": 0.25,
+      "steps_used": 18
+    },
+    {
+      "nfe": 5,
+      "quality": 0.25,
+      "steps_used": 18
+    }
+  ],
+  "baseline_nfe": 50,
+  "recommended_nfe": 5,
+  "recommendation_source": "documented_calibri",
+  "overfit_flagged": false,
+  "monthly_steps": 20000000,
+  "current_monthly_spend": 30000.0,
+  "projected_monthly_savings": 27000.0,
+  "consultant_share": 0.25,
+  "billed_monthly": 6750.0
+}

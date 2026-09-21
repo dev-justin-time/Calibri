@@ -43,14 +43,28 @@ class TestKernelParams(unittest.TestCase):
 
 class TestModulationSpec(unittest.TestCase):
     def test_gains_peak_at_position(self):
+        # Odd n_sites: position 0.5 maps to an exact site (p*(n-1)
+        # convention), so the kernel peaks exactly there.
+        spec = ModulationSpec(
+            component="attn", n_sites=21,
+            kernel=KernelParams(weight=1.5, position=0.5, focus=0.1, floor=0.0),
+        )
+        gains = spec.gains()
+        peak_idx = max(range(21), key=lambda i: gains[i])
+        self.assertEqual(peak_idx, 10)  # middle layer
+        self.assertAlmostEqual(gains[10], 1.5)
+
+    def test_gains_symmetric_between_center_sites_when_even(self):
+        # Even n_sites: position 0.5 sits between the two center sites, so
+        # the kernel is mirror-symmetric and the peak is a two-way tie.
         spec = ModulationSpec(
             component="attn", n_sites=20,
             kernel=KernelParams(weight=1.5, position=0.5, focus=0.1, floor=0.0),
         )
         gains = spec.gains()
+        self.assertAlmostEqual(gains[9], gains[10])
         peak_idx = max(range(20), key=lambda i: gains[i])
-        self.assertEqual(peak_idx, 10)  # middle layer
-        self.assertAlmostEqual(gains[10], 1.5)
+        self.assertIn(peak_idx, (9, 10))
 
     def test_ripple_changes_gains_and_phase_shifts_them(self):
         base = ModulationSpec(

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix marketplace licenses.
 #
 # A license binds a kernel artifact (identified by content hash of its spec

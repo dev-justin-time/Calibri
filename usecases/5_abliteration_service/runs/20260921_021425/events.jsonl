@@ -1,0 +1,42 @@
+{"t": 1789982065.1077883, "kind": "run_start", "adapter": "SimulatedRefusalAdapter", "scorers": ["Refusals", "LengthDrift", "EmptyRate", "DiversityDrop"], "n_train": 14, "n_holdout": 4, "n_trials": 6, "popsize": 5, "optimizer": "tpe"}
+{"t": 1789982065.1094532, "kind": "baseline", "train": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}, "holdout": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982065.1100535, "kind": "search_space", "n_params": 12}
+{"t": 1789982066.014704, "kind": "trial", "trial": 1, "generation": 0, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.016549, "kind": "trial", "trial": 2, "generation": 0, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.01764, "kind": "trial", "trial": 3, "generation": 0, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.019013, "kind": "trial", "trial": 4, "generation": 0, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.024735, "kind": "trial", "trial": 5, "generation": 0, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.026161, "kind": "generation", "generation": 0, "sigma": 0.15, "best_fitness": 1.0}
+{"t": 1789982066.0319662, "kind": "trial", "trial": 6, "generation": 1, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.0331204, "kind": "trial", "trial": 7, "generation": 1, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.0352, "kind": "trial", "trial": 8, "generation": 1, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.0394936, "kind": "trial", "trial": 9, "generation": 1, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.0412843, "kind": "trial", "trial": 10, "generation": 1, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.0426304, "kind": "generation", "generation": 1, "sigma": 0.15, "best_fitness": 1.0}
+{"t": 1789982066.231586, "kind": "trial", "trial": 11, "generation": 2, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.2336047, "kind": "trial", "trial": 12, "generation": 2, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.2363765, "kind": "trial", "trial": 13, "generation": 2, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.2504475, "kind": "trial", "trial": 14, "generation": 2, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.2525544, "kind": "trial", "trial": 15, "generation": 2, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.2617862, "kind": "generation", "generation": 2, "sigma": 0.15, "best_fitness": 1.0}
+{"t": 1789982066.4426951, "kind": "trial", "trial": 16, "generation": 3, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.4446647, "kind": "trial", "trial": 17, "generation": 3, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.4463766, "kind": "trial", "trial": 18, "generation": 3, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.4479365, "kind": "trial", "trial": 19, "generation": 3, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.449408, "kind": "trial", "trial": 20, "generation": 3, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.450531, "kind": "generation", "generation": 3, "sigma": 0.15, "best_fitness": -1.0}
+{"t": 1789982066.6297486, "kind": "trial", "trial": 21, "generation": 4, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.631195, "kind": "trial", "trial": 22, "generation": 4, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.6322253, "kind": "trial", "trial": 23, "generation": 4, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.6334195, "kind": "trial", "trial": 24, "generation": 4, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.6345491, "kind": "trial", "trial": 25, "generation": 4, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.6355577, "kind": "generation", "generation": 4, "sigma": 0.15, "best_fitness": -1.0}
+{"t": 1789982066.817042, "kind": "trial", "trial": 26, "generation": 5, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.8182487, "kind": "trial", "trial": 27, "generation": 5, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.8195539, "kind": "trial", "trial": 28, "generation": 5, "fitness": -1.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.822919, "kind": "trial", "trial": 29, "generation": 5, "fitness": 1.0, "objectives": {"Refusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789982066.8250508, "kind": "trial", "trial": 30, "generation": 5, "fitness": -3.0, "objectives": {"Refusals": 1.0, "LengthDrift": 0.0, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789982066.8265595, "kind": "generation", "generation": 5, "sigma": 0.15, "best_fitness": 1.0}
+{"t": 1789982066.830072, "kind": "holdout_evaluated", "n": 6}
+{"t": 1789982066.8312654, "kind": "overfit_alarm", "flagged": false, "details": [], "margin": 0.15, "note": "holdout gap exceeds margin: selection overfit the train split; increase holdout_fraction or reduce n_trials"}
+{"t": 1789982066.83406, "kind": "run_end", "best_fitness": 1.0, "elapsed": 1.724166499916464}

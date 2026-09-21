@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix marketplace payments: Stripe Checkout + offline mock.
 #
 # The real provider uses stripe-python (optional extra `stripe`). The mock

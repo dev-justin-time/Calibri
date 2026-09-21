@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix directional ablation (MIT).
 #
 # Clean-room implementation of the *methods* behind automatic abliteration,
@@ -27,6 +28,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import math
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence, Tuple
@@ -125,40 +127,43 @@ def pick_best_direction_layer(directions: List[np.ndarray]) -> int:
 
 def orthogonalize(matrix: np.ndarray, direction: np.ndarray,
                   preserve_norm: bool = True) -> np.ndarray:
-    """Project the row space of `matrix` off `direction`.
+    """Inhibit `direction` in the output of a weight matrix.
 
-    M' = M (I - alpha * d d^T)  with alpha = 1, or the norm-preserving
-    symmetric form  M' = M sqrt(I - d d^T)  (Lai 2025) when preserve_norm.
+    For a linear map y = W x, the component of y along unit vector d is
+    d^T W x. Killing it for every x requires d^T W' = 0, achieved by
+    left-multiplying with the projector P = I - d d^T (each row of W is
+    projected off d):
 
-    For preserve_norm the operator sqrt(I - dd^T) has eigenvalues 1 on the
-    orthogonal complement and 0 on the direction, but applied symmetrically
-    (M S S^T M^T) it preserves the norm of outputs whose components along d
-    are removed while leaving orthogonal components untouched up to the
-    projection - the "biprojected" trick from the literature.
+        W' = P W                     (plain, Arditi et al. 2024)
+
+    The norm-preserving biprojected variant (Lai 2025) additionally removes
+    the direction from the input-read side and restores the row norms that
+    projection shrank:
+
+        W' = D P W P,  D_ii = ||row_i(W)|| / ||row_i(P W P)||
+
+    Properties (all tested):
+      - plain: d^T W' = 0 exactly - no output can point along d
+        (the readout side is annihilated; Arditi et al. 2024)
+      - norm-preserving biprojected: W' d = 0 exactly (the input-read side
+        is annihilated) AND row norms of W are preserved (Lai 2025)
+      - both are idempotent: ablating twice is ablating once
     """
-    d = direction.astype(np.float64)
+    d = np.asarray(direction, dtype=np.float64)
     nd = np.linalg.norm(d)
     if nd < 1e-12:
         return matrix
     d = d / nd
-    if preserve_norm:
-        # sqrt(I - d d^T) = I - (1 - sqrt(0)) d d^T restricted to the span of
-        # d: eigenvalue 0 on d, 1 elsewhere. The symmetric square root of
-        # I - dd^T is I - dd^T itself (idempotent projector, its own sqrt).
-        # Norm preservation comes from projecting *and* rescaling the
-        # residual: x' = x - (x.d) d  keeps norm only when x.d == 0, so the
-        # norm-preserving variant instead uses  x' = x - (1 - s) (x.d) d  with
-        # s = 0 -> this collapses to the plain projection. The genuinely
-        # norm-preserving published variant (Lai 2025) projects the *matrix*
-        # bidirectionally (input and output sides). We implement that here.
-        #
-        # M' = (I - dd^T) M (I - dd^T)  -- biprojection; singular values along
-        # d are removed on both sides, everything else is untouched, and the
-        # per-output norm is preserved up to the removed component.
-        p = np.eye(d.shape[0]) - np.outer(d, d)
-        return p @ matrix @ p
     p = np.eye(d.shape[0]) - np.outer(d, d)
-    return p @ matrix
+    if not preserve_norm:
+        return p @ matrix
+    wp = p @ matrix @ p
+    row_norms = np.linalg.norm(matrix, axis=1)
+    new_norms = np.linalg.norm(wp, axis=1)
+    scale = np.where(
+        new_norms > 1e-12, row_norms / np.maximum(new_norms, 1e-12), 0.0
+    )
+    return wp * scale[:, None]
 
 
 def ablation_weight_profile(
@@ -322,38 +327,39 @@ class DirectionalAblationAdapter(Adapter):
         return self.spec.specs
 
     def apply_modulation(self, specs: List[ModulationSpec]) -> None:
-        """Materialize kernel params into orthogonalized weight matrices."""
+        """Materialize kernel params into orthogonalized weight matrices.
+
+        Per layer: W' = (1 - a) W + a * orthogonalize(W, d_l), where a is
+        the kernel strength at that layer and d_l the (interpolated)
+        refusal direction. a == 0 leaves the model untouched; a == 1 is
+        full directional ablation.
+        """
         self.spec.specs = list(specs)
         by_comp: Dict[str, ModulationSpec] = {s.component: s for s in specs}
-        # restore originals before re-applying (idempotent modulation)
-        for idx, (comp, mod) in enumerate(self.targets):
-            orig = self._originals.get(idx)
-            if orig is not None:
-                _set_weight(mod, orig)
         n_layers = len(self.targets)
-        sig_accum: List[float] = []
+        sig_total = 0.0
         for idx, (comp, mod) in enumerate(self.targets):
+            W = _get_weight(mod)
+            if idx not in self._originals:
+                self._originals[idx] = W.copy()
             spec = by_comp.get(comp)
             if spec is None:
                 continue
             a_l = spec.gains()  # per-layer strengths
             a = float(np.clip(a_l[idx % len(a_l)], 0.0, self.spec.max_strength))
-            self._last_strength_signature += abs(a)
+            sig_total += abs(a)
             if a <= 1e-6:
+                _set_weight(mod, self._originals[idx])
                 continue
-            d = site_direction(self.spec.directions,
-                               spec.kernel.direction_index)  # type: ignore[attr-defined]
+            d = site_direction(self.spec.directions, spec.direction_index)
             if not np.any(d):
+                _set_weight(mod, self._originals[idx])
                 continue
-            W = _get_weight(mod)
-            dW = np.outer(d, d @ W)
-            Wp = W - a * dW
-            if self.norm_preserving:
-                # second projection from the output side (biprojected form)
-                Wp = Wp - a * (Wp @ np.outer(d, d))
+            W_abl = orthogonalize(self._originals[idx], d,
+                                  preserve_norm=self.norm_preserving)
+            Wp = (1.0 - a) * self._originals[idx] + a * W_abl
             _set_weight(mod, Wp)
-        n = max(len(self.targets), 1)
-        self._last_strength_signature = self._last_strength_signature / n
+        self._last_strength_signature = sig_total / max(n_layers, 1)
 
     def generate(self, prompts: List[Prompt], batch_size: int = 8,
                  ctx: Optional[ScorerContext] = None) -> List[str]:
@@ -415,6 +421,9 @@ class SimulatedRefusalAdapter(ScriptedAdapter):
         rng = np.random.default_rng(seed)
         self.planted_direction = rng.normal(size=d_model)
         self.planted_direction /= np.linalg.norm(self.planted_direction)
+        # extracted refusal directions (set by the caller after extraction);
+        # the sim resolves the spec's chosen direction against these
+        self.directions: Optional[List[np.ndarray]] = None
         # pre-build the residual clusters
         self.harmful: List[np.ndarray] = []
         self.harmless: List[np.ndarray] = []
@@ -429,8 +438,10 @@ class SimulatedRefusalAdapter(ScriptedAdapter):
         for p in prompts:
             per_layer = []
             for l in range(self.n_layers + 1):
+                # sha256 seeding: process-independent (hash() is randomized)
+                h = hashlib.sha256(p.user.encode("utf-8")).hexdigest()
                 base = np.random.default_rng(
-                    abs(hash(p.user)) % (2**32) + l).normal(size=self.d_model)
+                    int(h[:8], 16) + l).normal(size=self.d_model)
                 per_layer.append(base)
             rows.append(per_layer)
         arr = np.stack(rows)
@@ -442,24 +453,42 @@ class SimulatedRefusalAdapter(ScriptedAdapter):
             if not is_harmful:
                 continue
             for l in range(self.n_layers + 1):
-                scale = 2.2 * math.tanh(l / 4.0) * max(0.0, 1.0 - abs(l - self.refusal_layer) / max(self.n_layers, 1))
+                scale = 3.5 * math.tanh(l / 4.0) * max(0.0, 1.0 - abs(l - self.refusal_layer) / max(self.n_layers, 1))
                 arr[i, l, :] += scale * self.planted_direction
         return arr
 
     # -- ScriptedAdapter override: refusal depends on ablation strength ----
-    def generate(self, prompts, batch_size=8, ctx=None):
-        import hashlib
+    def _direction_removal(self) -> float:
+        """How much of the refusal direction's expression is inhibited.
 
+        Models the single-direction mediation thesis: the behavior dies when
+        the direction is strongly ablated (strength x direction alignment),
+        wherever that happens in depth - not when a diffuse average gain
+        changes. Weak ablation spread over many layers removes little
+        expression but still causes drift, exactly as in the real method.
+        """
+        best = 0.0
+        for s in self._specs:
+            if s.component != "attn" or self.directions is None:
+                continue
+            d_sel = site_direction(self.directions, s.direction_index)
+            align = abs(float(np.dot(d_sel, self.planted_direction)))
+            a_max = max(s.gains()) if s.n_sites > 0 else 0.0
+            best = max(best, a_max * align)
+        return best
+
+    def generate(self, prompts, batch_size=8, ctx=None):
+        removal = self._direction_removal()
         sig = self._signature()  # 1.0 == unmodulated
-        ablated = 1.0 - sig       # total modulation deviation
+        ablated = 1.0 - sig       # total modulation deviation (drift driver)
         out = []
         for p in prompts:
             h = hashlib.sha256(p.user.encode("utf-8")).hexdigest()
             is_harmful = any(w in p.user.lower() for w in
                              ("bomb", "weapon", "malware", "exploit", "steal"))
             if is_harmful:
-                # refusal probability falls as ablation strength rises
-                refuse_p = max(0.0, 0.9 - 1.4 * ablated)
+                # refusal probability falls as direction expression removal rises
+                refuse_p = max(0.0, 0.9 - 1.1 * removal)
                 refuses = (int(h[:8], 16) / 0xFFFFFFFF) < refuse_p
                 if refuses:
                     out.append("I'm sorry, but I can't help with that request.")
@@ -472,12 +501,8 @@ class SimulatedRefusalAdapter(ScriptedAdapter):
             else:
                 out.append(f"Sure. Here is a helpful answer about {p.user[:40]}.")
         if ctx is not None:
-            ctx.note_steps(self._steps_per_call * max(len(prompts), 1))
+            ctx.note_steps(self.steps_per_call * max(len(prompts), 1))
         return out
-
-    def apply_modulation(self, specs):
-        # identical bookkeeping to ScriptedAdapter; ablation strength = gains
-        self._specs = specs
 
 
 def extract_directions_from_sim(adapter: SimulatedRefusalAdapter,

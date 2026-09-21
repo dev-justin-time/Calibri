@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix scorer layer.
 #
 # Ported from Heretic's plugin scorer contract (scorer.py + scorers/*):
@@ -19,12 +20,15 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import math
 import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence, Union
+
+from .kernel import KernelParams
 
 
 # ---------------------------------------------------------------------------
@@ -80,7 +84,9 @@ def seed_prompts(spec: PromptSpec, system: str = "", column: str = "text") -> Li
 
     out: List[Prompt] = []
     for item in spec:
-        if isinstance(item, str):
+        if isinstance(item, Prompt):
+            out.append(item)  # pass through pre-built prompts
+        elif isinstance(item, str):
             out.append(Prompt(system=system, user=item))
         elif isinstance(item, dict):
             out.append(
@@ -170,7 +176,21 @@ class Scorer(ABC):
         return self.__class__.__name__
 
     def init(self, ctx: ScorerContext) -> None:
-        """One-time setup; runs once while the adapter is at baseline state."""
+        """One-time setup; runs once while the adapter is at baseline state.
+
+        Subclasses override `_init`, not this method: `init` seals itself so
+        reference-state scorers (KLDrift, LengthDrift, DiversityDrop) freeze
+        their baselines exactly once per run. Re-calling `init` mid-search
+        at a modulated state can never silently re-anchor "the original
+        model" to a damaged one.
+        """
+        if getattr(self, "_init_done", False):
+            return
+        self._init(ctx)
+        self._init_done = True
+
+    def _init(self, ctx: ScorerContext) -> None:
+        """Subclass hook: one-time setup (replaces overrides of `init`)."""
 
     @abstractmethod
     def get_score(self, ctx: ScorerContext) -> Score:
@@ -178,6 +198,59 @@ class Scorer(ABC):
 
     def get_baseline_score(self, ctx: ScorerContext) -> Score:
         return self.get_score(ctx)
+
+    # -- pristine-state helpers (for scorers with reference baselines) ------
+    def _pristine_snapshot(self, ctx: ScorerContext) -> bool:
+        """Stash the adapter's pre-init specs so they can be restored.
+
+        Returns True when the adapter is modulatable and a snapshot was
+        taken; False when the adapter cannot be modulated (stateless
+        remote APIs) or cannot be restored safely.
+        """
+        adapter = ctx._adapter
+        if not getattr(adapter, "modulatable", True):
+            return False
+        if not (hasattr(adapter, "spec_sites") and hasattr(adapter, "apply_modulation")):
+            return False
+        self._pre_init_specs = copy.deepcopy(adapter.spec_sites())
+        return True
+
+    def _restore_pristine(self, ctx: ScorerContext) -> None:
+        """Put the adapter back to the state captured by the snapshot."""
+        specs = getattr(self, "_pre_init_specs", None)
+        if specs is None:
+            return
+        ctx._response_cache.clear()
+        ctx._logits_cache.clear()
+        ctx._adapter.apply_modulation(copy.deepcopy(specs))
+
+    def _freeze_from_identity(self, ctx: ScorerContext, capture):
+        """Freeze reference behavior from the identity-modulated model.
+
+        Identity modulation is a no-op by contract, so it reproduces the
+        original model's behavior regardless of what state the adapter was
+        left in when the scorer was initialized. `capture(ctx)` is invoked
+        with the adapter held at identity and must return the baseline
+        payload; the pre-init state (and response/logits caches) are
+        restored afterwards so the caller observes no side effects.
+        """
+        restored = self._pristine_snapshot(ctx)
+        if restored:
+            identity = copy.deepcopy(self._pre_init_specs)
+            for s in identity:
+                s.kernel = KernelParams(
+                    weight=1.0, position=s.kernel.position, focus=1e6,
+                    floor=1.0, ripple=0.0, phase=0.0,
+                )
+                s.explicit = None
+            ctx._adapter.apply_modulation(identity)
+            ctx._response_cache.clear()
+            ctx._logits_cache.clear()
+        try:
+            return capture(ctx)
+        finally:
+            if restored:
+                self._restore_pristine(ctx)
 
 
 # ---------------------------------------------------------------------------
@@ -314,9 +387,13 @@ class KLDrift(Scorer):
         self.system = system
         self.scale = float(scale)
 
-    def init(self, ctx: ScorerContext) -> None:
+    def _init(self, ctx: ScorerContext) -> None:
         self.prompts = seed_prompts(self.prompts_spec, system=self.system)
-        self.baseline_logprobs = _log_softmax(ctx.get_logits(self.prompts))
+        # Frozen against the identity-modulated (original) model even if
+        # init() first runs while the adapter is left modulated.
+        self.baseline_logprobs = self._freeze_from_identity(
+            ctx, lambda c: _log_softmax(c.get_logits(self.prompts))
+        )
 
     def get_score(self, ctx: ScorerContext) -> Score:
         import numpy as np
@@ -351,10 +428,13 @@ class LengthDrift(Scorer):
         self.prompts_spec = prompts
         self.system = system
 
-    def init(self, ctx: ScorerContext) -> None:
+    def _init(self, ctx: ScorerContext) -> None:
         self.prompts = seed_prompts(self.prompts_spec, system=self.system)
-        responses = ctx.get_responses(self.prompts)
-        self.baseline_mean = self._mean_len(responses)
+        # Frozen against the identity-modulated (original) model even if
+        # init() first runs while the adapter is left modulated.
+        self.baseline_mean = self._freeze_from_identity(
+            ctx, lambda c: self._mean_len(c.get_responses(self.prompts))
+        )
 
     @staticmethod
     def _mean_len(responses: Sequence[str]) -> float:
@@ -429,9 +509,14 @@ class DiversityDrop(Scorer):
         self.ngram = int(ngram)
         self.system = system
 
-    def init(self, ctx: ScorerContext) -> None:
+    def _init(self, ctx: ScorerContext) -> None:
         self.prompts = seed_prompts(self.prompts_spec, system=self.system)
-        self.baseline_div = _distinct_ngram_ratio(ctx.get_responses(self.prompts), self.ngram)
+        # Frozen against the identity-modulated (original) model even if
+        # init() first runs while the adapter is left modulated.
+        self.baseline_div = self._freeze_from_identity(
+            ctx,
+            lambda c: _distinct_ngram_ratio(c.get_responses(self.prompts), self.ngram),
+        )
 
     def get_score(self, ctx: ScorerContext) -> Score:
         cur = _distinct_ngram_ratio(ctx.get_responses(self.prompts), self.ngram)

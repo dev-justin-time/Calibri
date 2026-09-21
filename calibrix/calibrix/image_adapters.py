@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix image adapters.
 #
 # Completes the "image models" half of the framework:

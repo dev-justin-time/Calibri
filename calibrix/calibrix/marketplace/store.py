@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix marketplace store: JSON-backed listings + orders.
 #
 # Deliberately boring: one JSON file, atomic writes, no database. Enough to

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix image scorers.
 #
 # Reuses the Calibri reward surface (HPSv3, Q-Align, PickScore, ImageReward,

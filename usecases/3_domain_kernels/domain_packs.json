@@ -1,0 +1,59 @@
+{
+  "product": {
+    "description": "E-commerce product photography: clean backgrounds, accurate color, sharp subject",
+    "price_cents": 1200,
+    "prompts": [
+      "a white ceramic coffee mug on a seamless studio background",
+      "a leather handbag photographed on a light grey backdrop",
+      "a pair of running shoes, three-quarter view, studio lighting",
+      "a bottle of perfume with soft reflections",
+      "a wireless headphone floating on a gradient background",
+      "a stainless steel watch on a dark slate surface",
+      "a skincare cream jar with water droplets, macro",
+      "a folded stack of cotton t-shirts, pastel colors",
+      "a laptop half-open on a minimalist desk",
+      "a glass water bottle with condensation, backlit",
+      "a pair of sunglasses on a marble pedestal",
+      "a houseplant in a terracotta pot, bright and airy"
+    ],
+    "objective_weights": {"DomainQuality": 2.0}
+  },
+  "anime": {
+    "description": "Poster/illustration look: bold linework, saturated palette, dynamic composition",
+    "price_cents": 900,
+    "prompts": [
+      "a samurai standing in a field of red maple leaves, cel shaded",
+      "a schoolgirl on a rooftop at sunset, dramatic clouds",
+      "a mecha robot launching rockets over a destroyed city",
+      "a magical girl transformation sequence with sparkles",
+      "a cozy ramen shop interior with lanterns at night",
+      "a dragon coiling around a pagoda, ukiyo-e inspired",
+      "a witch flying over a moonlit village",
+      "a swordsman in the rain, high contrast",
+      "a fox spirit with nine tails in a bamboo forest",
+      "a racing car drifting through neon streets",
+      "an idol performing on a holographic stage",
+      "a lone astronaut child watching a giant jellyfish float"
+    ],
+    "objective_weights": {"DomainQuality": 2.0}
+  },
+  "pastel": {
+    "description": "Soft palette art: muted tones, gentle light, dreamy atmosphere",
+    "price_cents": 700,
+    "prompts": [
+      "a pastel pink sky over calm ocean waves",
+      "a kitten sleeping on a lavender blanket, soft light",
+      "a countryside cottage with wisteria, morning haze",
+      "a hot air balloon in a peach-colored dawn",
+      "a bouquet of wildflowers in mint and cream tones",
+      "a ballet dancer in a sunlit pastel studio",
+      "a cup of tea beside an open window with sheer curtains",
+      "a sailboat on a mint-green lake at dusk",
+      "a child's bedroom with soft toys and diffused light",
+      "a garden path with cherry blossoms in soft focus",
+      "a stack of macarons in pastel shades",
+      "a cloudy sky over rolling pale green hills"
+    ],
+    "objective_weights": {"DomainQuality": 2.0}
+  }
+}

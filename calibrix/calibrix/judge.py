@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix LLM-judge scorer: remote (HF hosted / OpenAI-compat) + offline.
 
 # Gap patched: Calibri needs heavyweight local reward servers (HPSv3,

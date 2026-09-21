@@ -1,0 +1,42 @@
+{"t": 1789997111.7445118, "kind": "run_start", "adapter": "ScriptedAdapter", "scorers": ["PolicyRefusals", "LengthDrift", "EmptyRate", "DiversityDrop"], "n_train": 14, "n_holdout": 4, "n_trials": 6, "popsize": 5, "optimizer": "tpe"}
+{"t": 1789997111.747142, "kind": "baseline", "train": {"PolicyRefusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}, "holdout": {"PolicyRefusals": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}}
+{"t": 1789997111.7478359, "kind": "search_space", "n_params": 12}
+{"t": 1789997112.2489107, "kind": "trial", "trial": 1, "generation": 0, "fitness": -0.28143888660763117, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 0.8754687373538999, "EmptyRate": 0.0, "DiversityDrop": 0.5940298507462687}}
+{"t": 1789997112.250395, "kind": "trial", "trial": 2, "generation": 0, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.2515388, "kind": "trial", "trial": 3, "generation": 0, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.2563221, "kind": "trial", "trial": 4, "generation": 0, "fitness": -0.5332494170789145, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 1.0531499145913523, "EmptyRate": 0.0, "DiversityDrop": 0.5199004975124378}}
+{"t": 1789997112.2578566, "kind": "trial", "trial": 5, "generation": 0, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.2596786, "kind": "generation", "generation": 0, "sigma": 0.15, "best_fitness": -0.28143888660763117}
+{"t": 1789997112.264597, "kind": "trial", "trial": 6, "generation": 1, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.2654605, "kind": "trial", "trial": 7, "generation": 1, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.266751, "kind": "trial", "trial": 8, "generation": 1, "fitness": -0.28143888660763117, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 0.8754687373538999, "EmptyRate": 0.0, "DiversityDrop": 0.5940298507462687}}
+{"t": 1789997112.268162, "kind": "trial", "trial": 9, "generation": 1, "fitness": -0.5332494170789145, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 1.0531499145913523, "EmptyRate": 0.0, "DiversityDrop": 0.5199004975124378}}
+{"t": 1789997112.271062, "kind": "trial", "trial": 10, "generation": 1, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.2725046, "kind": "generation", "generation": 1, "sigma": 0.15, "best_fitness": -0.28143888660763117}
+{"t": 1789997112.3444042, "kind": "trial", "trial": 11, "generation": 2, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.3453684, "kind": "trial", "trial": 12, "generation": 2, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.3462186, "kind": "trial", "trial": 13, "generation": 2, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.3476584, "kind": "trial", "trial": 14, "generation": 2, "fitness": -0.5332494170789145, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 1.0531499145913523, "EmptyRate": 0.0, "DiversityDrop": 0.5199004975124378}}
+{"t": 1789997112.3483756, "kind": "trial", "trial": 15, "generation": 2, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.3492818, "kind": "generation", "generation": 2, "sigma": 0.15, "best_fitness": -0.5332494170789145}
+{"t": 1789997112.4302738, "kind": "trial", "trial": 16, "generation": 3, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.4311159, "kind": "trial", "trial": 17, "generation": 3, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.4319704, "kind": "trial", "trial": 18, "generation": 3, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.432825, "kind": "trial", "trial": 19, "generation": 3, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.4336417, "kind": "trial", "trial": 20, "generation": 3, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.4345481, "kind": "generation", "generation": 3, "sigma": 0.15, "best_fitness": -1.9600609091972725}
+{"t": 1789997112.5167615, "kind": "trial", "trial": 21, "generation": 4, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.51759, "kind": "trial", "trial": 22, "generation": 4, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.518293, "kind": "trial", "trial": 23, "generation": 4, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.5218196, "kind": "trial", "trial": 24, "generation": 4, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.5230446, "kind": "trial", "trial": 25, "generation": 4, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.5241106, "kind": "generation", "generation": 4, "sigma": 0.15, "best_fitness": -1.9600609091972725}
+{"t": 1789997112.6132927, "kind": "trial", "trial": 26, "generation": 5, "fitness": -0.5332494170789145, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 1.0531499145913523, "EmptyRate": 0.0, "DiversityDrop": 0.5199004975124378}}
+{"t": 1789997112.6142359, "kind": "trial", "trial": 27, "generation": 5, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.6150126, "kind": "trial", "trial": 28, "generation": 5, "fitness": -1.9600609091972725, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 0.06453852113757116, "EmptyRate": 0.0, "DiversityDrop": 0.1044776119402985}}
+{"t": 1789997112.616417, "kind": "trial", "trial": 29, "generation": 5, "fitness": -0.5332494170789145, "objectives": {"PolicyRefusals": 0.0, "LengthDrift": 1.0531499145913523, "EmptyRate": 0.0, "DiversityDrop": 0.5199004975124378}}
+{"t": 1789997112.617116, "kind": "trial", "trial": 30, "generation": 5, "fitness": -26.43131603804862, "objectives": {"PolicyRefusals": 1.0, "LengthDrift": 23.43131603804862, "EmptyRate": 1.0, "DiversityDrop": 0.0}}
+{"t": 1789997112.6179218, "kind": "generation", "generation": 5, "sigma": 0.15, "best_fitness": -0.5332494170789145}
+{"t": 1789997112.621666, "kind": "holdout_evaluated", "n": 2}
+{"t": 1789997112.6227238, "kind": "overfit_alarm", "flagged": false, "details": [], "margin": 0.15, "note": "holdout gap exceeds margin: selection overfit the train split; increase holdout_fraction or reduce n_trials"}
+{"t": 1789997112.6246498, "kind": "run_end", "best_fitness": -0.28143888660763117, "elapsed": 0.8788082000100985}

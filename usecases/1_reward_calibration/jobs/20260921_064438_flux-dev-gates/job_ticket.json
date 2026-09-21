@@ -1,0 +1,14 @@
+{
+  "job": "jobs\\20260921_064438_flux-dev-gates",
+  "preset": "flux-dev-gates",
+  "quoted_total": 250.0,
+  "actual_steps": 660,
+  "actual_seconds": 2.12,
+  "overfit_flagged": false,
+  "kernel_spec": "attn:1.073@0.823:1.067:1000000.154|mlp:0.906@1.088:0.825:1000000.695",
+  "deliverables": [
+    "jobs\\20260921_064438_flux-dev-gates\\report.json",
+    "jobs\\20260921_064438_flux-dev-gates\\report.html",
+    "jobs\\20260921_064438_flux-dev-gates\\kernel_spec.txt"
+  ]
+}
