@@ -15,14 +15,63 @@
 #   component:weight@position:floor:focus[:ripple:phase]
 # (the same serialization Calibrix report.json exports).
 
+import base64
+import hashlib
+import hmac
+import json
 import math
+import os
+import time
 import types
 
 import torch
 
-
 NODE_CLASS_MAPPINGS = {}
 NODE_DISPLAY_NAME_MAPPINGS = {}
+
+
+# ---------------------------------------------------------------------------
+# Offline license verification (mirrors calibrix.marketplace.licenses).
+# Kept inline so the node still works when copied standalone into
+# ComfyUI/custom_nodes without the calibrix package installed.
+
+_KEY_PREFIX = "CBX1"
+
+
+def _b64url_decode(s: str) -> bytes:
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def _signing_secret() -> str:
+    # Set CALIBRIX_MARKETPLACE_SECRET to the marketplace's signing secret.
+    return os.environ.get("CALIBRIX_MARKETPLACE_SECRET",
+                          "calibrix-dev-secret-do-not-use-in-production")
+
+
+def verify_license_offline(key: str, spec: str) -> tuple:
+    """Verify a CBX1 license key covers `spec`. Returns (ok, reason, payload)."""
+    try:
+        parts = key.strip().split(".")
+        if len(parts) != 3 or parts[0] != _KEY_PREFIX:
+            return False, "malformed key", None
+        payload_bytes = _b64url_decode(parts[1])
+        sig = _b64url_decode(parts[2])
+        expected = hmac.new(_signing_secret().encode("utf-8"), payload_bytes,
+                            hashlib.sha256).digest()
+        if not hmac.compare_digest(sig, expected):
+            return False, "bad signature", None
+        payload = json.loads(payload_bytes.decode("utf-8"))
+        subject = hashlib.sha256(spec.encode("utf-8")).hexdigest()
+        if payload.get("sub") != subject:
+            return False, "license does not cover this kernel", payload
+        exp = payload.get("exp")
+        if exp is not None and int(time.time()) > int(exp):
+            return False, "license expired", payload
+        if "comfyui" not in payload.get("ent", []):
+            return False, "missing entitlement: comfyui", payload
+        return True, None, payload
+    except Exception as e:  # noqa: BLE001
+        return False, f"error: {e}", None
 
 
 def _parse_kernel_spec(spec: str):
@@ -86,6 +135,12 @@ class CalibrixKernelScale:
                     "multiline": False,
                 }),
                 "n_blocks": ("INT", {"default": 19, "min": 1, "max": 64}),
+                "license_key": ("STRING", {
+                    "default": "",
+                    "multiline": False,
+                    "tooltip": "Optional CBX1 license from the Calibrix "
+                               "marketplace. Empty = free/unlicensed use.",
+                }),
             }
         }
 
@@ -93,7 +148,16 @@ class CalibrixKernelScale:
     FUNCTION = "apply"
     CATEGORY = "calibrix"
 
-    def apply(self, model, kernel_spec: str, n_blocks: int):
+    def apply(self, model, kernel_spec: str, n_blocks: int,
+              license_key: str = ""):
+        if license_key.strip():
+            ok, reason, payload = verify_license_offline(license_key, kernel_spec)
+            if not ok:
+                raise ValueError(
+                    f"CalibrixKernelScale: license rejected ({reason}). "
+                    "Paste the CBX1 key exactly as delivered, or leave "
+                    "license_key empty for unlicensed kernels."
+                )
         channels = _parse_kernel_spec(kernel_spec)
 
         m = model.clone()

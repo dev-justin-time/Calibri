@@ -40,6 +40,28 @@ Paste a kernel exported by Calibrix (`report.json` → `best.vector`, or a
 kernel spec string like `attn:1.15@0.55:0.82:0.4|mlp:1.0@0.5:1.0:1e6`) into
 the node's `kernel_spec` field.
 
+## Licenses (marketplace)
+
+Kernels bought from the [Calibrix marketplace](../calibrix/marketplace/) are
+locked to their spec: paste the delivered `CBX1...` key into the node's
+`license_key` field. The node verifies it **offline** (HMAC signature,
+artifact binding, expiry, entitlements — stdlib only, no network call).
+Leave `license_key` empty to use free/unlicensed kernels.
+
+```bash
+# Seller side (from the calibrix/ package root):
+python -m calibrix.marketplace.cli seed --store marketplace_data.json
+python -m calibrix.marketplace.cli serve --store marketplace_data.json  # http://127.0.0.1:8700
+
+# With real Stripe (after pip install 'calibrix[stripe]'):
+export STRIPE_SECRET_KEY=sk_live_...
+export STRIPE_WEBHOOK_SECRET=whsec_...
+python -m calibrix.marketplace.cli serve
+```
+
+The buyer's license key is delivered by the webhook/email flow and stored in
+the order ledger (`marketplace_data.json` → `orders`).
+
 ## Drive ComfyUI from Calibrix
 
 ```python

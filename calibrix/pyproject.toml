@@ -25,9 +25,11 @@ dependencies = [
 torch = ["torch>=2.2", "diffusers>=0.31", "transformers>=4.44", "peft>=0.13"]
 opt = ["cma>=4.4", "optuna>=4.0"]
 hub = ["huggingface-hub>=0.26"]
+stripe = ["stripe>=11"]
 
 [project.scripts]
 calibrix = "calibrix.cli:main"
+calibrix-marketplace = "calibrix.marketplace.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["calibrix"]

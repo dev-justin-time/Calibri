@@ -349,7 +349,7 @@ class HFInferenceAdapter(Adapter):
                 resp = client.chat_completion(
                     model=self.model,
                     messages=[
-                        *[{"role": "system", "content": p.system}] if p.system else [],
+                        *([{"role": "system", "content": p.system}] if p.system else []),
                         {"role": "user", "content": p.user},
                     ],
                     max_tokens=512,

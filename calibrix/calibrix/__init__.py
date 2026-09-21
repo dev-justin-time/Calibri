@@ -47,7 +47,7 @@ from .adapters import (
 )
 from .judge import OfflineJudge, RemoteLLMJudge
 from .optimizers import make_optimizer
-from .metering import Meter, CostModel, plan_budget
+from .metering import Meter, CostModel, plan_budget, quote_job, quote_from_preset, format_quote_text, QuoteConfig, MODEL_PRESETS
 from .events import EventLog
 from .engine import SearchEngine, SearchConfig, TrialResult
 from .report import build_report, write_report
@@ -70,6 +70,8 @@ __all__ = [
     "make_optimizer",
     # metering
     "Meter", "CostModel", "plan_budget", "EventLog",
+    # quoting
+    "quote_job", "quote_from_preset", "format_quote_text", "QuoteConfig", "MODEL_PRESETS",
     # engine
     "SearchEngine", "SearchConfig", "TrialResult",
     # report
