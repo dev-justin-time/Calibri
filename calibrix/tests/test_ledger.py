@@ -44,8 +44,13 @@ class TestLedgerTest(unittest.TestCase):
         cr = self.ledger["provenance"]["cleanroom"]
         self.assertTrue(cr["clean"])
         self.assertEqual(cr["verdict"], "CLEANROOM-VERIFIED")
-        # the scanner-definition module is a recorded exemption, not a lie
-        self.assertEqual(cr["allowlisted"], ["calibrix/studio/governance.py"])
+        # scanner-definition + license-boundary modules are recorded
+        # exemptions, never hidden. This pins the exact set: adding an
+        # exemption must be an explicit, reviewed decision in
+        # governance.DEFAULT_SCAN_ALLOWLIST.
+        self.assertEqual(set(cr["allowlisted"]),
+                         {"calibrix/studio/governance.py",
+                          "calibrix/heretic_bridge.py"})
 
     def test_spdx_grants_recorded(self):
         self.assertIn("MIT", self.ledger["provenance"]["spdx"])

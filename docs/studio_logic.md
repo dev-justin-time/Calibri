@@ -191,3 +191,24 @@ settlement.py (contracts, escrow, splits) ── paid via ──> marketplace/st
 - Every "proof" claim in the docs now has a machine-checkable function behind it; every money-flow has deterministic, unit-tested math that Stripe calls merely enforce at the edges.
 
 **Explicit non-goals / honest limits** (documented in-code): the F028 sandbox is hygiene, not security; F089's cipher is a stdlib stand-in for AES; F100 is commitment-based, not a zk-SNARK; F080 produces a documentation *draft*, not legal advice. Production swaps for these are interface-compatible and noted at each site.
+
+---
+
+## Standalone platform layer (non-commercial, license-separated)
+
+The platform runs fully solo and offline; the AGPL Heretic tree is an
+optional accelerator behind a machine-checked subprocess boundary (see
+`LICENSES.md` at the repo root). Components:
+
+| Component | File | What it does |
+|---|---|---|
+| License boundary bridge | `calibrix/heretic_bridge.py` | Subprocess-only invocation of the `heretic` CLI (never imports it); `fit_kernel_profile` converts any per-layer strength profile (Heretic output, our ablation, or expert curves) into a portable 6-param kernel spec that parses in the ComfyUI node. Fitting: coarse grid + joint 4-param closed-form solve (weight/floor + ripple cosine) + multi-start bounded Nelder-Mead — recovers arbitrary profiles to machine precision. |
+| Robust ablation upgrades | `calibrix/ablation.py` | `geometric_median` (Weiszfeld, rotation-invariant — isotropic noise cannot tilt the extracted direction), `compute_refusal_directions_robust` (orthonormal multi-direction basis via SVD + Gram-Schmidt, primary = robust cluster shift), `biprojection_ablate_matrix` (multi-direction ablation in one pass), `multi_direction_strength` (total projected energy). |
+| Rust core | `calibrix/rust-core/` (cargo) | Clean-room reimplementation of spec parsing, kernel gains, Pareto/knee, and differential evolution. C ABI + ctypes bridge in `calibrix/accel.py` with automatic Python fallback; parity vs Python is test-enforced (measured: max_abs_diff 0.0, ~295x interpreter overhead removed on the DE microbenchmark). |
+| Solo runner | `calibrix/solo.py` (`python -m calibrix solo`) | One command, whole platform offline: calibrate -> kernelize -> Rust-verify -> ComfyUI export -> transfer fit -> sealed dossier (`solo_run/`). |
+
+Firewall tests (`tests/test_standalone.py::TestLicenseFirewall`) AST-scan
+every package file and fail CI on any `import heretic`; the bridge must use
+`subprocess` + `shutil.which`. The cleanroom scanner carries exactly two
+recorded exemptions — `studio/governance.py` (the scanner itself) and
+`heretic_bridge.py` (the boundary) — pinned by test.

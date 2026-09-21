@@ -211,3 +211,39 @@ def unpack_spec_vector(specs: List[ModulationSpec], vec: List[float]) -> None:
 
 def total_param_count(specs: List[ModulationSpec]) -> int:
     return sum(s.n_params() for s in specs)
+
+
+def parse_kernel_spec(spec: str) -> List[Tuple[str, KernelParams]]:
+    """Parse the portable kernel spec grammar:
+
+        comp:weight@position:floor:focus[:ripple:phase] | comp:...
+
+    This is the canonical Python implementation (the ComfyUI node ships an
+    identical inline copy so it stays dependency-free; the Rust core
+    reimplements it for the accel path — parity is test-enforced).
+    """
+    channels: List[Tuple[str, KernelParams]] = []
+    for part in spec.split("|"):
+        part = part.strip()
+        if not part:
+            continue
+        head, sep, tail = part.partition(":")
+        if not sep:
+            raise ValueError(f"bad kernel spec segment (missing ':'): {part!r}")
+        comp = head.strip()
+        if not comp:
+            raise ValueError(f"empty component in segment: {part!r}")
+        w_str, sep2, tail2 = tail.partition("@")
+        if not sep2:
+            raise ValueError(f"bad segment (missing '@'): {part!r}")
+        try:
+            weight = float(w_str)
+            nums = [float(x) for x in tail2.split(":")] if tail2.strip() else []
+        except ValueError as exc:
+            raise ValueError(f"bad numbers in segment {part!r}: {exc}") from exc
+        g = lambda i, d: nums[i] if len(nums) > i else d
+        params = KernelParams(weight=weight, position=g(0, 0.5), floor=g(1, 1.0),
+                              focus=g(2, 1e6), ripple=g(3, 0.0), phase=g(4, 0.0))
+        params.validate()
+        channels.append((comp, params))
+    return channels

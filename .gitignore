@@ -6,3 +6,8 @@ benchmarks/
 logs/
 marketplace_data.json
 marketplace_data.json.tmp
+rust-core/target/
+solo_run/
+*.dll
+*.so
+*.dylib

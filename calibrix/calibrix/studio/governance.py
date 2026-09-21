@@ -30,7 +30,13 @@ LICENSE_GRANT = re.compile(r"SPDX-License-Identifier:\s*(MIT|Apache-2\.0|BSD-\d)
 # banned markers (a disclaimer is not contamination), and vendored
 # third-party code with its own reviewed license. Exemptions are always
 # recorded in the scan result so no file leaves the audit trail silently.
-DEFAULT_SCAN_ALLOWLIST = frozenset({"calibrix/studio/governance.py"})
+# Files whose *purpose* is to document/detect the license boundary and
+# therefore legitimately contain AGPL-marker literals. Exemptions are
+# recorded in every scan result — never hidden.
+DEFAULT_SCAN_ALLOWLIST = frozenset({
+    "calibrix/studio/governance.py",   # the scanner itself
+    "calibrix/heretic_bridge.py",      # the subprocess license boundary
+})
 
 
 def cleanroom_scan(

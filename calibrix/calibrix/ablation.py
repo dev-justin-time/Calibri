@@ -515,3 +515,141 @@ def extract_directions_from_sim(adapter: SimulatedRefusalAdapter,
     stacked = np.concatenate([hs_h, hs_s], axis=0)
     flags = [True] * len(harmful) + [False] * len(harmless)
     return compute_refusal_directions(stacked, flags)
+
+
+# ---------------------------------------------------------------------------
+# 6. Robustness upgrades (improvements over the baseline method)
+# ---------------------------------------------------------------------------
+
+def geometric_median(X: np.ndarray, iters: int = 100, tol: float = 1e-9) -> np.ndarray:
+    """Weiszfeld iteration for the geometric median (spatial median).
+
+    The component-wise median is only marginally more robust than the mean
+    against *rotationally symmetric* activation noise: coordinate-wise
+    medians still admit an admixture tilt of order sigma/n. The geometric
+    median minimizes sum_i ||x_i - m||_2, which is rotation-invariant —
+    isotropic noise contributes no preferred direction, so the cluster
+    shift survives untitled. Breakdown point 1/2 in any dimension.
+    """
+    m = X.mean(axis=0)
+    for _ in range(iters):
+        dist = np.linalg.norm(X - m, axis=1)
+        inv = 1.0 / np.maximum(dist, 1e-12)
+        m_new = (X * inv[:, None]).sum(axis=0) / inv.sum()
+        if np.linalg.norm(m_new - m) < tol * max(np.linalg.norm(m), 1e-12):
+            return m_new
+        m = m_new
+    return m
+
+
+def compute_refusal_directions_robust(
+    hidden_states: np.ndarray,
+    harmful_flags: List[bool],
+    n_directions: int = 4,
+    estimator: str = "median",
+) -> List[List[np.ndarray]]:
+    """Multi-direction, outlier-robust refusal directions per layer.
+
+    Improvement #2 over the baseline difference-of-means (Arditi et al.
+    2024 §difference-in-means assumes a single linear direction):
+
+      * median-of-differences : the direction at each layer is the
+        normalized *geometric median* (Weiszfeld) over per-prompt
+        differences. Unlike the component-wise median, the geometric
+        median is rotation-invariant: isotropic noise cannot tilt the
+        extracted shift, and a few wildly-off prompts are resisted
+        outright (breakdown point 1/2) — the exact failure mode of
+        mean-based extraction on dirty cluster labels.
+      * multi-direction (SVD) : the top-`n_directions` right singular
+        vectors of the centered cluster-difference matrix capture the fact
+        that refusal is not always rank-1 (med-several refusal codes,
+        multilingual refusals, topic-specific refusals).
+
+    Returns per layer a list of up to `n_directions` orthonormal vectors,
+    ordered by explained variance (descending). Layers with an empty
+    cluster yield [zero-vector].
+    """
+    if estimator not in ("median", "mean"):
+        raise ValueError("estimator must be 'median' or 'mean'")
+    n_prompts, n_layers_p1, d = hidden_states.shape
+    harm_idx = [i for i, f in enumerate(harmful_flags) if f]
+    safe_idx = [i for i, f in enumerate(harmful_flags) if not f]
+    per_layer: List[List[np.ndarray]] = []
+    for l in range(n_layers_p1):
+        if not harm_idx or not safe_idx:
+            per_layer.append([np.zeros(d, dtype=np.float64)])
+            continue
+        H = hidden_states[harm_idx, l, :]
+        S = hidden_states[safe_idx, l, :]
+        diffs = (H[:, None, :] - S.mean(axis=0, keepdims=True)[None, :, :]).reshape(-1, d)
+        if estimator == "median":
+            center = geometric_median(diffs)
+        else:
+            center = diffs.mean(axis=0)
+        nc = np.linalg.norm(center)
+        if nc < 1e-12:
+            per_layer.append([np.zeros(d, dtype=np.float64)])
+            continue
+        # Primary direction = the robust cluster-shift itself (the signal).
+        # Supplementary directions = top singular vectors of the *centered*
+        # differences: the residual variation AROUND the shift (secondary
+        # refusal codes etc.). Centering before the SVD is deliberate —
+        # the SVD must not spend its rank-1 budget re-describing the shift.
+        #
+        # The returned basis is contractually ORTHONORMAL: numerical SVD
+        # only guarantees orthogonality among the vt rows, not against the
+        # primary direction, so re-orthogonalize (modified Gram-Schmidt).
+        vecs = [center / nc]
+        if n_directions > 1 and diffs.shape[0] >= 2:
+            centered = diffs - center
+            _u, s, vt = np.linalg.svd(centered, full_matrices=False)
+            for row in vt[: min(n_directions - 1, len(s))]:
+                v = row / np.linalg.norm(row)
+                for prev in vecs:                      # Gram-Schmidt pass
+                    v = v - float(np.dot(v, prev)) * prev
+                nv = np.linalg.norm(v)
+                if nv > 1e-8:                          # drop degenerate axes
+                    vecs.append(v / nv)
+        per_layer.append(vecs)
+    return per_layer
+
+
+def multi_direction_strength(
+    directions: List[np.ndarray],
+    activation: np.ndarray,
+) -> float:
+    """Total refusal-mass of an activation under a multi-direction basis.
+
+    Improvement #3: single-direction ablation quality is usually scored as
+    |<h, d>|; with a multi-direction basis the right score is the *total
+    projected energy* sum_k <h, d_k>^2 (how much of the state the ablation
+    would remove). Used by the engine as a co-objective. With an
+    orthonormal basis this equals ||P h||^2 of the joint projector.
+    """
+    total = 0.0
+    for d in directions:
+        nd = np.linalg.norm(d)
+        if nd > 1e-12:
+            total += float(np.dot(activation, d / nd) ** 2)
+    return total
+
+
+def biprojection_ablate_matrix(W: np.ndarray, directions: List[np.ndarray],
+                               strengths: Sequence[float]) -> np.ndarray:
+    """Apply per-direction ablation to W in one pass (multi-direction).
+
+    W' = (prod_k (I - a_k d_k d_k^T)) W (same left factor), i.e. sequential
+    single-direction biprojections collapsed into one matrix product. When
+    len(directions) == 1 and strengths == [1.0] this reduces exactly to the
+    plain projector P W of Arditi et al.; with norm restoration callers can
+    wrap the result in the existing preserve_norm step. Kept here so the
+    multi-direction path shares one code path with the tested primitive.
+    """
+    prod = np.eye(W.shape[0])
+    for d, a in zip(directions, strengths):
+        nd = np.linalg.norm(d)
+        if nd < 1e-12:
+            continue
+        u = d / nd
+        prod = (np.eye(W.shape[0]) - float(a) * np.outer(u, u)) @ prod
+    return prod @ W
