@@ -25,6 +25,7 @@ behavior for a reward you care about, cheaply, provably, without retraining"
 service** on top of that stack.
 
 **License constraint (decides everything):**
+
 - Calibri + Calibrix are **MIT** → embed, SaaS, resale all fine.
 - Heretic is **AGPL-3.0** → you may *use* it, but any product that links or
   derives from it must be AGPL and you must offer source to network users.
@@ -39,6 +40,7 @@ service** on top of that stack.
 ## 2. High-value use cases (from strongest product-market fit down)
 
 ### UC-1. Reward-calibrated hosted image models (highest revenue ceiling)
+
 **Who pays:** app builders, marketing-tech, game-studio content pipelines,
 stock-image competitors — anyone who ships text-to-image to end users and
 loses to a benchmark or loses users to bad outputs.
@@ -55,6 +57,7 @@ equal or better quality" is a direct GPU-bill cut — the buyer's CFO signs.
 `plan_budget` prices it before you quote it.
 
 ### UC-2. Inference-cost reduction as a service (clear ROI, easy sell)
+
 **Who pays:** any team whose text-to-image cost line is visible.
 **Pitch:** "We cut your NFE 30–50% with a ~100-parameter calibration, we
 bill a percentage of the savings." The holdout/overfitting alarm in
@@ -63,6 +66,7 @@ can *prove* the improvement isn't overfit to the calibration prompts.
 **Code hook:** `NFETrap` scorer + `Meter` ledger + holdout validation.
 
 ### UC-3. Domain-tuned image models without training (fastest time-to-revenue)
+
 **Who pays:** niche verticals — product photography, anime/sticker
 generators, architectural visualization, medical-adjacent stock, print-on-
 demand. They currently pay LoRA trainers $2–5k per run and wait days.
@@ -73,6 +77,7 @@ catastrophic forgetting because the base weights never change.
 (`attn:1.15@0.55:0.82:0.4|mlp:...`) consumable by the ComfyUI node.
 
 ### UC-4. ComfyUI marketplace of calibrated kernels ("app store" model)
+
 **Who pays:** the ComfyUI user base (largest prosumer image-gen community).
 You already ship `comfyui_nodes/calibrix_node.py` — a drop-in node that
 applies an exported kernel in any workflow.
@@ -85,6 +90,7 @@ margin.
 channel is built in.
 
 ### UC-5. Managed abliteration marketplace (Heretic surface, AGPL-safe)
+
 **Who pays:** r/LocalLLaMA hobbyists (proven willingness — 5000+ HF models)
 and small labs that want a specific uncensored model without running the
 pipeline themselves.
@@ -97,6 +103,7 @@ fork.
 no proprietary code touches it.
 
 ### UC-6. Safety/compliance *restoration* (the inverse product — underrated)
+
 **Who pays:** enterprises who must deploy open models (air-gapped, legal
 requirements) but need *increased* guardrail compliance, with evidence.
 **Flow:** same kernel machinery, opposite direction — search kernels that
@@ -108,6 +115,7 @@ procurement can sign; nobody else in the abliteration landscape packages
 the *inverse*.
 
 ### UC-7. Interpretability-as-a-service (research → revenue)
+
 **Who pays:** labs, universities, AI-safety orgs with grant money.
 **Code hook:** Heretic's `--plot-residuals` (PaCMAP layer-by-layer
 animations) and `--print-residual-geometry` (per-layer geometry tables);
@@ -115,6 +123,7 @@ Calibrix's scorer-panel reports. Sell as: managed runs on their model,
 delivered as static HTML/GIF reports.
 
 ### UC-8. Calibrix as an open-core library (the platform play)
+
 **Who pays:** ML platforms and inference providers who want
 "calibration-as-a-feature."
 **Model:** MIT core stays free forever (that's the funnel — it's what makes
