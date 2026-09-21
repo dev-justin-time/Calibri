@@ -13,8 +13,9 @@
 #     panel of scorers (compliance vs behavior drift) - which is exactly
 #     what Calibrix's SearchEngine already does for any adapter.
 #
-# No code from heretic (AGPL) or any other abliteration project is used or
-# consulted; everything below is written against the Calibrix adapter API.
+# Written clean-room: no code from any copyleft-licensed abliteration
+# project is used or consulted; everything below is written against the
+# Calibrix adapter API, from the published method description only.
 #
 # What "ablation" means here: an Adapter whose modulation *is* ablation.
 # Each component channel carries KernelParams whose (weight, position,

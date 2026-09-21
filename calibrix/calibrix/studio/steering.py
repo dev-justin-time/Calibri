@@ -318,13 +318,15 @@ def sparse_topk(scores: np.ndarray, k: int, fill: float = -np.inf) -> np.ndarray
 
 
 def attention_sink(scores: np.ndarray, sink_mass: float) -> np.ndarray:
-    """Reserve ``sink_mass`` of attention probability on position 0.
+    """Reserve exactly ``sink_mass`` of softmax probability on position 0.
 
-    Streaming-attention stabilizer: a fixed fraction of softmax mass is
+    Streaming-attention stabilizer: a fixed fraction of attention mass is
     pinned to the first position so the remaining distribution cannot wander
-    as context grows. Implemented by subtracting log(1 - m) from all other
-    positions' logits — exact for any temperature — leaving position 0's own
-    logit untouched so the original attention pattern survives a sink of 0.
+    as context grows. A per-row log-shift on the non-sink logits makes the
+    reservation *exact* for any input distribution: after softmax,
+    p(position 0) == sink_mass whenever the row has finite mass on both
+    sides. Rows that cannot honor the contract (all mass already on one
+    side) are left unchanged, and sink_mass=0 is an exact no-op.
     """
     m = float(sink_mass)
     if not 0.0 <= m < 1.0:
@@ -332,7 +334,11 @@ def attention_sink(scores: np.ndarray, sink_mass: float) -> np.ndarray:
     s = np.asarray(scores, dtype=np.float64)
     if m == 0.0:
         return s.copy()
-    shift = np.log1p(-m)
+    a = np.exp(s[..., :1])                                # sink logit mass
+    b = np.exp(s[..., 1:]).sum(axis=-1, keepdims=True)    # non-sink mass
+    with np.errstate(divide="ignore", over="ignore"):
+        shift = np.log((1.0 - m) * a / (m * b))
+    shift = np.where(np.isfinite(shift), shift, 0.0)
     out = s.copy()
     out[..., 1:] += shift
     return out

@@ -124,6 +124,65 @@ def cmd_webhook(args) -> int:
     return 0
 
 
+def cmd_demo(args) -> int:
+    """One-shot offline sale cycle: stock -> order -> mock webhook ->
+    license -> revenue. Uses a throwaway store so CI stays idempotent."""
+    store_path = os.path.join(HERE, "_demo_store.json")
+    if os.path.exists(store_path):
+        os.remove(store_path)
+    store = JsonStore(store_path)
+
+    listing = Listing(
+        listing_id="uc4-demo-kernel",
+        title="Demo Domain Kernel (offline)",
+        model="FLUX.1-dev",
+        kernel_spec="demo|seed=7|gamma=1.25|nfe=4",
+        price_cents=1200,
+        description="Emitted by seller.py demo",
+    )
+    store.add_listing(listing)
+    print(f"stocked 1 listing: {listing.listing_id} "
+          f"(${listing.price_cents / 100:.2f})")
+
+    provider = make_provider()
+    assert provider.name == "mock", "demo requires offline mock provider"
+    order = store.create_order(listing, "buyer@example.com", provider.name)
+    session = provider.create_checkout(
+        listing, order,
+        success_url=f"http://localhost:{args.port}/success",
+        cancel_url=f"http://localhost:{args.port}/",
+    )
+    store.attach_session(order, session["session_id"])
+    print(f"checkout session created for order {order.order_id} "
+          f"(${order.amount_cents / 100:.2f})")
+
+    payload, sig = build_mock_event(session["session_id"])
+    from calibrix.marketplace.server import MarketplaceServer
+    server = MarketplaceServer(store, provider)
+    status, body = server.handle_webhook(payload, sig)
+    if status != 200:
+        print(f"webhook failed: [{status}] {body}", file=sys.stderr)
+        return 1
+    print(f"webhook accepted: {body}")
+
+    order = store.get_order(order.order_id)
+    res = verify_license(order.license_key,
+                         spec=store.get_listing(order.listing_id).kernel_spec)
+    lic = res.get("license")
+    print(f"license verified: valid={res['valid']} "
+          f"buyer={getattr(lic, 'buyer', 'n/a')}")
+    if not res["valid"]:
+        return 1
+
+    orders = list(store._data["orders"].values())
+    gross = sum(o["amount_cents"] for o in orders
+                if o["status"] in (OrderStatus.PAID, OrderStatus.FULFILLED))
+    print(f"revenue: {len(orders)} order(s), gross ${gross / 100:.2f}")
+    os.remove(store_path)
+    print("UC-4 demo sale cycle: OK")
+    return 0
+
+
 def cmd_revenue(args) -> int:
     store = get_store()
     orders = list(store._data["orders"].values())
@@ -151,7 +210,7 @@ def cmd_revenue(args) -> int:
 def main() -> int:
     p = argparse.ArgumentParser(description="UC-4 kernel marketplace seller")
     p.add_argument("--store", default=STORE_PATH)
-    sub = p.add_subparsers(dest="cmd", required=True)
+    sub = p.add_subparsers(dest="cmd")
 
     s = sub.add_parser("stock", help="add listings from listing.json files/dirs")
     s.add_argument("--from-dir", nargs="+", required=True)
@@ -179,7 +238,15 @@ def main() -> int:
     r = sub.add_parser("revenue", help="reconcile the order ledger")
     r.set_defaults(fn=cmd_revenue)
 
+    dm = sub.add_parser("demo", help="run the full offline sale cycle once")
+    dm.add_argument("--port", type=int, default=8700)
+    dm.set_defaults(fn=cmd_demo)
+
     args = p.parse_args()
+    if args.cmd is None:
+        # Bare invocation (scripts/CI) defaults to the offline demo cycle.
+        print("no subcommand given; running the offline demo (see --help)")
+        args.cmd, args.fn, args.port = "demo", cmd_demo, 8700
     return args.fn(args)
 
 

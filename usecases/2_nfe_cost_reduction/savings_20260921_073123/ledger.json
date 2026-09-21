@@ -1,0 +1,166 @@
+{
+  "cost_model": {
+    "steps_cost": 1.0,
+    "price_per_1k_steps": 0.0,
+    "currency": "USD"
+  },
+  "totals": {
+    "steps": 228,
+    "seconds": 0.018145699752494693,
+    "price": 0.0,
+    "scorer_calls": 64,
+    "trials": 13
+  },
+  "by_phase": {
+    "baseline": {
+      "steps": 0.0,
+      "seconds": 0.0,
+      "price": 0.0
+    },
+    "search": {
+      "steps": 216.0,
+      "seconds": 0.003379599773325026,
+      "price": 0.0
+    },
+    "validation": {
+      "steps": 12.0,
+      "seconds": 0.0,
+      "price": 0.0
+    },
+    "run": {
+      "steps": 0.0,
+      "seconds": 0.014766099979169667,
+      "price": 0.0
+    }
+  },
+  "records": [
+    {
+      "trial": 0,
+      "phase": "baseline",
+      "steps": 0,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 8
+    },
+    {
+      "trial": 1,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0005119999404996634,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 2,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00016820000018924475,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 3,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00015989993698894978,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 4,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0005274999421089888,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 5,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0001876000314950943,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 6,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00015719991642981768,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 7,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0001490999711677432,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 8,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.000498599954880774,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 9,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.0005414999322965741,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 10,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00016540009528398514,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 11,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00015710003208369017,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 12,
+      "phase": "search",
+      "steps": 18,
+      "seconds": 0.00015550001990050077,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 1,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 8,
+      "phase": "validation",
+      "steps": 6,
+      "seconds": 0.0,
+      "price": 0.0,
+      "scorer_calls": 4
+    },
+    {
+      "trial": 0,
+      "phase": "run",
+      "steps": 0,
+      "seconds": 0.014766099979169667,
+      "price": 0.0,
+      "scorer_calls": 0
+    }
+  ]
+}

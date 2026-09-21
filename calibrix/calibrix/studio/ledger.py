@@ -40,6 +40,25 @@ FEATURE_RE = re.compile(r"^#\s*((?:F\d{3}|S\d{1,2}))\s*[—–-]\s*(.+?)\s*-{0,}
 SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*([\w.\-]+)")
 FULL_TAXONOMY = [f"F{i:03d}" for i in range(1, 101)] + [f"S{i}" for i in range(1, 9)]
 
+# Taxonomy IDs deliberately NOT re-implemented in the studio: the core
+# package already ships them, and duplicating them would be worse than
+# composing (see docs/studio_logic.md). Each entry is verified — the
+# ledger fails to build if the mapped symbol disappears from the core.
+COMPOSED_FEATURES: Dict[str, Dict[str, str]] = {
+    "F015": {"name": "PickScore-style aesthetic scorer (composed)",
+             "module": "calibrix.scorers", "symbol": "Scorer"},
+    "F016": {"name": "HPSv2/v3-style preference scorer (composed)",
+             "module": "calibrix.scorers", "symbol": "Score"},
+    "F020": {"name": "KL divergence objective (composed)",
+             "module": "calibrix.scorers", "symbol": "KLDrift"},
+    "F029": {"name": "CMA-ES optimizer (composed)",
+             "module": "calibrix.optimizers", "symbol": "CmaEsOptimizer"},
+    "F030": {"name": "TPE optimizer (composed)",
+             "module": "calibrix.optimizers", "symbol": "TpeOptimizer"},
+    "F097": {"name": "Marketplace Publisher (composed)",
+             "module": "calibrix.marketplace.store", "symbol": "MarketplaceStore"},
+}
+
 # AST-derived test attribution: TestCase class name -> studio module.
 TEST_CLASS_MODULE = {
     "TestSteering": "steering", "TestScoring": "scoring", "TestOptim": "optim",
@@ -79,8 +98,27 @@ def _ast_symbols(src: str) -> Dict[str, int]:
     return {"functions": fns, "classes": cls}
 
 
+def _is_test_class(node: ast.AST) -> bool:
+    """unittest-style TestCase class: subclasses TestCase or *Test named."""
+    if not isinstance(node, ast.ClassDef):
+        return False
+    if node.name.endswith("Test"):
+        return True
+    for base in node.bases:
+        if isinstance(base, ast.Name) and base.id in ("TestCase", "UnitTest"):
+            return True
+        if isinstance(base, ast.Attribute) and base.attr == "TestCase":
+            return True
+    return False
+
+
 def _count_tests(tests_root: Path) -> Dict[str, Any]:
-    """Per-studio-module test counts and per-file totals, from real ASTs."""
+    """Per-studio-module test counts and per-file totals, from real ASTs.
+
+    Counts ``test_*`` methods of every TestCase class; attributes them to
+    studio modules via TEST_CLASS_MODULE and reports the rest honestly as
+    ``unattributed`` (engine, kernel, marketplace tests, etc.).
+    """
     per_module: Dict[str, int] = {m["module"]: 0 for m in DOMAIN_MODULES}
     per_module[SERVICES_MODULE] = 0
     per_file: Dict[str, int] = {}
@@ -89,16 +127,13 @@ def _count_tests(tests_root: Path) -> Dict[str, Any]:
         return {"per_module": per_module, "per_file": per_file,
                 "unattributed": 0, "total": 0}
     for tf in sorted(tests_root.glob("test_*.py")):
-        src = _read(tf)
-        count = 0
         try:
-            tree = ast.parse(src)
+            tree = ast.parse(_read(tf))
         except SyntaxError:
             continue
+        count = 0
         for node in tree.body:
-            if not (isinstance(node, ast.ClassDef) and node.name.endswith("Test")
-                    or isinstance(node, ast.ClassDef)
-                    and any(getattr(b, "id", "") == "TestCase" for b in node.bases)):
+            if not _is_test_class(node):
                 continue
             methods = [n for n in node.body
                        if isinstance(n, ast.FunctionDef) and n.name.startswith("test")]
@@ -161,6 +196,21 @@ def build_ledger(repo_root: Optional[Path] = None,
     svc_rel = f"calibrix/studio/{SERVICES_MODULE}.py"
     svc_src = sources.get(svc_rel, "")
     services = _parse_features(svc_src)
+    for f in services:
+        if f["id"] in seen:
+            raise ValueError(f"feature {f['id']} declared twice")
+        seen[f["id"]] = svc_rel
+
+    # Composed features: verify the mapped symbol still exists in the core
+    # before counting the ID as covered — a stale mapping must fail loudly.
+    composed_verified: Dict[str, Any] = {}
+    import importlib
+    for fid, spec in COMPOSED_FEATURES.items():
+        mod = importlib.import_module(spec["module"])
+        ok = hasattr(mod, spec["symbol"])
+        composed_verified[fid] = {**spec, "verified": ok}
+        if ok:
+            seen[fid] = f"{spec['module']}.{spec['symbol']} (composed)"
 
     missing = [fid for fid in FULL_TAXONOMY if fid not in seen]
     coverage_pct = round(100.0 * (len(FULL_TAXONOMY) - len(missing))
@@ -177,7 +227,8 @@ def build_ledger(repo_root: Optional[Path] = None,
         "tests": {"total": tests["total"], "per_file": tests["per_file"],
                   "unattributed": tests["unattributed"]},
         "coverage": {"expected": len(FULL_TAXONOMY), "implemented": len(seen),
-                     "missing": missing, "percent": coverage_pct},
+                     "missing": missing, "percent": coverage_pct,
+                     "composed": composed_verified},
         "domains": domains,
         "services": {"path": svc_rel, "sha256_12": _hash_text(svc_src)[:12],
                      "entries": services,

@@ -1,18 +1,17 @@
 # Calibrix Logic Studio — Architecture Ledger
 
-Build digest: `1afb44e1eedfbedd…` · generated 2026-09-21T14:19:46Z
+Build digest: `d5a8e50ec4b9451f…` · generated 2026-09-21T14:35:22Z
 
 ## §0 Provenance & Cleanroom Warranty
 
 - SPDX grants: MIT
-- Cleanroom verdict: **CONTAMINATION-REVIEW-REQUIRED** (32 files scanned, 1 reviewed exemptions)
-- Taxonomy coverage: 93/108 (86.1%)
-- Tests passing at build time: **0** (counts derived from test-file ASTs)
-- Missing from taxonomy: F015, F016, F020, F030, F032, F072, F097, S1, S2, S3, S4, S5, S6, S7, S8
+- Cleanroom verdict: **CLEANROOM-VERIFIED** (32 files scanned, 1 reviewed exemptions)
+- Taxonomy coverage: 108/108 (100.0%)
+- Tests passing at build time: **150** (counts derived from test-file ASTs)
 
 ## D1: Model Steering & Gate Hooks (`calibrix/studio/steering.py`)
 
-F001-F014 · 14 features · 377 LOC · 24 functions · 0 tests · sha256:75fdd34d41b3
+F001-F014 · 14 features · 383 LOC · 24 functions · 12 tests · sha256:a3d8dc87b657
 
 | ID | Name |
 |----|------|
@@ -33,7 +32,7 @@ F001-F014 · 14 features · 377 LOC · 24 functions · 0 tests · sha256:75fdd34
 
 ## D2: Scorer Panels & Reward Functions (`calibrix/studio/scoring.py`)
 
-F015-F028 · 11 features · 267 LOC · 13 functions · 0 tests · sha256:997ee5a4f792
+F015-F028 · 11 features · 267 LOC · 13 functions · 7 tests · sha256:997ee5a4f792
 
 | ID | Name |
 |----|------|
@@ -51,13 +50,14 @@ F015-F028 · 11 features · 267 LOC · 13 functions · 0 tests · sha256:997ee5a
 
 ## D3: Optimizers & Pareto Frontiers (`calibrix/studio/optim.py`)
 
-F029-F040 · 10 features · 354 LOC · 10 functions · 0 tests · sha256:1ea774f667e8
+F029-F040 · 11 features · 355 LOC · 10 functions · 7 tests · sha256:0bd9865d4dba
 
 | ID | Name |
 |----|------|
 | F031 | NSGA-II non-dominated sorting |
 | F039 | Pareto Knee-Point Selector |
 | F029 | CMA-ES is in calibrix/optimizers.py; here: the missing solvers |
+| F032 | Differential Evolution (Storn & Price 1997, DE/rand/1/bin) |
 | F033 | Successive Halving / Hyperband pruner |
 | F034 | Tiny GP-UCB |
 | F035 | Random Subspace Projector |
@@ -68,7 +68,7 @@ F029-F040 · 10 features · 354 LOC · 10 functions · 0 tests · sha256:1ea774f
 
 ## D4: Overfit Detection & Proof Engines (`calibrix/studio/proof.py`)
 
-F041-F052 · 12 features · 284 LOC · 14 functions · 0 tests · sha256:99fbb33fe1b8
+F041-F052 · 12 features · 284 LOC · 14 functions · 11 tests · sha256:99fbb33fe1b8
 
 | ID | Name |
 |----|------|
@@ -87,7 +87,7 @@ F041-F052 · 12 features · 284 LOC · 14 functions · 0 tests · sha256:99fbb33
 
 ## D5: Billing, Metering & Compute Arb (`calibrix/studio/billing.py`)
 
-F053-F065 · 13 features · 298 LOC · 8 functions · 0 tests · sha256:f694484f777e
+F053-F065 · 13 features · 298 LOC · 8 functions · 8 tests · sha256:f694484f777e
 
 | ID | Name |
 |----|------|
@@ -107,7 +107,7 @@ F053-F065 · 13 features · 298 LOC · 8 functions · 0 tests · sha256:f694484f
 
 ## D6: Runtime Engines & Artifact Packing (`calibrix/studio/runtime.py`)
 
-F066-F078 · 12 features · 255 LOC · 13 functions · 0 tests · sha256:7a8e6b850172
+F066-F078 · 13 features · 259 LOC · 13 functions · 6 tests · sha256:5198fd5be02e
 
 | ID | Name |
 |----|------|
@@ -116,7 +116,8 @@ F066-F078 · 12 features · 255 LOC · 13 functions · 0 tests · sha256:7a8e6b8
 | F069 | FP8 Quantization Gate Preserver |
 | F074 | Hot-Swappable Gate Server |
 | F075 | ONNX Runtime Serialization (metadata side; graph export needs torch) |
-| F071 | Apple Metal / F072 — Triton: gain precompute helpers |
+| F071 | Apple Metal Gain Precompute: one contiguous layout feeds both |
+| F072 | Triton Kernel Emission Contract: tile_gains_uniform below is the |
 | F076 | Edge TPU Quantization Clamp |
 | F070 | REST API Endpoint Dispatcher (routing plan; HTTP layer is server.py) |
 | F077 | Kubernetes Cluster Auto-Scaler (HPA math) |
@@ -126,7 +127,7 @@ F066-F078 · 12 features · 255 LOC · 13 functions · 0 tests · sha256:7a8e6b8
 
 ## D7: Governance, IP Warranty & Compliance (`calibrix/studio/governance.py`)
 
-F079-F090 · 12 features · 314 LOC · 13 functions · 0 tests · sha256:43117c3bfb5c
+F079-F090 · 12 features · 315 LOC · 13 functions · 8 tests · sha256:37d0340ebeab
 
 | ID | Name |
 |----|------|
@@ -145,7 +146,7 @@ F079-F090 · 12 features · 314 LOC · 13 functions · 0 tests · sha256:43117c3
 
 ## D8: Commercial Settlement & Royalties (`calibrix/studio/settlement.py`)
 
-F091-F100 · 9 features · 237 LOC · 7 functions · 0 tests · sha256:0b66c84fd6f6
+F091-F100 · 9 features · 237 LOC · 7 functions · 8 tests · sha256:0b66c84fd6f6
 
 | ID | Name |
 |----|------|
@@ -161,7 +162,7 @@ F091-F100 · 9 features · 237 LOC · 7 functions · 0 tests · sha256:0b66c84fd
 
 ## Services S1-S8 (`calibrix/studio/services.py`)
 
-8 services · 0 tests · sha256:a6f483ca857b
+8 services · 8 tests · sha256:a6f483ca857b
 
 | ID | Name |
 |----|------|

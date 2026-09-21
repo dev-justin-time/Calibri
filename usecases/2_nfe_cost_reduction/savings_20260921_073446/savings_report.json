@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-09-21 07:34:47",
+  "price_per_1k_steps": 1.5,
+  "baseline_reward": -0.2155,
+  "sweep": [
+    {
+      "nfe": 15,
+      "quality": 0.4359,
+      "steps_used": 18
+    },
+    {
+      "nfe": 10,
+      "quality": 0.4359,
+      "steps_used": 18
+    },
+    {
+      "nfe": 7,
+      "quality": 0.4359,
+      "steps_used": 18
+    },
+    {
+      "nfe": 5,
+      "quality": 0.4359,
+      "steps_used": 18
+    }
+  ],
+  "baseline_nfe": 50,
+  "recommended_nfe": 15,
+  "recommendation_source": "measured",
+  "overfit_flagged": false,
+  "monthly_steps": 20000000,
+  "current_monthly_spend": 30000.0,
+  "projected_monthly_savings": 21000.0,
+  "consultant_share": 0.25,
+  "billed_monthly": 5250.0
+}

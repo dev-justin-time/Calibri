@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>Calibrix Yield &amp; Compute Arbitrage Exchange (CALX-MKT)</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #161616; }
+    ::-webkit-scrollbar-thumb { background: #393939; }
+    ::-webkit-scrollbar-thumb:hover { background: #525252; }
+    .font-mono { font-family: 'IBM Plex Mono', monospace; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#0d0f12",
+            "surface-dim": "#08090b",
+            "surface-bright": "#16181d",
+            "surface-container-lowest": "#050608",
+            "surface-container-low": "#111317",
+            "surface-container": "#181a20",
+            "surface-container-high": "#22252c",
+            "surface-container-highest": "#2e323b",
+            "on-surface": "#e6edf3",
+            "on-surface-variant": "#8b949e",
+            "secondary": "#6e7681",
+            "primary": "#0f62fe",
+            "primary-container": "#1a365d",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#d0e2ff",
+            "tertiary": "#24a148",
+            "tertiary-container": "#0e391b",
+            "on-tertiary-container": "#a7f0ba",
+            "error": "#da1e28",
+            "error-container": "#3c1214",
+            "outline": "#30363d",
+            "outline-variant": "#21262d"
+          },
+          fontFamily: {
+            headline: ["IBM Plex Sans", "sans-serif"],
+            display: ["IBM Plex Sans", "sans-serif"],
+            body: ["IBM Plex Sans", "sans-serif"],
+            mono: ["IBM Plex Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface-dim font-body text-on-surface antialiased selection:bg-primary selection:text-white">
+<!-- Financial Ticker & Market Header (Bloomberg Style Top Bar) -->
+<header class="fixed top-0 left-0 right-0 h-14 bg-surface-container-low border-b border-outline z-50 flex items-center justify-between px-4">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2.5 pr-4 border-r border-outline">
+<div class="w-6 h-6 bg-primary flex items-center justify-center text-on-primary font-mono font-bold text-xs tracking-wider">CX</div>
+<div class="flex flex-col">
+<span class="font-headline font-semibold text-xs tracking-wider uppercase text-on-surface flex items-center gap-1.5">
+            CALIBRIX<span class="text-primary font-mono text-[10px] bg-primary/20 px-1 py-0.2">EXCHANGE</span>
+</span>
+<span class="text-[9px] font-mono text-secondary -mt-0.5">CALX-MKT // UNIT-ECON-DESK</span>
+</div>
+</div>
+<!-- Real-time Live Financial Ticker Strip -->
+<div class="hidden lg:flex items-center gap-5 text-[11px] font-mono overflow-hidden whitespace-nowrap">
+<div class="flex items-center gap-1.5">
+<span class="text-secondary font-semibold">FLUX-NFE-YIELD:</span>
+<span class="text-tertiary font-bold flex items-center"><span class="material-symbols-outlined text-[12px]">arrow_upward</span>+58.2%</span>
+<span class="text-[10px] text-secondary">(18 ST)</span>
+</div>
+<span class="text-outline">|</span>
+<div class="flex items-center gap-1.5">
+<span class="text-secondary font-semibold">H100-SPOT-ARB:</span>
+<span class="text-primary font-bold">$1.42/hr</span>
+<span class="text-tertiary text-[10px] font-semibold">(-64.1%)</span>
+</div>
+<span class="text-outline">|</span>
+<div class="flex items-center gap-1.5">
+<span class="text-secondary font-semibold">AVG-DELTA-E:</span>
+<span class="text-on-surface font-bold">0.42</span>
+<span class="text-[10px] text-tertiary">(PANTONE PASS)</span>
+</div>
+<span class="text-outline">|</span>
+<div class="flex items-center gap-1.5">
+<span class="text-secondary font-semibold">24H TRADING VOL:</span>
+<span class="text-on-surface font-bold font-mono">$342,800 USD</span>
+</div>
+<span class="text-outline">|</span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+<span class="text-secondary">ORD-LATENCY:</span>
+<span class="text-on-surface font-medium">1.8ms</span>
+</div>
+</div>
+</div>
+<!-- Right Global Telemetry Controls -->
+<div class="flex items-center gap-4 text-xs font-mono">
+<div class="hidden xl:flex items-center gap-2 bg-surface-container px-2.5 py-1 border border-outline text-[11px]">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-secondary">TREASURY ESCROW:</span>
+<span class="text-tertiary font-semibold">$1,482,900 LOCKED</span>
+</div>
+<div class="flex items-center gap-2 border-l border-outline pl-3">
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors border border-outline">
+<span class="material-symbols-outlined text-[17px]">sync_alt</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors border border-outline">
+<span class="material-symbols-outlined text-[17px]">notifications_active</span>
+</button>
+<div class="flex items-center gap-2 pl-1">
+<div class="w-7 h-7 bg-primary text-on-primary font-mono text-xs flex items-center justify-center font-bold">QF</div>
+<div class="hidden md:flex flex-col text-left">
+<span class="text-[11px] font-mono leading-none text-on-surface">QUANT-09</span>
+<span class="text-[9px] font-mono text-secondary">CFO / ARB DESK</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Left Sidebar Shell (Consistent Navigation with Active Marketplace Tab) -->
+<aside class="fixed left-0 top-14 bottom-0 w-64 bg-surface-container-low border-r border-outline z-40 overflow-y-auto flex flex-col justify-between">
+<div class="py-2">
+<div class="px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">1. Commercial Pipelines</div>
+<nav class="space-y-0.5 px-2 font-mono text-xs">
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">tune</span>Hosted Calibration (UC-1/3)
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">trending_down</span>NFE Gainshare (UC-2)
+        </a>
+<a class="flex items-center px-3 py-1.5 bg-primary text-on-primary font-semibold border-l-2 border-primary-container" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">currency_exchange</span>Yield &amp; Arb Exchange (UC-4)
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">terminal</span>Developer REST API
+        </a>
+</nav>
+<div class="mt-4 px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">2. Financial &amp; Risk Ops</div>
+<nav class="space-y-0.5 px-2 font-mono text-xs">
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">balance</span>Gainshare Escrow Clearing
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">stacked_bar_chart</span>GPU Fleet Unit Economics
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">verified_user</span>Cleanroom Merkle Ledger
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">account_balance</span>Stripe Treasury Direct
+        </a>
+</nav>
+<div class="mt-4 px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">3. Hardware Spot Markets</div>
+<nav class="space-y-0.5 px-2 font-mono text-xs">
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">memory</span>H100 SXM5 Yield Curve
+        </a>
+<a class="flex items-center px-3 py-1.5 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined mr-2.5 text-[16px]">hub</span>CoreWeave vs RunPod Arb
+        </a>
+</nav>
+</div>
+<!-- Bottom System Telemetry Box -->
+<div class="p-3 bg-surface-container border-t border-outline font-mono">
+<div class="flex items-center justify-between text-[10px] text-secondary">
+<span>CLEANROOM ENGINE:</span>
+<span class="text-tertiary font-bold">V4.8-STRICT</span>
+</div>
+<div class="flex items-center justify-between text-[10px] text-secondary mt-1">
+<span>MERKLE AUDIT ROOT:</span>
+<span class="text-on-surface">#0x9842...10F</span>
+</div>
+<div class="mt-2 text-[9px] text-secondary bg-surface-dim p-1.5 border border-outline">
+        All decimation arbitrage contracts protected by perpetual MIT cleanroom indemnification.
+      </div>
+</div>
+</aside>
+<!-- Main Workspace Canvas -->
+<div class="pl-64">
+<main class="pt-14 px-6 pb-12 bg-surface-dim min-h-screen">
+<!-- Top Secondary Bar: Ticker Sub-Header & Macro Market Status -->
+<div class="flex flex-col md:flex-row md:items-center justify-between border-b border-outline py-3 gap-3">
+<div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-primary/20 text-primary border border-primary/40 text-[10px] font-mono font-bold tracking-wider uppercase">UC-4 LIQUID EXCHANGE</span>
+<span class="font-mono text-xs text-secondary font-medium">COMPUTE DECIMATION &amp; GAINSHARE ARBITRAGE DESK</span>
+</div>
+<h1 class="text-xl font-headline font-semibold text-on-surface tracking-tight mt-0.5">
+            CALIBRIX Yield &amp; Compute Arbitrage Exchange <span class="font-mono text-sm text-tertiary font-normal">(CALX-MKT)</span>
+</h1>
+</div>
+<div class="flex items-center gap-3 font-mono text-xs">
+<div class="bg-surface-container border border-outline px-3 py-1.5 flex items-center gap-2">
+<span class="text-secondary text-[11px]">ACTIVE MARKET REGIME:</span>
+<span class="text-tertiary font-bold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span> HIGH VOL ARBITRAGE
+            </span>
+</div>
+<button class="bg-primary hover:bg-primary-container text-white px-3.5 py-1.5 text-xs font-mono font-semibold flex items-center gap-1.5 border border-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">add_chart</span> Post Order / Kernel
+          </button>
+</div>
+</div>
+<!-- Macro Stats Grid Strip (CFO / Quantitative MLOps Focus) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 py-4 font-mono">
+<div class="bg-surface-container border border-outline p-3.5 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] text-secondary uppercase font-semibold">Active Decimation Contracts</span>
+<span class="material-symbols-outlined text-primary text-[18px]">contract</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight text-on-surface">318</span>
+<span class="text-xs text-tertiary font-bold">+28 today</span>
+</div>
+<div class="text-[10px] text-secondary mt-1">Autonomous micro-tensor bindings</div>
+</div>
+<div class="bg-surface-container border border-outline p-3.5 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] text-secondary uppercase font-semibold">Total Compute Saved (YTD)</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">energy_savings_leaf</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight text-tertiary">$1,842,650</span>
+<span class="text-xs text-on-surface-variant font-medium">USD</span>
+</div>
+<div class="text-[10px] text-secondary mt-1">Net cloud invoice reduction delivered</div>
+</div>
+<div class="bg-surface-container border border-outline p-3.5 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] text-secondary uppercase font-semibold">Gainshare Escrow In-Flight</span>
+<span class="material-symbols-outlined text-primary text-[18px]">account_balance_wallet</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight text-on-surface">$412,000</span>
+<span class="text-xs text-tertiary font-bold">T+0 Clearing</span>
+</div>
+<div class="text-[10px] text-secondary mt-1">75% Buyer / 25% Researcher Smart Escrow</div>
+</div>
+<div class="bg-surface-container border border-outline p-3.5 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] text-secondary uppercase font-semibold">Mean Hardware Payback</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">schedule</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-2xl font-bold tracking-tight text-tertiary">4.2 Hours</span>
+<span class="text-xs text-secondary font-medium">at 85% cluster load</span>
+</div>
+<div class="text-[10px] text-secondary mt-1">Breakeven on license injection fee</div>
+</div>
+</div>
+<!-- Main Trading Desk Workspace: Split 7-Col Left vs 5-Col Right -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 pb-6">
+<!-- LEFT PANE (7 Cols): Order Book & Yield Curve Interactive Chart -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<!-- Yield Curve & Pareto Efficiency Chart -->
+<div class="bg-surface-container border border-outline p-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline pb-3">
+<div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-primary"></span>
+<span class="text-xs font-mono uppercase font-bold text-on-surface">Yield Curve &amp; Pareto Frontier: Latency vs Fidelity</span>
+</div>
+<div class="text-[11px] font-mono text-secondary mt-0.5">Real-time frontier mapping step decimation yield vs perceptual SSIM degradation</div>
+</div>
+<div class="flex items-center gap-2 font-mono text-[11px]">
+<span class="px-2 py-0.5 bg-primary/10 text-primary border border-primary/30">FLUX.1-DEV FRONTIER</span>
+<span class="px-2 py-0.5 bg-surface border border-outline text-secondary">SD-3.5L</span>
+</div>
+</div>
+<!-- SVG Visualization of Yield / Pareto Curve -->
+<div class="relative w-full h-52 bg-surface-container-low border border-outline mt-3 p-3 flex flex-col justify-between">
+<!-- Graph Watermark / Overlay Data -->
+<div class="absolute top-3 right-4 font-mono text-[10px] text-right pointer-events-none space-y-0.5">
+<div class="text-tertiary font-bold">OPTIMAL ARBITRAGE KNEE: STEP 18</div>
+<div class="text-secondary">Marginal SSIM loss: 0.0016 / step</div>
+<div class="text-secondary">Gainshare ROI: 412% annualized</div>
+</div>
+<svg class="w-full h-full" viewbox="0 0 540 160">
+<defs>
+<lineargradient id="yieldGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" stop-color="#0f62fe" stop-opacity="0.8"></stop>
+<stop offset="60%" stop-color="#24a148" stop-opacity="1"></stop>
+<stop offset="100%" stop-color="#da1e28" stop-opacity="0.8"></stop>
+</lineargradient>
+<lineargradient id="areaGrad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#24a148" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#24a148" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid lines -->
+<line stroke="#21262d" stroke-dasharray="2 2" stroke-width="1" x1="40" x2="520" y1="20" y2="20"></line>
+<line stroke="#21262d" stroke-dasharray="2 2" stroke-width="1" x1="40" x2="520" y1="55" y2="55"></line>
+<line stroke="#21262d" stroke-dasharray="2 2" stroke-width="1" x1="40" x2="520" y1="90" y2="90"></line>
+<line stroke="#21262d" stroke-dasharray="2 2" stroke-width="1" x1="40" x2="520" y1="125" y2="125"></line>
+<!-- Vertical reference lines for step markers -->
+<line stroke="#0f62fe" stroke-dasharray="3 3" stroke-opacity="0.4" x1="160" x2="160" y1="15" y2="130"></line>
+<line stroke="#24a148" stroke-dasharray="2 2" stroke-width="1.5" x1="280" x2="280" y1="15" y2="130"></line>
+<line stroke="#6e7681" stroke-dasharray="2 2" x1="480" x2="480" y1="15" y2="130"></line>
+<!-- Uncalibrated Baseline Degradation Curve -->
+<path d="M 50 120 C 130 115, 240 85, 500 25" fill="none" stroke="#6e7681" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<!-- Calibrix Calibrated Pareto Frontier Curve -->
+<path d="M 50 125 C 140 120, 240 45, 280 32 S 380 24, 500 22" fill="none" stroke="url(#yieldGradient)" stroke-width="3"></path>
+<path d="M 50 125 C 140 120, 240 45, 280 32 S 380 24, 500 22 L 500 135 L 50 135 Z" fill="url(#areaGrad)"></path>
+<!-- Optimal Frontier Knee Dot & Annotation -->
+<circle cx="280" cy="32" fill="#24a148" r="5" stroke="#ffffff" stroke-width="1.5"></circle>
+<text fill="#24a148" font-family="monospace" font-size="10" font-weight="bold" x="290" y="36">KNEE: 18 Steps (64% Cut @ 0.984 SSIM)</text>
+<!-- Competitor Uncalibrated Dot -->
+<circle cx="280" cy="72" fill="#da1e28" r="4"></circle>
+<text fill="#da1e28" font-family="monospace" font-size="9" x="290" y="75">Stock FLUX 18-step (Degraded 0.812)</text>
+<!-- Axis Labels -->
+<text fill="#6e7681" font-family="monospace" font-size="9" x="45" y="145">50 STEPS (100% LAT)</text>
+<text fill="#24a148" font-family="monospace" font-size="9" x="250" y="145">18 STEPS (36% LAT)</text>
+<text fill="#da1e28" font-family="monospace" font-size="9" x="460" y="145">8 STEPS (16%)</text>
+</svg>
+<!-- Footer Micro Labels -->
+<div class="flex items-center justify-between text-[9px] font-mono text-secondary pt-1 border-t border-outline">
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-gradient-to-r from-primary to-tertiary inline-block"></span> Calibrix Micro-Tensor Frontier</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-0.5 bg-secondary inline-block"></span> Stock Euler Uncalibrated</span>
+<span class="text-on-surface">Yield Metric: ΔCost / ΔPerceptual Variance</span>
+</div>
+</div>
+</div>
+<!-- Live Kernel Yield Order Book & Liquidity Pools Table -->
+<div class="bg-surface-container border border-outline">
+<div class="p-3 border-b border-outline flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">table_rows</span>
+<span class="text-xs font-mono font-bold uppercase text-on-surface">Live Kernel Yield Order Book &amp; Arbitrage Pools</span>
+</div>
+<div class="flex items-center gap-1.5 font-mono text-[11px]">
+<button class="px-2 py-0.5 bg-surface text-on-surface border border-outline font-semibold">ALL ARB CONTRACTS</button>
+<button class="px-2 py-0.5 text-secondary hover:text-on-surface">DIFFUSION</button>
+<button class="px-2 py-0.5 text-secondary hover:text-on-surface">LLM PREFILL</button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-mono text-xs border-collapse">
+<thead>
+<tr class="bg-surface-container-high/60 border-b border-outline text-[10px] text-secondary uppercase tracking-wider">
+<th class="py-2 px-3">Model Pair / Architecture</th>
+<th class="py-2 px-2.5">Calibration Vector</th>
+<th class="py-2 px-2.5 text-right">Yield Rate</th>
+<th class="py-2 px-2.5 text-right">Perceptual Loss</th>
+<th class="py-2 px-2.5 text-right">Bid (Gainshare)</th>
+<th class="py-2 px-2.5 text-right">Ask Price</th>
+<th class="py-2 px-2.5 text-right">24h Vol</th>
+<th class="py-2 px-3 text-center">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline">
+<!-- Row 1: High Liquidity FLUX -->
+<tr class="hover:bg-surface-container-high/40 transition-colors bg-surface-container/30">
+<td class="py-2.5 px-3">
+<div class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                        FLUX.1-dev / Schnell
+                      </div>
+<div class="text-[10px] text-secondary">Pool: FLX-DEC-18S</div>
+</td>
+<td class="py-2.5 px-2.5">
+<span class="bg-surface-container-high text-primary px-1.5 py-0.5 text-[10px] border border-outline">img_attn.k_proj</span>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-tertiary font-bold">+64.0%</span>
+<div class="text-[9px] text-secondary">50 → 18 NFE</div>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-on-surface font-semibold">0.984 SSIM</span>
+<div class="text-[9px] text-tertiary">ΔE &lt; 0.38</div>
+</td>
+<td class="py-2.5 px-2.5 text-right text-tertiary font-medium">25% Gainshare</td>
+<td class="py-2.5 px-2.5 text-right text-on-surface font-bold">$12.00 <span class="text-[9px] text-secondary font-normal">/seat</span></td>
+<td class="py-2.5 px-2.5 text-right text-secondary font-medium">$142.8k</td>
+<td class="py-2.5 px-3 text-center">
+<button class="px-2 py-1 bg-tertiary/20 text-tertiary border border-tertiary/40 hover:bg-tertiary hover:text-white transition-all text-[11px] font-bold" onclick="selectArbPair('FLUX.1-dev', '64.0%', 'img_attn.k_proj', 12.0)">
+                        ARB LATCH
+                      </button>
+</td>
+</tr>
+<!-- Row 2: SD 3.5 Large Photoreal -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                        SD 3.5 Large MMDiT
+                      </div>
+<div class="text-[10px] text-secondary">Pool: SD35-CIE-ANCHOR</div>
+</td>
+<td class="py-2.5 px-2.5">
+<span class="bg-surface-container-high text-primary px-1.5 py-0.5 text-[10px] border border-outline">vae_post_quant</span>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-tertiary font-bold">+44.5%</span>
+<div class="text-[9px] text-secondary">40 → 22 NFE</div>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-on-surface font-semibold">0.991 SSIM</span>
+<div class="text-[9px] text-tertiary">ΔE 0.41</div>
+</td>
+<td class="py-2.5 px-2.5 text-right text-tertiary font-medium">20% Gainshare</td>
+<td class="py-2.5 px-2.5 text-right text-on-surface font-bold">$8.00 <span class="text-[9px] text-secondary font-normal">/seat</span></td>
+<td class="py-2.5 px-2.5 text-right text-secondary font-medium">$89.2k</td>
+<td class="py-2.5 px-3 text-center">
+<button class="px-2 py-1 bg-tertiary/20 text-tertiary border border-tertiary/40 hover:bg-tertiary hover:text-white transition-all text-[11px] font-bold" onclick="selectArbPair('SD 3.5 Large', '44.5%', 'vae_post_quant', 8.0)">
+                        ARB LATCH
+                      </button>
+</td>
+</tr>
+<!-- Row 3: LLaMA 3.1 70B Quantized Prefill -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                        LLaMA-3.1-70B-Instruct
+                      </div>
+<div class="text-[10px] text-secondary">Pool: LLM-ORTHO-NULL</div>
+</td>
+<td class="py-2.5 px-2.5">
+<span class="bg-surface-container-high text-primary px-1.5 py-0.5 text-[10px] border border-outline">mlp_residual_l32</span>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-tertiary font-bold">+38.0%</span>
+<div class="text-[9px] text-secondary">KV Prefill Cap</div>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-on-surface font-semibold">100.0% MMLU</span>
+<div class="text-[9px] text-tertiary">+0.01 PPL</div>
+</td>
+<td class="py-2.5 px-2.5 text-right text-tertiary font-medium">30% Gainshare</td>
+<td class="py-2.5 px-2.5 text-right text-on-surface font-bold">$15.00 <span class="text-[9px] text-secondary font-normal">/seat</span></td>
+<td class="py-2.5 px-2.5 text-right text-secondary font-medium">$64.1k</td>
+<td class="py-2.5 px-3 text-center">
+<button class="px-2 py-1 bg-tertiary/20 text-tertiary border border-tertiary/40 hover:bg-tertiary hover:text-white transition-all text-[11px] font-bold" onclick="selectArbPair('LLaMA-3.1-70B', '38.0%', 'mlp_residual_l32', 15.0)">
+                        ARB LATCH
+                      </button>
+</td>
+</tr>
+<!-- Row 4: Qwen-2.5-Coder 32B FP8 -->
+<tr class="hover:bg-surface-container-high/40 transition-colors">
+<td class="py-2.5 px-3">
+<div class="font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        Qwen-2.5-Coder-32B
+                      </div>
+<div class="text-[10px] text-secondary">Pool: QWEN-INT8-SCALE</div>
+</td>
+<td class="py-2.5 px-2.5">
+<span class="bg-surface-container-high text-primary px-1.5 py-0.5 text-[10px] border border-outline">q_proj_int8_s</span>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-tertiary font-bold">+51.2%</span>
+<div class="text-[9px] text-secondary">VRAM Peak Cut</div>
+</td>
+<td class="py-2.5 px-2.5 text-right">
+<span class="text-on-surface font-semibold">99.2% HumanEval</span>
+<div class="text-[9px] text-secondary">Zero Degradation</div>
+</td>
+<td class="py-2.5 px-2.5 text-right text-tertiary font-medium">18% Gainshare</td>
+<td class="py-2.5 px-2.5 text-right text-on-surface font-bold">$18.00 <span class="text-[9px] text-secondary font-normal">/seat</span></td>
+<td class="py-2.5 px-2.5 text-right text-secondary font-medium">$46.7k</td>
+<td class="py-2.5 px-3 text-center">
+<button class="px-2 py-1 bg-tertiary/20 text-tertiary border border-tertiary/40 hover:bg-tertiary hover:text-white transition-all text-[11px] font-bold" onclick="selectArbPair('Qwen-2.5-Coder', '51.2%', 'q_proj_int8_s', 18.0)">
+                        ARB LATCH
+                      </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Status Summary -->
+<div class="p-2.5 bg-surface-container-low border-t border-outline flex items-center justify-between font-mono text-[10px] text-secondary">
+<span>Showing 4 active high-yield micro-tensor pools</span>
+<div class="flex items-center gap-3">
+<span class="text-tertiary">● Automated Settlement: Active</span>
+<span class="text-on-surface font-semibold">Next Clearing Epoch: 00:00 UTC</span>
+</div>
+</div>
+</div>
+<!-- Provider GPU Fleet Cost & Spot Liquidity Matrix -->
+<div class="bg-surface-container border border-outline p-4">
+<div class="flex items-center justify-between border-b border-outline pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">developer_board</span>
+<span class="text-xs font-mono font-bold uppercase text-on-surface">GPU Provider Fleet Liquidity &amp; Arbitrage Matrix</span>
+</div>
+<span class="text-[10px] font-mono text-tertiary font-semibold">CROSS-CLOUD ARB ACTIVE</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 font-mono text-xs">
+<!-- RunPod Spot -->
+<div class="bg-surface-container-low border border-outline p-3 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-bold text-on-surface">RunPod Spot</span>
+<span class="text-[10px] bg-tertiary/20 text-tertiary px-1 py-0.2">HIGH CAPACITY</span>
+</div>
+<div class="text-[10px] text-secondary mt-0.5">8x H100 SXM5 Cluster</div>
+</div>
+<div class="my-2">
+<div class="text-xl font-bold text-on-surface">$1.42 <span class="text-xs text-secondary font-normal">/hr/GPU</span></div>
+<div class="text-[10px] text-tertiary font-medium">Net with Decimation: $0.51/hr</div>
+</div>
+<div class="text-[10px] text-secondary border-t border-outline/50 pt-1.5 flex justify-between">
+<span>Available: 142 GPUs</span>
+<span class="text-primary font-bold">Spread: -64%</span>
+</div>
+</div>
+<!-- CoreWeave Contract -->
+<div class="bg-surface-container-low border border-outline p-3 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-bold text-on-surface">CoreWeave ORD</span>
+<span class="text-[10px] bg-primary/20 text-primary px-1 py-0.2">TIER 1 NET</span>
+</div>
+<div class="text-[10px] text-secondary mt-0.5">Infiniband 3.2 Tbps Fabric</div>
+</div>
+<div class="my-2">
+<div class="text-xl font-bold text-on-surface">$2.15 <span class="text-xs text-secondary font-normal">/hr/GPU</span></div>
+<div class="text-[10px] text-tertiary font-medium">Net with Decimation: $0.77/hr</div>
+</div>
+<div class="text-[10px] text-secondary border-t border-outline/50 pt-1.5 flex justify-between">
+<span>Available: 512 GPUs</span>
+<span class="text-primary font-bold">Spread: -64%</span>
+</div>
+</div>
+<!-- Lambda Cloud -->
+<div class="bg-surface-container-low border border-outline p-3 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-bold text-on-surface">Lambda Cloud</span>
+<span class="text-[10px] bg-outline-variant text-secondary px-1 py-0.2">RESERVED</span>
+</div>
+<div class="text-[10px] text-secondary mt-0.5">On-Demand H100 80GB</div>
+</div>
+<div class="my-2">
+<div class="text-xl font-bold text-on-surface">$2.49 <span class="text-xs text-secondary font-normal">/hr/GPU</span></div>
+<div class="text-[10px] text-tertiary font-medium">Net with Decimation: $0.89/hr</div>
+</div>
+<div class="text-[10px] text-secondary border-t border-outline/50 pt-1.5 flex justify-between">
+<span>Available: 68 GPUs</span>
+<span class="text-primary font-bold">Spread: -64%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT PANE (5 Cols): Automated Arbitrage Execution & Smart Contract Settlement -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<!-- Live Order Dispatcher / Arbitrage Latch Engine -->
+<div class="bg-surface-container border border-outline p-4">
+<div class="flex items-center justify-between border-b border-outline pb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[18px]">bolt</span>
+<span class="text-xs font-mono font-bold uppercase text-on-surface">Automated Arbitrage Execution Latch</span>
+</div>
+<span class="text-[10px] font-mono bg-tertiary/20 text-tertiary px-1.5 py-0.5 font-bold">READY TO FIRE</span>
+</div>
+<form class="mt-4 space-y-3 font-mono text-xs" onsubmit="event.preventDefault(); triggerExecution();">
+<!-- Fleet Cluster Selector -->
+<div>
+<label class="block text-[10px] text-secondary uppercase mb-1">Target Cluster / Cloud Fleet</label>
+<select class="w-full bg-surface border border-outline text-on-surface p-2 text-xs focus:ring-1 focus:ring-primary focus:outline-none" id="fleetSelect">
+<option value="cw-ord-01">CoreWeave ORD-01 (128x H100 SXM5)</option>
+<option value="aws-useast1">AWS us-east-1 Cluster (64x P5.48xlarge)</option>
+<option value="runpod-eu">RunPod Community Pool (256x RTX 4090)</option>
+<option value="lambda-uswest">Lambda Labs US-West (32x H100)</option>
+</select>
+</div>
+<!-- Selected Kernel Strategy -->
+<div>
+<label class="block text-[10px] text-secondary uppercase mb-1">Decimation Calibration Strategy</label>
+<div class="bg-surface border border-outline p-2 flex items-center justify-between">
+<span class="font-bold text-on-surface" id="selectedModelLabel">FLUX.1-dev Hyper-Decimator</span>
+<span class="bg-tertiary/20 text-tertiary text-[10px] px-1.5 py-0.5 font-bold" id="selectedYieldBadge">+64.0% Yield</span>
+</div>
+</div>
+<!-- Monthly Request Volume Slider / Input -->
+<div>
+<div class="flex justify-between text-[10px] text-secondary uppercase mb-1">
+<span>Monthly Inference Volume</span>
+<span class="text-on-surface font-bold" id="volumeDisplay">2,500,000 requests</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-high rounded-none appearance-none cursor-pointer accent-primary" id="volumeSlider" max="10000000" min="500000" oninput="updateCalculations(this.value)" step="250000" type="range" value="2500000"/>
+<div class="flex justify-between text-[9px] text-secondary mt-1">
+<span>500k reqs</span>
+<span>5M reqs</span>
+<span>10M reqs</span>
+</div>
+</div>
+<!-- Projected Arbitrage Economic Split Calculator -->
+<div class="bg-surface-container-low border border-outline p-3 space-y-2 text-[11px]">
+<div class="flex justify-between">
+<span class="text-secondary">Gross Compute Cost (Uncalibrated):</span>
+<span class="text-on-surface font-semibold" id="grossCost">$38,500.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-secondary">Post-Decimation Compute Cost:</span>
+<span class="text-on-surface font-semibold" id="postCost">$13,860.00</span>
+</div>
+<div class="flex justify-between border-t border-outline/60 pt-1.5">
+<span class="text-tertiary font-bold">Net Compute Arbitrage Savings:</span>
+<span class="text-tertiary font-bold text-sm" id="netSavings">+$24,640.00 /mo</span>
+</div>
+</div>
+<!-- Execution Button -->
+<button class="w-full py-2.5 bg-tertiary hover:bg-tertiary/90 text-white font-mono font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 border border-tertiary shadow-sm transition-all" id="execBtn" type="submit">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                Execute Arbitrage Latch &amp; Lock Contract
+              </button>
+<div class="text-[9px] text-center text-secondary">
+                Protected by Calibrix Cleanroom Escrow Guarantee. Zero SLA interruption.
+              </div>
+</form>
+</div>
+<!-- Escrow Clearing Panel: 75/25 Gainshare Split & Smart Contract Settlement -->
+<div class="bg-surface-container border border-outline p-4">
+<div class="flex items-center justify-between border-b border-outline pb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">payments</span>
+<span class="text-xs font-mono font-bold uppercase text-on-surface">Escrow Clearing &amp; Gainshare Split (75 / 25)</span>
+</div>
+<span class="text-[10px] font-mono text-tertiary font-bold">T+0 STRIPE TREASURY</span>
+</div>
+<div class="grid grid-cols-2 gap-3 my-3 font-mono">
+<div class="bg-surface border border-outline p-2.5">
+<div class="text-[10px] text-secondary">ENTERPRISE BUYER (75%)</div>
+<div class="text-lg font-bold text-tertiary mt-1" id="buyerSplit">+$18,480.00</div>
+<div class="text-[9px] text-secondary mt-0.5">Retained Cloud Cost Reduction</div>
+</div>
+<div class="bg-surface border border-outline p-2.5">
+<div class="text-[10px] text-secondary">CREATOR / CALIBRIX (25%)</div>
+<div class="text-lg font-bold text-primary mt-1" id="sellerSplit">+$6,160.00</div>
+<div class="text-[9px] text-secondary mt-0.5">Automated Escrow Protocol</div>
+</div>
+</div>
+<!-- Visual Split Progress Bar -->
+<div class="w-full bg-surface-container-high h-2 flex overflow-hidden border border-outline">
+<div class="bg-tertiary h-full transition-all duration-300" style="width: 75%"></div>
+<div class="bg-primary h-full transition-all duration-300" style="width: 25%"></div>
+</div>
+<div class="flex items-center justify-between text-[9px] font-mono text-secondary mt-1.5">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary inline-block"></span> 75% Enterprise CFO Retained Alpha</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-primary inline-block"></span> 25% Researcher Royalty Yield</span>
+</div>
+<div class="mt-3 pt-3 border-t border-outline flex items-center justify-between font-mono text-[11px]">
+<span class="text-secondary">Smart Contract Target:</span>
+<code class="text-on-surface bg-surface px-1.5 py-0.5 border border-outline text-[10px]">0x789b...3C10 (USDC / Stripe)</code>
+</div>
+</div>
+<!-- Real-Time Merkle Block Audit Stream -->
+<div class="bg-surface-container border border-outline p-4 font-mono">
+<div class="flex items-center justify-between border-b border-outline pb-2.5 mb-2.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span class="text-xs font-bold uppercase text-on-surface">Merkle Block Audit Stream</span>
+</div>
+<span class="text-[10px] text-tertiary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span> LIVE SYNC
+              </span>
+</div>
+<!-- Merkle Log Console -->
+<div class="bg-surface-container-lowest border border-outline p-2.5 text-[10px] space-y-1.5 font-mono overflow-hidden">
+<div class="flex items-center justify-between text-secondary">
+<span class="text-tertiary">[BLOCK #984210]</span>
+<span>SHA-256: d9e4a02...8c71b</span>
+<span class="text-on-surface">00:01:14</span>
+</div>
+<div class="text-on-surface-variant truncate">
+                &gt; TX_ID: <span class="text-primary">0x4a91...fe2</span> // Bind Micro-Tensor [img_attn.k_proj] to Cluster ORD-01
+              </div>
+<div class="flex items-center justify-between text-secondary">
+<span class="text-tertiary">[BLOCK #984209]</span>
+<span>SHA-256: c714e88...120ef</span>
+<span class="text-on-surface">00:00:58</span>
+</div>
+<div class="text-on-surface-variant truncate">
+                &gt; GAINSHARE_CLEARED: <span class="text-tertiary">$10,240.00 USDC</span> -&gt; Stripe Treasury Route
+              </div>
+<div class="flex items-center justify-between text-secondary">
+<span class="text-tertiary">[BLOCK #984208]</span>
+<span>SHA-256: bb81340...993aa</span>
+<span class="text-on-surface">00:00:22</span>
+</div>
+<div class="text-on-surface-variant truncate">
+                &gt; CLEANROOM_VERIFY: Pure MIT cleanroom execution confirmed. 0 foreign deps.
+              </div>
+</div>
+<div class="mt-2 text-[10px] text-secondary flex justify-between items-center">
+<span>Merkle Root: <strong class="text-on-surface">0x7F91C31B</strong></span>
+<a class="text-primary hover:underline flex items-center gap-0.5" href="#">Explore Full Ledger <span class="material-symbols-outlined text-[11px]">arrow_forward</span></a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Interactive Arbitrage Calculation Script -->
+<script>
+    let currentCostPerReq = 0.0154; // $15.40 per 1k baseline
+    let currentYieldRatio = 0.64;
+
+    function formatCurrency(val) {
+      return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function updateCalculations(volume) {
+      const volNum = parseInt(volume, 10);
+      document.getElementById('volumeDisplay').innerText = volNum.toLocaleString('en-US') + ' requests';
+      
+      const gross = volNum * currentCostPerReq;
+      const post = gross * (1 - currentYieldRatio);
+      const savings = gross - post;
+      
+      const buyerGain = savings * 0.75;
+      const sellerGain = savings * 0.25;
+
+      document.getElementById('grossCost').innerText = formatCurrency(gross);
+      document.getElementById('postCost').innerText = formatCurrency(post);
+      document.getElementById('netSavings').innerText = '+' + formatCurrency(savings) + ' /mo';
+
+      document.getElementById('buyerSplit').innerText = '+' + formatCurrency(buyerGain);
+      document.getElementById('sellerSplit').innerText = '+' + formatCurrency(sellerGain);
+    }
+
+    function selectArbPair(model, yieldPct, layer, price) {
+      document.getElementById('selectedModelLabel').innerText = model + ' (' + layer + ')';
+      document.getElementById('selectedYieldBadge').innerText = yieldPct + ' Yield';
+      currentYieldRatio = parseFloat(yieldPct) / 100.0;
+      const sliderVal = document.getElementById('volumeSlider').value;
+      updateCalculations(sliderVal);
+    }
+
+    function triggerExecution() {
+      const btn = document.getElementById('execBtn');
+      const original = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> LATCHING SMART CONTRACT...';
+      btn.classList.add('bg-primary');
+      btn.classList.remove('bg-tertiary');
+      
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span> ARBITRAGE ACTIVE (BLOCK #984211)';
+        btn.classList.remove('bg-primary');
+        btn.classList.add('bg-tertiary');
+        setTimeout(() => {
+          btn.innerHTML = original;
+        }, 3000);
+      }, 1200);
+    }
+
+    // Initialize with default 2.5M volume
+    updateCalculations(2500000);
+  </script>
+</body></html>

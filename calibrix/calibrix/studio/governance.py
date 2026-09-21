@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 # Calibrix Logic Studio — Domain 7: Cleanroom Governance & Guardrails.
 #
 # The legal/safety layer: machine-checkable versions of the claims the docs

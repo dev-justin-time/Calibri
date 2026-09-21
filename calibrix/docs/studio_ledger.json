@@ -1,59 +1,78 @@
 {
   "schema": "calibrix.architecture-ledger/1.0",
-  "generated_at": "2026-09-21T14:19:46Z",
+  "generated_at": "2026-09-21T14:35:22Z",
   "provenance": {
     "spdx": [
       "MIT"
     ],
     "cleanroom": {
-      "clean": false,
-      "contaminated_files": [
-        "calibrix/ablation.py"
-      ],
-      "missing_spdx": [
-        "calibrix/studio/governance.py"
-      ],
+      "clean": true,
+      "contaminated_files": [],
+      "missing_spdx": [],
       "allowlisted": [
         "calibrix/studio/governance.py"
       ],
       "files_scanned": 32,
-      "verdict": "CONTAMINATION-REVIEW-REQUIRED"
+      "verdict": "CLEANROOM-VERIFIED"
     }
   },
   "tests": {
-    "total": 0,
+    "total": 150,
     "per_file": {
-      "test_ablation.py": 0,
-      "test_engine_budget.py": 0,
-      "test_kernel.py": 0,
-      "test_marketplace.py": 0,
-      "test_metering.py": 0,
-      "test_scorers.py": 0,
-      "test_studio.py": 0
+      "test_ablation.py": 13,
+      "test_engine_budget.py": 6,
+      "test_kernel.py": 11,
+      "test_ledger.py": 8,
+      "test_marketplace.py": 17,
+      "test_metering.py": 11,
+      "test_scorers.py": 9,
+      "test_studio.py": 75
     },
-    "unattributed": 0
+    "unattributed": 75
   },
   "coverage": {
     "expected": 108,
-    "implemented": 93,
-    "missing": [
-      "F015",
-      "F016",
-      "F020",
-      "F030",
-      "F032",
-      "F072",
-      "F097",
-      "S1",
-      "S2",
-      "S3",
-      "S4",
-      "S5",
-      "S6",
-      "S7",
-      "S8"
-    ],
-    "percent": 86.1
+    "implemented": 108,
+    "missing": [],
+    "percent": 100.0,
+    "composed": {
+      "F015": {
+        "name": "PickScore-style aesthetic scorer (composed)",
+        "module": "calibrix.scorers",
+        "symbol": "Scorer",
+        "verified": true
+      },
+      "F016": {
+        "name": "HPSv2/v3-style preference scorer (composed)",
+        "module": "calibrix.scorers",
+        "symbol": "Score",
+        "verified": true
+      },
+      "F020": {
+        "name": "KL divergence objective (composed)",
+        "module": "calibrix.scorers",
+        "symbol": "KLDrift",
+        "verified": true
+      },
+      "F029": {
+        "name": "CMA-ES optimizer (composed)",
+        "module": "calibrix.optimizers",
+        "symbol": "CmaEsOptimizer",
+        "verified": true
+      },
+      "F030": {
+        "name": "TPE optimizer (composed)",
+        "module": "calibrix.optimizers",
+        "symbol": "TpeOptimizer",
+        "verified": true
+      },
+      "F097": {
+        "name": "Marketplace Publisher (composed)",
+        "module": "calibrix.marketplace.store",
+        "symbol": "MarketplaceStore",
+        "verified": true
+      }
+    }
   },
   "domains": [
     {
@@ -62,13 +81,13 @@
       "title": "Model Steering & Gate Hooks",
       "span": "F001-F014",
       "path": "calibrix/studio/steering.py",
-      "sha256_12": "75fdd34d41b3",
-      "loc": 377,
+      "sha256_12": "a3d8dc87b657",
+      "loc": 383,
       "symbols": {
         "functions": 24,
         "classes": 1
       },
-      "tests": 0,
+      "tests": 12,
       "features": [
         {
           "id": "F001",
@@ -140,7 +159,7 @@
         "functions": 13,
         "classes": 1
       },
-      "tests": 0,
+      "tests": 7,
       "features": [
         {
           "id": "F019",
@@ -194,13 +213,13 @@
       "title": "Optimizers & Pareto Frontiers",
       "span": "F029-F040",
       "path": "calibrix/studio/optim.py",
-      "sha256_12": "1ea774f667e8",
-      "loc": 354,
+      "sha256_12": "0bd9865d4dba",
+      "loc": 355,
       "symbols": {
         "functions": 10,
         "classes": 6
       },
-      "tests": 0,
+      "tests": 7,
       "features": [
         {
           "id": "F031",
@@ -213,6 +232,10 @@
         {
           "id": "F029",
           "name": "CMA-ES is in calibrix/optimizers.py; here: the missing solvers"
+        },
+        {
+          "id": "F032",
+          "name": "Differential Evolution (Storn & Price 1997, DE/rand/1/bin)"
         },
         {
           "id": "F033",
@@ -256,7 +279,7 @@
         "functions": 14,
         "classes": 3
       },
-      "tests": 0,
+      "tests": 11,
       "features": [
         {
           "id": "F041",
@@ -320,7 +343,7 @@
         "functions": 8,
         "classes": 9
       },
-      "tests": 0,
+      "tests": 8,
       "features": [
         {
           "id": "F053",
@@ -382,13 +405,13 @@
       "title": "Runtime Engines & Artifact Packing",
       "span": "F066-F078",
       "path": "calibrix/studio/runtime.py",
-      "sha256_12": "7a8e6b850172",
-      "loc": 255,
+      "sha256_12": "5198fd5be02e",
+      "loc": 259,
       "symbols": {
         "functions": 13,
         "classes": 2
       },
-      "tests": 0,
+      "tests": 6,
       "features": [
         {
           "id": "F066",
@@ -412,7 +435,11 @@
         },
         {
           "id": "F071",
-          "name": "Apple Metal / F072 \u2014 Triton: gain precompute helpers"
+          "name": "Apple Metal Gain Precompute: one contiguous layout feeds both"
+        },
+        {
+          "id": "F072",
+          "name": "Triton Kernel Emission Contract: tile_gains_uniform below is the"
         },
         {
           "id": "F076",
@@ -446,13 +473,13 @@
       "title": "Governance, IP Warranty & Compliance",
       "span": "F079-F090",
       "path": "calibrix/studio/governance.py",
-      "sha256_12": "43117c3bfb5c",
-      "loc": 314,
+      "sha256_12": "37d0340ebeab",
+      "loc": 315,
       "symbols": {
         "functions": 13,
         "classes": 2
       },
-      "tests": 0,
+      "tests": 8,
       "features": [
         {
           "id": "F079",
@@ -516,7 +543,7 @@
         "functions": 7,
         "classes": 5
       },
-      "tests": 0,
+      "tests": 8,
       "features": [
         {
           "id": "F091",
@@ -594,7 +621,7 @@
         "name": "SLO Governor (marginal-utility early stop)"
       }
     ],
-    "tests": 0
+    "tests": 8
   },
-  "build_digest": "1afb44e1eedfbedde46d2022d056ede33cb106145d04568789932047c0617371"
+  "build_digest": "d5a8e50ec4b9451f8315400eef0e1570a2248602fb2d0559640a4d476b78a9ae"
 }

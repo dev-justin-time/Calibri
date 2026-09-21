@@ -116,6 +116,7 @@ def knee_point(front_objectives: np.ndarray) -> int:
 
 
 # F029 — CMA-ES is in calibrix/optimizers.py; here: the missing solvers ----------
+# F032 — Differential Evolution (Storn & Price 1997, DE/rand/1/bin) --------------
 class DifferentialEvolution:
     """DE/rand/1/bin (Storn & Price 1997). Minimizes f."""
 

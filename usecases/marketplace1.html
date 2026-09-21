@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-error": "#ffffff",
+          "surface-variant": "#f4f4f4",
+          "surface-container-lowest": "#ffffff",
+          "secondary-fixed": "#e0e0e0",
+          "on-primary-container": "#161616",
+          "outline-variant": "#e0e0e0",
+          "surface-container-highest": "#c6c6c6",
+          "on-secondary": "#ffffff",
+          "secondary": "#6f6f6f",
+          "primary": "#0f62fe",
+          "surface-dim": "#e0e0e0",
+          "surface-container-high": "#e0e0e0",
+          "on-surface-variant": "#525252",
+          "tertiary-fixed-dim": "#42be65",
+          "on-surface": "#161616",
+          "on-tertiary-fixed-variant": "#044317",
+          "error": "#da1e28",
+          "on-background": "#161616",
+          "error-container": "#fff1f1",
+          "tertiary-fixed": "#a7f0ba",
+          "secondary-container": "#e0e0e0",
+          "surface-bright": "#ffffff",
+          "tertiary": "#198038",
+          "secondary-fixed-dim": "#c6c6c6",
+          "outline": "#8d8d8d",
+          "on-secondary-fixed": "#161616",
+          "surface-container-low": "#f4f4f4",
+          "on-secondary-container": "#525252",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed": "#022d0d",
+          "on-error-container": "#750e13",
+          "primary-container": "#d0e2ff",
+          "on-tertiary-container": "#044317",
+          "primary-fixed-dim": "#78a9ff",
+          "on-secondary-fixed-variant": "#525252",
+          "surface-tint": "#0f62fe",
+          "on-primary": "#ffffff",
+          "inverse-primary": "#78a9ff",
+          "surface-container": "#f4f4f4",
+          "inverse-on-surface": "#f4f4f4",
+          "on-primary-fixed": "#001d6c",
+          "on-primary-fixed-variant": "#0043ce",
+          "background": "#ffffff",
+          "surface": "#ffffff",
+          "inverse-surface": "#393939",
+          "primary-fixed": "#d0e2ff",
+          "tertiary-container": "#a7f0ba"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.125rem",
+          "lg": "0.25rem",
+          "xl": "0.5rem",
+          "full": "0.75rem"
+        },
+        "spacing": {},
+        "fontFamily": {
+          "headline": ["IBM Plex Sans", "sans-serif"],
+          "display": ["IBM Plex Sans", "sans-serif"],
+          "body": ["IBM Plex Sans", "sans-serif"],
+          "label": ["IBM Plex Sans", "sans-serif"],
+          "mono": ["IBM Plex Mono", "monospace"]
+        },
+        "fontSize": {}
+      }
+    }
+  }</script></head><body class="bg-surface font-body text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-14 bg-surface z-50 border-b border-outline-variant shadow-sm flex items-center justify-between px-4"><div class="flex items-center gap-4"><div class="flex items-center gap-2.5 pr-4 border-r border-outline-variant"><div class="w-6 h-6 bg-primary flex items-center justify-center text-on-primary font-bold text-xs tracking-wider">CX</div><span class="font-headline font-semibold text-sm tracking-wider uppercase text-on-surface">CALIBRIX<span class="text-primary ml-1 font-normal text-xs">REGISTRY</span></span></div><span class="bg-surface-container-high px-2 py-0.5 text-[11px] font-mono tracking-wide text-on-surface uppercase border border-outline-variant font-semibold">ENTERPRISE B2B EXCHANGE</span><div class="relative ml-4 hidden md:block"><span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span><input class="w-80 h-8 pl-8 pr-3 text-xs bg-surface-container text-on-surface placeholder:text-on-surface-variant border border-outline-variant focus:outline-none focus:border-primary focus:bg-surface-bright" placeholder="Search enterprise artifacts, compliance certs, SHA-256..." type="text"/></div></div><div class="flex items-center gap-6"><div class="hidden xl:flex items-center gap-5 text-xs font-mono"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-none bg-tertiary"></span><span class="text-on-surface-variant">SOC-2 TYPE II:</span><span class="font-medium text-on-surface">ATTESTED</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-none bg-primary"></span><span class="text-on-surface-variant">EU AI ACT:</span><span class="font-medium text-on-surface">ANNEX IV COMPLIANT</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-none bg-tertiary"></span><span class="text-on-surface-variant">AGPL CONTAMINATION:</span><span class="font-medium text-tertiary">0.00% STRICT</span></div></div><div class="flex items-center gap-3 pl-4 border-l border-outline-variant"><button class="px-2.5 py-1 text-xs font-mono bg-surface-container border border-outline-variant text-on-surface flex items-center gap-1 hover:bg-surface-container-high"><span class="material-symbols-outlined text-[16px] text-tertiary">verified</span> Enclave HSM</button><button class="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-outline-variant"><span class="material-symbols-outlined text-[18px]">notifications</span></button><div class="w-8 h-8 bg-surface-container-high border border-outline-variant flex items-center justify-center font-mono font-bold text-xs">AC</div></div></div></header><aside class="fixed left-0 top-14 bottom-0 w-72 bg-surface-container-low z-40 overflow-y-auto flex flex-col justify-between border-r border-outline-variant"><div class="py-3"><div class="px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">Enterprise Core Modules</div><nav class="space-y-0.5 px-2"><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">tune</span>Hosted Calibration (UC-1/3)</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">trending_down</span>NFE Gainshare (UC-2)</a><a class="flex items-center px-3 py-2 text-xs bg-primary-container text-on-primary-container font-semibold border-l-2 border-primary" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">token</span>Micro-Tensor Registry (UC-4)</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">terminal</span>Developer API &amp; SDK</a></nav><div class="mt-4 px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">Compliance &amp; Procurement</div><nav class="space-y-0.5 px-2"><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">policy</span>Compliance Dossiers (UC-6)</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">lock_open</span>Sandbox Isolation (UC-5)</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">receipt_long</span>B2B Master Purchase Orders</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">security</span>Air-Gap Enclave Keyrings</a></nav><div class="mt-4 px-4 py-2 text-[10px] font-mono tracking-wider font-semibold text-secondary uppercase">Enterprise Governance</div><nav class="space-y-0.5 px-2"><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">balance</span>Dual-License Boundary Ledger</a><a class="flex items-center px-3 py-2 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface border-l-2 border-transparent transition-colors" href="#"><span class="material-symbols-outlined mr-2.5 text-[18px]">account_balance</span>Stripe Treasury &amp; Escrow</a></nav></div><div class="p-3 bg-surface border-t border-outline-variant"><div class="flex items-center justify-between text-[11px] font-mono"><span class="text-on-surface-variant uppercase">SLA HEALTH:</span><span class="text-tertiary font-semibold">99.98% SLA-1</span></div><div class="text-[10px] text-secondary font-mono mt-1">CLEANROOM MIT ENCLAVE: SECURE</div></div></aside><div class="pl-72"><main class="relative pt-14 w-full px-8 bg-surface"><div class="flex flex-col w-full">
+<!-- Header & Status Strip -->
+<div class="bg-surface-container text-on-surface text-xs px-6 py-2.5 flex flex-wrap items-center justify-between border-b border-outline-variant gap-4">
+<div class="flex items-center gap-4">
+<span class="flex h-2.5 w-2.5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex h-2.5 w-2.5 bg-tertiary"></span>
+</span>
+<span class="font-mono text-[11px] uppercase tracking-wider text-secondary font-semibold">ENTERPRISE CLEANROOM REGISTRY:</span>
+<span class="font-semibold text-xs tracking-tight">100% Isolated MIT Verification • Hardware Enclave HSM Signed</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 text-[10px] font-mono uppercase font-semibold border border-tertiary">SOC-2 &amp; EU AI Act Annex IV Certified</span>
+</div>
+<div class="flex items-center gap-6 text-[11px] font-mono text-on-surface-variant">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-tertiary">verified_user</span> AGPL CONTAMINATION: <strong class="text-tertiary font-semibold">0.00% VERIFIED</strong></span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary">key</span> ROOT CA: <strong class="text-on-surface font-semibold">FIPS 140-3 LEVEL 3</strong></span>
+</div>
+</div>
+<!-- Metrics Ribbon -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 py-4">
+<div class="bg-surface-container p-4 border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] font-mono tracking-wider text-secondary uppercase font-semibold">Verified Enterprise Kernels</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-3xl font-light font-headline tracking-tight text-on-surface">684</span>
+<span class="text-xs font-mono text-tertiary flex items-center font-semibold"><span class="material-symbols-outlined text-xs">shield</span>Audit Clean</span>
+</div>
+<div class="mt-2 text-[11px] text-on-surface-variant font-mono">100% Zero AGPL License Isolation</div>
+</div>
+<div class="bg-surface-container p-4 border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] font-mono tracking-wider text-secondary uppercase font-semibold">Enterprise Volume Tier</span>
+<span class="material-symbols-outlined text-primary text-[18px]">price_change</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-3xl font-light font-headline tracking-tight text-on-surface">$0.004</span>
+<span class="text-xs font-mono text-secondary">/ call</span>
+</div>
+<div class="mt-2 text-[11px] text-tertiary font-mono font-medium">Or $2,500/org enterprise perpetual</div>
+</div>
+<div class="bg-surface-container p-4 border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] font-mono tracking-wider text-secondary uppercase font-semibold">Mean Verification Score</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">fact_check</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-3xl font-light font-headline tracking-tight text-on-surface">99.8%</span>
+<span class="text-xs font-mono text-tertiary font-mono font-medium">PASS TIER-1</span>
+</div>
+<div class="mt-2 text-[11px] text-on-surface-variant font-mono">Statistical drift &amp; MMLU regression test</div>
+</div>
+<div class="bg-surface-container p-4 border border-outline-variant flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="text-[11px] font-mono tracking-wider text-secondary uppercase font-semibold">Cluster Deployments</span>
+<span class="material-symbols-outlined text-primary text-[18px]">dns</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="text-3xl font-light font-headline tracking-tight text-on-surface">48</span>
+<span class="text-xs font-mono text-primary font-medium">CLUSTERS ACTIVE</span>
+</div>
+<div class="mt-2 text-[11px] text-on-surface-variant font-mono">Air-Gap VPC &amp; On-Premise nodes</div>
+</div>
+</div>
+<!-- Main Workspace (Data Table + Enterprise Inspector Split) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
+<!-- Left 7 Cols: Multi-Faceted Filters & High-Density Catalog Table -->
+<div class="lg:col-span-7 flex flex-col gap-4">
+<!-- Search & Multi-Faceted Enterprise Taxonomy Filters -->
+<div class="bg-surface-container p-4 border border-outline-variant flex flex-col gap-3">
+<div class="flex gap-2">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 text-xs bg-surface text-on-surface placeholder:text-on-surface-variant border border-outline-variant focus:outline-none focus:border-primary font-mono" id="enterpriseSearchInput" placeholder="Filter by kernel ID, layer parameter, compliance tag, or target model..." type="text" value="FLUX.1 Extreme NFE"/>
+</div>
+<button class="px-4 h-10 bg-primary text-on-primary text-xs font-semibold uppercase tracking-wider flex items-center gap-2 hover:bg-on-primary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-[16px]">filter_alt</span> Query
+</button>
+</div>
+<!-- Multi-Faceted Taxonomy Select Rows -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-xs">
+<div class="bg-surface p-2 border border-outline-variant">
+<div class="text-[10px] font-mono text-secondary uppercase font-semibold">Architecture</div>
+<select class="w-full bg-transparent text-xs font-medium text-on-surface focus:outline-none mt-1 font-mono">
+<option selected="">FLUX.1-Enterprise</option>
+<option>SD3.5-Large</option>
+<option>LLaMA-3.3-70B</option>
+<option>DeepSeek-V3</option>
+<option>Qwen-2.5-Coder</option>
+</select>
+</div>
+<div class="bg-surface p-2 border border-outline-variant">
+<div class="text-[10px] font-mono text-secondary uppercase font-semibold">Modality</div>
+<select class="w-full bg-transparent text-xs font-medium text-on-surface focus:outline-none mt-1 font-mono">
+<option selected="">NFE Reduction</option>
+<option>Safety Probes</option>
+<option>Precision Color</option>
+<option>OCR Sharpness</option>
+<option>Context Window Exp</option>
+</select>
+</div>
+<div class="bg-surface p-2 border border-outline-variant">
+<div class="text-[10px] font-mono text-secondary uppercase font-semibold">License Class</div>
+<select class="w-full bg-transparent text-xs font-medium text-on-surface focus:outline-none mt-1 font-mono">
+<option selected="">Cleanroom MIT</option>
+<option>Enterprise Dual-License</option>
+<option>Dedicated Enclave</option>
+</select>
+</div>
+<div class="bg-surface p-2 border border-outline-variant">
+<div class="text-[10px] font-mono text-secondary uppercase font-semibold">SLA Tier</div>
+<select class="w-full bg-transparent text-xs font-medium text-on-surface focus:outline-none mt-1 font-mono">
+<option selected="">Tier 1 Mission-Critical</option>
+<option>Tier 2 Standard (99.9%)</option>
+<option>Dedicated Air-Gap</option>
+</select>
+</div>
+</div>
+</div>
+<!-- High-Density Enterprise Catalog Table / Grid -->
+<div class="flex flex-col gap-3">
+<!-- Item 1: FLUX.1 Extreme NFE Decimator (Active/Selected) -->
+<div class="bg-surface border-2 border-primary p-4 shadow-sm cursor-pointer relative">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-primary-container text-on-primary-fixed border border-primary flex items-center justify-center font-mono font-bold text-xs">
+NFE-1
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-semibold text-on-surface font-headline">FLUX.1 Extreme NFE Decimator (50 → 18 Steps)</span>
+<span class="bg-primary text-on-primary text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold">Active Selection</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold border border-tertiary">Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1 font-mono">
+<span>Model: <strong class="text-on-surface">FLUX.1-Enterprise / Schnell</strong></span>
+<span>•</span>
+<span>Target: <code class="bg-surface-container px-1 text-[11px]">cross_attention_k_bias</code></span>
+<span>•</span>
+<span>Footprint: <strong class="text-on-surface">2.84 KB</strong></span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-semibold font-headline text-on-surface">$1,200<span class="text-xs font-mono text-secondary font-normal">/mo team</span></div>
+<div class="text-[10px] font-mono text-tertiary font-medium">or $4,800 Perpetual</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2.5 leading-relaxed font-body">
+Direct numerical bias recalibration eliminating step-count degradation. Drops inference latency by -64% GPU burn while preserving Wang 2004 structural SSIM fidelity at 0.985 with zero LoRA overhead.
+</p>
+<div class="mt-3 grid grid-cols-4 gap-2 bg-surface-container p-2 text-xs font-mono border border-outline-variant">
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">GPU Burn Delta</div>
+<div class="font-bold text-tertiary">-64.0% Latency</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">SSIM Retention</div>
+<div class="font-bold text-on-surface">0.985 (Wang '04)</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">HSM Hash</div>
+<div class="font-bold text-on-surface truncate">d9e4a...8c71b</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">SLA Guarantee</div>
+<div class="font-bold text-primary">Tier 1 Mission-Crit</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-[11px] font-mono text-secondary">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+<span>HSM Signature: Verified</span>
+<span>•</span>
+<span>SOC-2 Type II Dossier #882</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors">Manifest</button>
+<button class="px-3 py-1 bg-primary text-on-primary text-xs font-semibold hover:bg-on-primary-fixed-variant transition-colors flex items-center gap-1 font-mono">
+<span class="material-symbols-outlined text-[14px]">assignment_add</span> Add to Master PO
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2: Arditi Refusal Vector Nullifier -->
+<div class="bg-surface border border-outline-variant p-4 shadow-sm hover:border-outline transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-surface-container-high text-on-surface border border-outline-variant flex items-center justify-center font-mono font-bold text-xs">
+SAF-2
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-semibold text-on-surface font-headline">Arditi Refusal Vector Nullifier &amp; Clinical Alignment Restorer</span>
+<span class="bg-surface-container-high text-on-surface text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold">HIPAA / EU AI</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold border border-tertiary">Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1 font-mono">
+<span>Model: <strong class="text-on-surface">LLaMA-3.1-70B / 8B</strong></span>
+<span>•</span>
+<span>Target: <code class="bg-surface-container px-1 text-[11px]">mlp_residual_gate_l32</code></span>
+<span>•</span>
+<span>Artifact: <strong class="text-on-surface">4.18 KB</strong></span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-semibold font-headline text-on-surface">$2,400<span class="text-xs font-mono text-secondary font-normal">/yr</span></div>
+<div class="text-[10px] font-mono text-secondary">Org Wide Enterprise</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2.5 leading-relaxed">
+Zero catastrophic forgetting alignment restoration. Isolates orthogonal refusal directions on enterprise medical diagnostic, historical query, and clinical bio-chemistry workflows with 99.4% benign pass.
+</p>
+<div class="mt-3 grid grid-cols-4 gap-2 bg-surface-container p-2 text-xs font-mono border border-outline-variant">
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Refusal Suppress</div>
+<div class="font-bold text-tertiary">99.4% Benign Pass</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">MMLU Drift</div>
+<div class="font-bold text-on-surface">0.00% Zero-Loss</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Audit Status</div>
+<div class="font-bold text-on-surface">HIPAA Attested</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Seat License</div>
+<div class="font-bold text-primary">Uncapped Cluster</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-[11px] font-mono text-secondary">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+<span>Subspace Neutralization V3</span>
+<span>•</span>
+<span>Annex IV Compliant</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors">Audit Dossier</button>
+<button class="px-3 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors font-mono">
+Add to Master PO
+</button>
+</div>
+</div>
+</div>
+<!-- Item 3: CIE 1976 ΔE < 1.0 Global Pantone Color Lock -->
+<div class="bg-surface border border-outline-variant p-4 shadow-sm hover:border-outline transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-surface-container-high text-on-surface border border-outline-variant flex items-center justify-center font-mono font-bold text-xs">
+CLR-3
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-semibold text-on-surface font-headline">CIE 1976 ΔE &lt; 1.0 Global Pantone Color Lock</span>
+<span class="bg-surface-container-high text-on-surface text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold">Colorway Anchor</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold border border-tertiary">Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1 font-mono">
+<span>Model: <strong class="text-on-surface">SD3.5 Large / Flux</strong></span>
+<span>•</span>
+<span>Target: <code class="bg-surface-container px-1 text-[11px]">cross_attn_bias_calib</code></span>
+<span>•</span>
+<span>Artifact: <strong class="text-on-surface">3.12 KB</strong></span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-semibold font-headline text-on-surface">$850<span class="text-xs font-mono text-secondary font-normal">/mo</span></div>
+<div class="text-[10px] font-mono text-tertiary font-medium">B2B Commercial Runtime</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2.5 leading-relaxed">
+Eliminates oversaturated chromatic drift, plastic sheen, and uncalibrated skin cast. Cross-attention bias calibration anchors latent output to CIE Delta-E &lt; 1.0 against standard Pantone Reference Colorway vectors.
+</p>
+<div class="mt-3 grid grid-cols-4 gap-2 bg-surface-container p-2 text-xs font-mono border border-outline-variant">
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Color Fidelity</div>
+<div class="font-bold text-tertiary">ΔE &lt; 0.94 Verified</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Forward Hook</div>
+<div class="font-bold text-on-surface">0.08ms Execution</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Cleanroom Cert</div>
+<div class="font-bold text-on-surface">F093 ISO-9001</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Integration</div>
+<div class="font-bold text-primary">PyTorch / Comfy</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-[11px] font-mono text-secondary">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+<span>Certified Spectrophotometer Delta</span>
+<span>•</span>
+<span>Zero Host Contamination</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors">Lab Report</button>
+<button class="px-3 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors font-mono">
+Add to Master PO
+</button>
+</div>
+</div>
+</div>
+<!-- Item 4: Edge INT8 Low-RAM Quantization Kernel -->
+<div class="bg-surface border border-outline-variant p-4 shadow-sm hover:border-outline transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-surface-container-high text-on-surface border border-outline-variant flex items-center justify-center font-mono font-bold text-xs">
+QNT-4
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-semibold text-on-surface font-headline">Edge INT8 Low-RAM Quantization Kernel</span>
+<span class="bg-surface-container-high text-on-surface text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold">NPU Enclave</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold border border-tertiary">Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1 font-mono">
+<span>Target: <strong class="text-on-surface">Snapdragon NPU &amp; Apple Silicon</strong></span>
+<span>•</span>
+<span>Format: <code class="bg-surface-container px-1 text-[11px]">3.8 KB gate weights</code></span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-semibold font-headline text-on-surface">$1,500<span class="text-xs font-mono text-secondary font-normal">/cluster</span></div>
+<div class="text-[10px] font-mono text-secondary">Unlimited Edge Nodes</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2.5 leading-relaxed">
+Ultra-compact quantization scaling map enabling seamless sub-4.2 GB memory footprint execution without weight recompilation. Calibrated scale vectors eliminate edge perplexity spikes.
+</p>
+<div class="mt-3 grid grid-cols-4 gap-2 bg-surface-container p-2 text-xs font-mono border border-outline-variant">
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">RAM Reduction</div>
+<div class="font-bold text-tertiary">-68.2% VRAM Peak</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Gate Footprint</div>
+<div class="font-bold text-on-surface">3.8 KB Micro-Tensor</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">NPU Latency</div>
+<div class="font-bold text-on-surface">&lt; 14ms Cold-Start</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">License</div>
+<div class="font-bold text-primary">MIT Air-Gap Ready</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-[11px] font-mono text-secondary">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+<span>Hardware Cryptographic Seal #9201</span>
+<span>•</span>
+<span>C++ / CoreML</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors">Spec Sheet</button>
+<button class="px-3 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors font-mono">
+Add to Master PO
+</button>
+</div>
+</div>
+</div>
+<!-- Item 5: Multi-Modal Tenengrad OCR Acutance Maximizer -->
+<div class="bg-surface border border-outline-variant p-4 shadow-sm hover:border-outline transition-all">
+<div class="flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 bg-surface-container-high text-on-surface border border-outline-variant flex items-center justify-center font-mono font-bold text-xs">
+OCR-5
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-sm font-semibold text-on-surface font-headline">Multi-Modal Tenengrad OCR Acutance Maximizer</span>
+<span class="bg-surface-container-high text-on-surface text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold">Document AI</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[9px] font-mono px-1.5 py-0.5 uppercase font-semibold border border-tertiary">Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-3 text-xs text-on-surface-variant mt-1 font-mono">
+<span>Model: <strong class="text-on-surface">FLUX.1-Enterprise &amp; SDXL</strong></span>
+<span>•</span>
+<span>Target: <code class="bg-surface-container px-1 text-[11px]">spatial_conv_acutance</code></span>
+<span>•</span>
+<span>Artifact: <strong class="text-on-surface">2.65 KB</strong></span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-base font-semibold font-headline text-on-surface">$950<span class="text-xs font-mono text-secondary font-normal">/mo</span></div>
+<div class="text-[10px] font-mono text-tertiary font-medium">B2B Team License</div>
+</div>
+</div>
+<p class="text-xs text-on-surface-variant mt-2.5 leading-relaxed">
+High-gradient Sobel-Tenengrad acutance injection kernel. Eliminates blurry rendered typography and micro-text artifacts in synthetic documents, technical schematics, and invoice generation.
+</p>
+<div class="mt-3 grid grid-cols-4 gap-2 bg-surface-container p-2 text-xs font-mono border border-outline-variant">
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Acutance Gain</div>
+<div class="font-bold text-tertiary">+41.8% Tenengrad</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Character CER</div>
+<div class="font-bold text-on-surface">&lt; 0.002 OCR Error</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Resolution</div>
+<div class="font-bold text-on-surface">Up to 4K Native</div>
+</div>
+<div>
+<div class="text-[9px] text-secondary uppercase font-semibold">Audit Log</div>
+<div class="font-bold text-primary">ISO 15415 Verified</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between pt-1">
+<div class="flex items-center gap-2 text-[11px] font-mono text-secondary">
+<span class="material-symbols-outlined text-[15px] text-tertiary">verified</span>
+<span>High-Contrast Font Vector Pass</span>
+<span>•</span>
+<span>Pure Cleanroom MIT</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors">Test Suite</button>
+<button class="px-3 py-1 bg-surface-container border border-outline-variant text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors font-mono">
+Add to Master PO
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right 5 Cols: Interactive Enterprise Inspector Drawer & Deep-Dive -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<!-- Inspector Header -->
+<div class="flex items-center justify-between bg-surface-container px-4 py-3 border border-outline-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">verified_user</span>
+<span class="text-xs font-mono uppercase font-semibold text-on-surface">Enterprise Inspector: Kernel #4091-E</span>
+</div>
+<span class="text-[10px] font-mono bg-tertiary-container text-on-tertiary-container px-2 py-0.5 uppercase font-bold border border-tertiary">ENCLAVE SECURE</span>
+</div>
+<!-- Cryptographic Root Hash & Compliance Audit Manifest -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold uppercase font-mono text-secondary">Cryptographic Root Hash &amp; Attestation</span>
+<span class="text-[10px] font-mono text-tertiary font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">lock</span> HSM Signed
+</span>
+</div>
+<div class="bg-surface-container p-3 border border-outline-variant space-y-2 font-mono text-xs">
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-secondary">SHA-256 ROOT DIGEST:</span>
+<span class="text-on-surface font-semibold select-all">d9e4a0286782b54203fa211029c0174128f6e80b271b</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-secondary">HARDWARE HSM ENCLAVE:</span>
+<span class="text-on-surface">AWS Nitro Enclave #KMS-8819-FIPS</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-secondary">EU AI ACT ANNEX IV:</span>
+<span class="text-tertiary font-semibold">Compliant (Dossier #CX-2025-04)</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-secondary">CONTAMINATION AUDIT:</span>
+<span class="text-tertiary font-semibold">0.00% AGPL / GPL Copyleft Residual</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] font-mono pt-1">
+<span class="text-secondary">Air-Gap Enclave Key: <code class="text-on-surface">cx-pk-4091-secp256k1</code></span>
+<a class="text-primary hover:underline flex items-center gap-1" href="#">
+Audit Manifest (PDF) <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+</a>
+</div>
+</div>
+<!-- Automated License Seat Distributor -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs font-mono uppercase font-semibold text-secondary">Automated Seat &amp; Node Distributor</span>
+<span class="text-[10px] font-mono text-on-surface-variant">Tier-1 Dynamic Quota</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container p-2.5 border border-outline-variant">
+<div class="text-xs font-mono">
+<div class="text-[10px] text-secondary uppercase font-semibold">Licensed Node Seats</div>
+<div class="text-lg font-bold text-on-surface font-headline" id="seatCounterDisplay">25 Distributed Seats</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 bg-surface border border-outline-variant flex items-center justify-center font-bold text-base hover:bg-surface-container-high transition-colors" onclick="adjustSeats(-5)">-</button>
+<button class="w-8 h-8 bg-surface border border-outline-variant flex items-center justify-center font-bold text-base hover:bg-surface-container-high transition-colors" onclick="adjustSeats(5)">+</button>
+</div>
+</div>
+<!-- Seat Tier Slider Representation -->
+<div class="space-y-1">
+<div class="flex justify-between text-[10px] font-mono text-secondary">
+<span>5 Seats (Dev Pod)</span>
+<span>50 Seats (Enterprise VPC)</span>
+<span>500+ Seats (Air-Gap Campus)</span>
+</div>
+<input class="w-full h-1.5 bg-surface-container-highest appearance-none cursor-pointer accent-primary" id="seatRange" max="500" min="5" oninput="updateFromSlider(this.value)" step="5" type="range" value="25"/>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
+<div class="bg-surface-container p-2 border border-outline-variant">
+<div class="text-[10px] text-secondary uppercase">CALCULATED MASTER PO</div>
+<div class="text-base font-bold text-on-surface mt-0.5" id="poPriceDisplay">$2,850.00</div>
+<div class="text-[9px] text-tertiary">Includes 24/7 SLA-1 Hotline</div>
+</div>
+<div class="bg-surface-container p-2 border border-outline-variant">
+<div class="text-[10px] text-secondary uppercase">PAYMENT TERMS</div>
+<div class="text-base font-bold text-on-surface mt-0.5">Net-30 Invoiced</div>
+<div class="text-[9px] text-on-surface-variant">Stripe Treasury Escrow</div>
+</div>
+</div>
+</div>
+<!-- Enterprise Micro-Tensor Schema Spec Preview (< 4 KB) -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-xs font-mono uppercase font-semibold text-secondary">Micro-Tensor Vector Payload (Cleanroom MIT)</span>
+<span class="text-[10px] font-mono bg-surface-container px-2 py-0.5 text-on-surface border border-outline-variant">Size: 2.84 KB</span>
+</div>
+<pre class="bg-inverse-surface text-inverse-on-surface p-3 text-[11px] font-mono overflow-x-auto max-h-36 leading-relaxed selection:bg-primary selection:text-on-primary"><code>{
+  "$schema": "https://calibrix.dev/schema/micro-tensor-enterprise-v4.json",
+  "kernel_id": "kernel_flx_nfe_4091_ent",
+  "target_model": "FLUX.1-Enterprise-dev",
+  "license_assertion": "MIT-Zero-Copyleft-Cleanroom",
+  "soc2_type2_attestation": "SOC2-CX-2025-CERT-904",
+  "hsm_enclave_signature": "0x4b71d9...f89a2",
+  "recalibration_offsets": {
+    "double_blocks.0.img_attn.k_proj": {
+      "bias_bias_correction": [-0.00318, 0.00412, -0.00091],
+      "damping_factor": 0.8841
+    }
+  },
+  "sha256": "d9e4a0286782b54203fa211029c0174128f6e80b271b"
+}</code></pre>
+</div>
+<!-- Enterprise Procurement & Action Buttons -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs font-mono uppercase font-semibold text-secondary">Procurement Actions</span>
+<span class="text-[10px] font-mono text-tertiary font-semibold">T+0 ESCROW READY</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+<button class="px-4 py-2.5 bg-primary text-on-primary text-xs font-semibold hover:bg-on-primary-fixed-variant transition-colors flex items-center justify-center gap-2 font-mono" id="addPoBtn" onclick="handleAddToMasterPO()">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span> Add to Master PO
+</button>
+<button class="px-4 py-2.5 bg-surface-container border border-outline-variant text-on-surface text-xs font-semibold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-mono" onclick="handleAirGapDeploy()">
+<span class="material-symbols-outlined text-[16px] text-primary">security</span> Deploy Air-Gap Enclave
+</button>
+</div>
+<div class="flex items-center justify-between text-[11px] font-mono text-secondary pt-1 border-t border-outline-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary"></span> SOC-2 Auto-Audit Active</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-primary"></span> Corporate DPA Binding</span>
+</div>
+</div>
+</div>
+</div>
+<!-- B2B Procurement & Invoice Dispatch Section -->
+<div class="bg-surface-container p-6 border border-outline-variant mb-8">
+<div class="flex flex-col md:flex-row items-start md:items-center justify-between pb-4 border-b border-outline-variant gap-4">
+<div>
+<div class="text-xs font-mono text-primary uppercase font-semibold tracking-wider">B2B PROCUREMENT &amp; INVOICE DISPATCH</div>
+<h2 class="text-xl font-normal font-headline text-on-surface tracking-tight mt-0.5">Master SLA Agreement &amp; Net-30 Enterprise Escrow</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-surface border border-outline-variant text-on-surface text-xs font-mono hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">description</span> Download Corporate DPA (Draft)
+</button>
+<button class="px-5 py-2 bg-primary text-on-primary text-xs font-semibold hover:bg-on-primary-fixed-variant transition-colors flex items-center gap-2 font-mono">
+<span class="material-symbols-outlined text-[16px]">task_alt</span> Execute Master Order PO-8902
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+<!-- Column 1: SLA Contract Binding -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface uppercase font-mono">1. Master SLA Contract</span>
+<span class="text-[10px] font-mono text-tertiary font-bold">ACTIVE BINDING</span>
+</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-2 space-y-1.5">
+<div class="flex justify-between">
+<span>Contract ID:</span>
+<strong class="text-on-surface">CALIBRIX-MSA-2025-88</strong>
+</div>
+<div class="flex justify-between">
+<span>Uptime Guarantee:</span>
+<strong class="text-on-surface">99.99% Execution SLA</strong>
+</div>
+<div class="flex justify-between">
+<span>Mean Fix Time:</span>
+<strong class="text-on-surface">&lt; 15 min Critical Response</strong>
+</div>
+<div class="flex justify-between">
+<span>Indemnification:</span>
+<strong class="text-tertiary">$10,000,000 IP Assurance</strong>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-outline-variant flex justify-between items-center text-[10px] font-mono text-secondary">
+<span>Jurisdiction: Delaware / EU GDPR</span>
+<a class="text-primary hover:underline" href="#">View Legal Terms →</a>
+</div>
+</div>
+<!-- Column 2: Net-30 Enterprise Invoicing & Escrow -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface uppercase font-mono">2. Stripe Treasury Escrow</span>
+<span class="text-[10px] font-mono text-primary font-bold">NET-30 APPROVED</span>
+</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-2 space-y-1.5">
+<div class="flex justify-between">
+<span>Corporate Credit Line:</span>
+<strong class="text-on-surface">$250,000 Available</strong>
+</div>
+<div class="flex justify-between">
+<span>Invoice Routing:</span>
+<strong class="text-on-surface">AP@enterprise-ml.com</strong>
+</div>
+<div class="flex justify-between">
+<span>Tax &amp; VAT ID:</span>
+<strong class="text-on-surface">US-EIN 84-2918471</strong>
+</div>
+<div class="flex justify-between">
+<span>Autonomous Settlement:</span>
+<strong class="text-tertiary">ACH / Wire Direct (T+0)</strong>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-outline-variant flex justify-between items-center text-[10px] font-mono text-secondary">
+<span>Escrow Vault: FDIC Insured</span>
+<a class="text-primary hover:underline" href="#">Manage Billing Profile →</a>
+</div>
+</div>
+<!-- Column 3: Corporate DPA & Compliance Verification -->
+<div class="bg-surface p-4 border border-outline-variant flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="text-xs font-semibold text-on-surface uppercase font-mono">3. Corporate DPA Auto-Gen</span>
+<span class="text-[10px] font-mono text-tertiary font-bold">100% AUTOMATED</span>
+</div>
+<div class="text-[11px] text-on-surface-variant font-mono mt-2 space-y-1.5">
+<div class="flex justify-between">
+<span>HIPAA BAA Status:</span>
+<strong class="text-tertiary">Pre-Signed &amp; Validated</strong>
+</div>
+<div class="flex justify-between">
+<span>Model Weights Transfer:</span>
+<strong class="text-on-surface">Non-Ingestion Clause 4.1</strong>
+</div>
+<div class="flex justify-between">
+<span>Cleanroom Auditor:</span>
+<strong class="text-on-surface">PwC Security Systems</strong>
+</div>
+<div class="flex justify-between">
+<span>Next Recertification:</span>
+<strong class="text-on-surface">Q3 2025 Regular Audit</strong>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-outline-variant flex justify-between items-center text-[10px] font-mono text-secondary">
+<span>Enclave Protocol: Strict MIT</span>
+<a class="text-primary hover:underline" href="#">Download Cert Pack →</a>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive JavaScript -->
+<script>
+let currentSeats = 25;
+const basePerpetualSeatPrice = 114;
+
+function updateFromSlider(val) {
+  currentSeats = parseInt(val);
+  refreshSeatUI();
+}
+
+function adjustSeats(delta) {
+  currentSeats = Math.max(5, Math.min(500, currentSeats + delta));
+  const slider = document.getElementById('seatRange');
+  if (slider) slider.value = currentSeats;
+  refreshSeatUI();
+}
+
+function refreshSeatUI() {
+  const display = document.getElementById('seatCounterDisplay');
+  const priceDisplay = document.getElementById('poPriceDisplay');
+  if (display) display.innerText = currentSeats + " Distributed Seats";
+  if (priceDisplay) {
+    const total = currentSeats * basePerpetualSeatPrice;
+    priceDisplay.innerText = "$" + total.toLocaleString() + ".00";
+  }
+}
+
+function handleAddToMasterPO() {
+  const btn = document.getElementById('addPoBtn');
+  const original = btn.innerHTML;
+  btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check</span> Added to PO-8902!';
+  btn.classList.remove('bg-primary');
+  btn.classList.add('bg-tertiary');
+  setTimeout(() => {
+    btn.innerHTML = original;
+    btn.classList.remove('bg-tertiary');
+    btn.classList.add('bg-primary');
+  }, 2200);
+}
+
+function handleAirGapDeploy() {
+  alert("Initiating hardware HSM sealed distribution for Kernel #4091-E. Deployment package generating for air-gap cluster verification.");
+}
+</script>
+</div></main></div></body></html>

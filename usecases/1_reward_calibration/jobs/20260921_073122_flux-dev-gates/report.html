@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calibrix Report — uc1(flux-dev-gates)</title>
+<style>
+  :root { --bg:#0d1117; --card:#161b22; --ink:#e6edf3; --mut:#8b949e;
+          --acc:#58a6ff; --ok:#3fb950; --warn:#d29922; --bad:#f85149; }
+  * { box-sizing:border-box; margin:0; }
+  body { background:var(--bg); color:var(--ink);
+         font:14px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; padding:24px; }
+  h1 { font-size:20px; margin-bottom:2px; }
+  .mut { color:var(--mut); }
+  .grid { display:grid; gap:12px; margin:16px 0;
+          grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+  .card { background:var(--card); border:1px solid #30363d;
+          border-radius:8px; padding:14px; }
+  .card h3 { font-size:12px; text-transform:uppercase; color:var(--mut);
+             margin-bottom:8px; letter-spacing:.05em; }
+  .big { font-size:22px; font-weight:600; }
+  table { width:100%; border-collapse:collapse; margin-top:8px; }
+  th,td { text-align:left; padding:6px 10px; border-bottom:1px solid #21262d; }
+  th { color:var(--mut); font-weight:500; font-size:12px; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:99px;
+          font-size:11px; font-weight:600; }
+  .ok   { background:#12351c; color:var(--ok); }
+  .bad  { background:#3d1618; color:var(--bad); }
+  .warn { background:#3a2b0e; color:var(--warn); }
+</style>
+</head>
+<body>
+<h1>Calibrix Report</h1>
+<div class="mut">uc1(flux-dev-gates) · 2026-09-21 07:31:22 ·
+open this file anywhere — no server needed</div>
+
+<div class="grid" id="cards"></div>
+
+<div class="card" style="margin-top:12px">
+  <h3>Trials (fitness = scalarized co-objectives)</h3>
+  <table id="trials"></table>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h3>Selected kernel vector (lossless — reload via adapter.apply_to_vector)</h3>
+  <code id="vec" class="mut" style="font-size:12px; word-break:break-all"></code>
+</div>
+
+<script>
+const R = {"generated_at": "2026-09-21 07:31:22", "adapter": "uc1(flux-dev-gates)", "scorers": ["PromptAdherence", "LengthDrift", "EmptyRate", "DiversityDrop"], "baseline_train": {"PromptAdherence": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}, "baseline_holdout": {"PromptAdherence": 0.0, "LengthDrift": 0.0, "EmptyRate": 0.0, "DiversityDrop": 1.0}, "n_params": 12, "n_evals": 36, "elapsed_seconds": 0.7, "overfit": {"flagged": false, "details": [], "margin": 0.15, "note": "holdout gap exceeds margin: selection overfit the train split; increase holdout_fraction or reduce n_trials"}, "best": {"trial": 1, "fitness": -0.215469, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 0.875469, "EmptyRate": 0.0, "DiversityDrop": 0.66}, "holdout": {"PromptAdherence": 0.0, "LengthDrift": 0.875469, "EmptyRate": 0.0, "DiversityDrop": 0.868293}, "steps_used": 18, "vector": [1.07322, 0.822784, 1000000.154145, 1.067325, -0.114518, 0.218841, 0.906381, 1.08766, 1000000.695494, 0.825162, 0.437588, 0.043342]}, "trials": [{"trial": 1, "generation": 0, "fitness": -0.215469, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 0.875469, "EmptyRate": 0.0, "DiversityDrop": 0.66}, "steps_used": 18}, {"trial": 2, "generation": 0, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 3, "generation": 0, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 4, "generation": 0, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 5, "generation": 0, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 6, "generation": 0, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 7, "generation": 1, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 8, "generation": 1, "fitness": -0.215469, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 0.875469, "EmptyRate": 0.0, "DiversityDrop": 0.66}, "steps_used": 18}, {"trial": 9, "generation": 1, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 10, "generation": 1, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 11, "generation": 1, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 12, "generation": 1, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 13, "generation": 2, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 14, "generation": 2, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 15, "generation": 2, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 16, "generation": 2, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 17, "generation": 2, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 18, "generation": 2, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 19, "generation": 3, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 20, "generation": 3, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 21, "generation": 3, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 22, "generation": 3, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 23, "generation": 3, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 24, "generation": 3, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 25, "generation": 4, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 26, "generation": 4, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 27, "generation": 4, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 28, "generation": 4, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 29, "generation": 4, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 30, "generation": 4, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 31, "generation": 5, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 32, "generation": 5, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 33, "generation": 5, "fitness": -26.431316, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 23.431316, "EmptyRate": 1.0, "DiversityDrop": 0.0}, "steps_used": 18}, {"trial": 34, "generation": 5, "fitness": -0.466483, "objectives": {"PromptAdherence": 0.0, "LengthDrift": 1.05315, "EmptyRate": 0.0, "DiversityDrop": 0.586667}, "steps_used": 18}, {"trial": 35, "generation": 5, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}, {"trial": 36, "generation": 5, "fitness": -1.924539, "objectives": {"PromptAdherence": 1.0, "LengthDrift": 0.064539, "EmptyRate": 0.0, "DiversityDrop": 0.14}, "steps_used": 18}]};
+const $ = (id) => document.getElementById(id);
+
+// ---- summary cards --------------------------------------------------
+const cards = [
+  ["Free parameters", R.n_params, ""],
+  ["Evaluations", R.n_evals, ""],
+  ["Best fitness", R.best ? R.best.fitness : "—", ""],
+  ["Elapsed", R.elapsed_seconds + "s", ""],
+];
+$("cards").innerHTML = cards.map(([k,v,u]) => `
+  <div class="card"><h3>${k}</h3><div class="big">${v}<span class="mut">${u}</span></div></div>
+`).join("");
+
+// ---- baseline vs best -------------------------------------------------
+if (R.best) {
+  const rows = Object.keys(R.baseline_train).map(name => {
+    const b = R.baseline_train[name], t = R.best.objectives[name] ?? "—",
+          h = R.best.holdout[name] ?? "—";
+    return `<tr><td>${name}</td><td>${b}</td><td>${t}</td><td>${h}</td></tr>`;
+  });
+  $("trials").innerHTML = `<tr><th>Metric</th><th>Baseline</th>
+     <th>Best (train)</th><th>Best (holdout)</th></tr>` + rows.join("");
+}
+
+// ---- overfit alarm ---------------------------------------------------
+if (R.overfit && R.overfit.flagged) {
+  const d = document.createElement("div");
+  d.className = "card";
+  d.style.borderColor = "var(--bad)";
+  d.innerHTML = `<h3>⚠ Overfit alarm</h3>` +
+    R.overfit.details.map(x =>
+      `<div>${x.metric}: train ${x.train} vs holdout ${x.holdout} (gap ${x.gap})</div>`).join("");
+  $("cards").appendChild(d);
+}
+
+$("vec").textContent = R.best ? JSON.stringify(R.best.vector) : "";
+</script>
+</body>
+</html>

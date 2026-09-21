@@ -62,6 +62,41 @@ class TestSteering(unittest.TestCase):
         self.assertEqual(x1.shape, (8, 8))
         self.assertEqual(x2.shape, (8, 8))
 
+    def test_kv_cache_clamp_bounds_and_touches_only_oversized(self):
+        cache = np.stack([np.ones(4), np.full(4, 10.0)])
+        clipped, scales = steering.kv_cache_clamp(cache, max_norm=2.0)
+        self.assertAlmostEqual(float(np.linalg.norm(clipped[1])), 2.0)
+        self.assertEqual(scales[0], 1.0)  # under-bound token untouched
+        self.assertTrue(np.allclose(clipped[0], cache[0]))
+
+    def test_sparse_topk_keeps_top_k_and_masks_rest(self):
+        s = np.array([[1.0, 4.0, 3.0, 2.0]])
+        out = steering.sparse_topk(s, k=2)
+        self.assertTrue(np.isneginf(out[0, 0]))
+        self.assertTrue(np.isneginf(out[0, 3]))
+        self.assertEqual(out[0, 1], 4.0)
+        self.assertEqual(out[0, 2], 3.0)
+        # softmax of the masked row puts zero mass on masked entries
+        p = np.exp(out - out.max()); p /= p.sum()
+        self.assertEqual(p[0, 0], 0.0)
+
+    def test_attention_sink_mass_and_zero_noop(self):
+        s = np.zeros((1, 6))
+        m = 0.25
+        p = np.exp(steering.attention_sink(s, m)); p /= p.sum()
+        self.assertAlmostEqual(float(p[0, 0]), m, places=12)
+        # sink=0 must be an exact no-op
+        self.assertTrue(np.array_equal(steering.attention_sink(s, 0.0), s))
+
+    def test_weight_drift_probe_zero_mod_and_breach(self):
+        base = np.array([1.0, -2.0, 3.0])
+        intact = steering.weight_drift_probe(base, base.copy())
+        self.assertTrue(intact["within_bound"])
+        self.assertEqual(intact["verdict"], "ZERO-MOD-INTACT")
+        breach = steering.weight_drift_probe(base, base + 0.5)
+        self.assertFalse(breach["within_bound"])
+        self.assertAlmostEqual(breach["abs_l2"], 0.5 * math.sqrt(3))
+
 
 class TestScoring(unittest.TestCase):
     def test_delta_e_identical_is_zero(self):
@@ -147,6 +182,20 @@ class TestOptim(unittest.TestCase):
         # island 1's worst replaced by island 0's best
         self.assertTrue(np.any(isl.pops[1] != isl.pops[1][0]) or True)
         self.assertEqual(len(isl.pops), 2)
+
+    def test_hyperband_finds_minimum_and_reports_spend(self):
+        hb = optim.Hyperband(eta=3, min_budget=1, max_budget=27)
+        calls = []
+
+        def sphere(x, budget):
+            calls.append(budget)
+            return float(np.sum(x * x))
+
+        val, x = hb.run(sphere, dim=4, seed=3)
+        self.assertLess(val, 0.5)
+        stats = hb.stats()
+        self.assertEqual(stats["evaluations"], len(calls))
+        self.assertGreater(stats["budget_spent"], 0)
 
 
 class TestProof(unittest.TestCase):

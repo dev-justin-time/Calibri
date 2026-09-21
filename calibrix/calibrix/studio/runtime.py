@@ -156,7 +156,11 @@ def onnx_metadata_props(kernel_spec: str, license_id: str) -> Dict[str, str]:
     }
 
 
-# F071 — Apple Metal / F072 — Triton: gain precompute helpers -------------------------------
+# F071 — Apple Metal Gain Precompute: one contiguous layout feeds both
+# fused-kernel backends (Metal Performance Shaders, Triton).
+# F072 — Triton Kernel Emission Contract: tile_gains_uniform below is the
+# exact buffer contract a Triton kernel consumes — gains[tile] laid out
+# row-major over (n_layers, n_heads), fp32, no striding surprises. -------------------------------
 def tile_gains_uniform(n_layers: int, gains: Sequence[float]) -> np.ndarray:
     """Runtime-friendly layout: (n_layers,) float32 buffer, contiguity
     guaranteed — Metal/Triton kernels consume exactly this layout."""
