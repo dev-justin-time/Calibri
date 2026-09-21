@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "calibrix"
+version = "0.1.0"
+description = "Model-agnostic parametric modulation of transformers with co-objective black-box search (unifies Heretic's abliteration search and Calibri's gate calibration)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+keywords = ["transformer", "interpretability", "calibration", "abliteration", "black-box-optimization"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy>=1.24",
+]
+
+[project.optional-dependencies]
+torch = ["torch>=2.2", "diffusers>=0.31", "transformers>=4.44", "peft>=0.13"]
+opt = ["cma>=4.4", "optuna>=4.0"]
+hub = ["huggingface-hub>=0.26"]
+
+[project.scripts]
+calibrix = "calibrix.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["calibrix"]

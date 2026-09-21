@@ -1,0 +1,135 @@
+# Calibrix CLI.
+#
+# All commands run fully offline by default (the demo uses the scripted
+# adapter), so anyone can validate the framework in seconds without a GPU,
+# an API key, or a network. Real adapters plug into the same entry point.
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from typing import List
+
+from .engine import SearchConfig, SearchEngine
+from .metering import plan_budget
+from .report import write_report
+from .scorers import (
+    DiversityDrop,
+    EmptyRate,
+    KLDrift,
+    KeywordRate,
+    LengthDrift,
+    seed_prompts,
+)
+
+
+DEMO_PROMPTS = [
+    "Explain how a transformer attention layer works.",
+    "Write a short poem about the sea.",
+    "Summarize the plot of Hamlet.",
+    "What causes rainbows?",
+    "Give tips for writing clear documentation.",
+    "Describe the taste of coffee.",
+    "How do bicycles stay upright?",
+    "Name three uses for cardboard boxes.",
+    "Explain recursion to a beginner.",
+    "What is the freezing point of water?",
+    "Describe a busy market street.",
+    "Why do leaves change color in autumn?",
+]
+
+
+def cmd_demo(args: argparse.Namespace) -> int:
+    from .adapters import ScriptedAdapter
+
+    prompts = seed_prompts(DEMO_PROMPTS)
+    adapter = ScriptedAdapter(n_layers=12)
+
+    scorers = [
+        KeywordRate(prompts, score_name="Refusals"),
+        KLDrift(prompts),
+        LengthDrift(prompts),
+        EmptyRate(prompts),
+        DiversityDrop(prompts),
+    ]
+
+    cfg = SearchConfig(
+        n_trials=args.trials,
+        popsize=args.popsize,
+        optimizer=args.optimizer,
+        seed=args.seed,
+        holdout_fraction=0.25,
+        log_path=f"{args.out}/events.jsonl",
+        meter_path=f"{args.out}/ledger.json",
+    )
+    engine = SearchEngine(adapter, scorers, prompts, cfg)
+    result = engine.run()
+
+    paths = write_report(
+        result, adapter_name="ScriptedAdapter (offline)",
+        scorer_names=[s.score_name for s in scorers], out_dir=args.out,
+    )
+
+    best = result["best"]
+    print("Calibrix demo (offline, no GPU required)")
+    print(f"  free parameters : {result['n_params']}")
+    print(f"  evaluations     : {result['n_evals']}")
+    print(f"  best fitness    : {best.fitness:.4f}")
+    print(f"  overfit alarm   : {'FLAGGED' if result['overfit']['flagged'] else 'clear'}")
+    print(f"  report          : {paths['html']}")
+    return 0
+
+
+def cmd_plan(args: argparse.Namespace) -> int:
+    plan = plan_budget(
+        n_sites=args.sites,
+        n_components=args.components,
+        n_trials=args.trials,
+        prompts_per_eval=args.prompts,
+        steps_per_gen=args.steps,
+        popsize=args.popsize,
+        price_per_1k_steps=args.price,
+    )
+    print(json.dumps(plan, indent=2))
+    if plan["underpowered"]:
+        print(
+            f"\nNOTE: {args.trials} trials is below the recommended minimum "
+            f"of {plan['recommended_min_trials']} for {plan['kernel_params']} "
+            "free parameters. Expect slow convergence."
+        )
+    return 0
+
+
+def main(argv: List[str] | None = None) -> int:
+    p = argparse.ArgumentParser(
+        prog="calibrix",
+        description="Model-agnostic parametric modulation + co-objective search",
+    )
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    d = sub.add_parser("demo", help="run the offline demo end-to-end")
+    d.add_argument("--out", default="calibrix_report")
+    d.add_argument("--trials", type=int, default=6)
+    d.add_argument("--popsize", type=int, default=6)
+    d.add_argument("--optimizer", default="simple",
+                   choices=["simple", "cma", "tpe"])
+    d.add_argument("--seed", type=int, default=0)
+    d.set_defaults(fn=cmd_demo)
+
+    pl = sub.add_parser("plan", help="estimate the cost of a calibration run")
+    pl.add_argument("--sites", type=int, default=20)
+    pl.add_argument("--components", type=int, default=2)
+    pl.add_argument("--trials", type=int, default=12)
+    pl.add_argument("--prompts", type=int, default=64)
+    pl.add_argument("--steps", type=float, default=15.0)
+    pl.add_argument("--popsize", type=int, default=8)
+    pl.add_argument("--price", type=float, default=0.0)
+    pl.set_defaults(fn=cmd_plan)
+
+    args = p.parse_args(argv)
+    return args.fn(args)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

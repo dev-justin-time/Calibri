@@ -8,10 +8,12 @@ Repurposes the core logic of two projects in this repository:
 - Calibri  (src/)     : per-block output-gain calibration of frozen diffusion
     transformers, CMA-ES black-box search, ~100-parameter efficiency.
 
-Calibrix makes the pattern general: ANY frozen transformer + ANY set of
+Calibrix makes the pattern general: ANY frozen transformer + ANY panel of
 behavioral scorers + a 6-parameter modulation kernel per component, searched
 by a co-objective optimizer. It adds the missing pieces both lack: holdout
-validation, Pareto trial selection, cost metering, and drift alarms.
+validation with an overfitting alarm, Pareto trial selection, explicit cost
+metering/planning, an offline scripted mode, and a self-contained HTML report
+that works from file:// or any free static host.
 """
 
 __version__ = "0.1.0"
@@ -33,30 +35,43 @@ from .scorers import (
     EmptyRate,
     DiversityDrop,
     NFETrap,
+    Prompt,
     seed_prompts,
 )
-from .engine import SearchEngine, SearchConfig
+from .adapters import (
+    Adapter,
+    ScriptedAdapter,
+    OpenAICompatAdapter,
+    HFInferenceAdapter,
+    CalibriFluxAdapter,
+)
+from .judge import OfflineJudge, RemoteLLMJudge
+from .optimizers import make_optimizer
+from .metering import Meter, CostModel, plan_budget
+from .events import EventLog
+from .engine import SearchEngine, SearchConfig, TrialResult
 from .report import build_report, write_report
 
 __all__ = [
     "__version__",
-    "KernelParams",
-    "ModulationSpec",
-    "pack_spec_vector",
-    "unpack_spec_vector",
-    "total_param_count",
-    "Scorer",
-    "Score",
-    "ScorerContext",
-    "KeywordRate",
-    "KLDrift",
-    "LengthDrift",
-    "EmptyRate",
-    "DiversityDrop",
-    "NFETrap",
-    "seed_prompts",
-    "SearchEngine",
-    "SearchConfig",
-    "build_report",
-    "write_report",
+    # kernel
+    "KernelParams", "ModulationSpec", "pack_spec_vector",
+    "unpack_spec_vector", "total_param_count",
+    # scorers
+    "Scorer", "Score", "ScorerContext", "Prompt", "seed_prompts",
+    "KeywordRate", "KLDrift", "LengthDrift", "EmptyRate",
+    "DiversityDrop", "NFETrap",
+    # adapters
+    "Adapter", "ScriptedAdapter", "OpenAICompatAdapter",
+    "HFInferenceAdapter", "CalibriFluxAdapter",
+    # judge
+    "RemoteLLMJudge", "OfflineJudge",
+    # optimizers
+    "make_optimizer",
+    # metering
+    "Meter", "CostModel", "plan_budget", "EventLog",
+    # engine
+    "SearchEngine", "SearchConfig", "TrialResult",
+    # report
+    "build_report", "write_report",
 ]
