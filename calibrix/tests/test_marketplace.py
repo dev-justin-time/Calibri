@@ -197,6 +197,33 @@ class TestServer(unittest.TestCase):
         self.assertIn("Server Test", html)
         self.assertIn("$5.00", html)
 
+    def test_api_listings_shape_and_privacy(self):
+        status, body = self.server.handle_api_listings()
+        self.assertEqual(status, 200)
+        data = json.loads(body)
+        self.assertEqual(data["stats"]["listing_count"], 1)
+        self.assertEqual(data["listings"][0]["listing_id"], "srv-kernel")
+        l0 = data["listings"][0]
+        self.assertEqual(l0["price_usd"], 5.00)
+        # module-family hint present, full spec never exposed
+        self.assertEqual(l0["vector"], "attn")
+        self.assertNotIn("kernel_spec", l0)
+        self.assertNotIn("attn:1.14", body)
+
+    def test_api_listings_revenue_aggregation(self):
+        order = self.store.create_order(self.listing, "b@c.co", "mock")
+        session = self.provider.create_checkout(
+            self.listing, order, "http://x/success", "http://x/")
+        self.store.attach_session(order, session["session_id"])
+        payload, sig = build_mock_event(session["session_id"])
+        self.server.handle_webhook(payload, sig)
+        status, body = self.server.handle_api_listings()
+        data = json.loads(body)
+        self.assertEqual(data["listings"][0]["orders"], 1)
+        self.assertEqual(data["listings"][0]["revenue_cents"], 500)
+        self.assertEqual(data["stats"]["order_count"], 1)
+        self.assertEqual(data["stats"]["gross_cents"], 500)
+
     def test_checkout_validates_email(self):
         status, _, body = self.server.handle_checkout(
             {"listing_id": "srv-kernel", "email": "not-an-email"})

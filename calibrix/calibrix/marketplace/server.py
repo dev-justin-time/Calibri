@@ -4,6 +4,7 @@
 # Routes:
 #   GET  /                      -> storefront HTML (listings)
 #   GET  /listing/<id>          -> listing detail + buy form
+#   GET  /api/listings          -> JSON snapshot (dashboard feed, CORS *)
 #   POST /checkout              -> create order + checkout session, 302 to payment
 #   GET  /success               -> fulfillment confirmation page
 #   POST /webhook               -> payment webhook (Stripe or mock)
@@ -67,6 +68,54 @@ class MarketplaceServer:
             order = self.store.fulfill_order(order)
         return 200, json.dumps({"status": "ok", "order_id": order.order_id,
                                 "license_id": order.license_id})
+
+    def handle_api_listings(self) -> Tuple[int, str]:
+        """GET /api/listings -> JSON snapshot of the store for dashboards.
+
+        Deliberately excludes kernel_spec and license material: the API is
+        read-only, public storefront data. Orders are aggregated per listing
+        (units + realized revenue) from the same ledger the seller console
+        uses, so dashboards can never drift from store.json.
+        """
+        listings = self.store.list_listings(active_only=False)
+        orders = list(self.store._data["orders"].values())
+        paid = (OrderStatus.PAID, OrderStatus.FULFILLED)
+        gross_cents = sum(o["amount_cents"] for o in orders
+                          if o["status"] in paid)
+        payload = {
+            "listings": [
+                {
+                    "listing_id": l.listing_id,
+                    "title": l.title,
+                    "model": l.model,
+                    "price_cents": l.price_cents,
+                    "price_usd": round(l.price_cents / 100, 2),
+                    "description": l.description,
+                    # Non-sensitive hint for dashboard display: the target
+                    # module family (e.g. "attn"), never the spec itself.
+                    "vector": (l.kernel_spec.split("|")[0].split(":")[0]
+                               if l.kernel_spec else ""),
+                    "scoring": l.scoring,
+                    "active": l.active,
+                    "created_at": l.created_at,
+                    "orders": sum(1 for o in orders
+                                  if o["listing_id"] == l.listing_id),
+                    "revenue_cents": sum(
+                        o["amount_cents"] for o in orders
+                        if o["listing_id"] == l.listing_id
+                        and o["status"] in paid),
+                }
+                for l in listings
+            ],
+            "stats": {
+                "listing_count": len(listings),
+                "active_count": sum(1 for l in listings if l.active),
+                "order_count": len(orders),
+                "gross_cents": gross_cents,
+                "gross_usd": round(gross_cents / 100, 2),
+            },
+        }
+        return 200, json.dumps(payload)
 
     def render_storefront(self) -> str:
         listings = self.store.list_listings(active_only=True)
@@ -141,13 +190,16 @@ def make_handler(store: JsonStore, provider: BaseProvider):
             pass
 
         def _send(self, status: int, body: str, ctype: str = "text/html",
-                  location: Optional[str] = None) -> None:
+                  location: Optional[str] = None,
+                  headers: Optional[Dict[str, str]] = None) -> None:
             data = body.encode("utf-8")
             self.send_response(status)
             self.send_header("Content-Type", ctype)
             self.send_header("Content-Length", str(len(data)))
             if location:
                 self.send_header("Location", location)
+            for k, v in (headers or {}).items():
+                self.send_header(k, v)
             self.end_headers()
             self.wfile.write(data)
 
@@ -155,6 +207,14 @@ def make_handler(store: JsonStore, provider: BaseProvider):
             path = urllib.parse.urlparse(self.path).path
             if path == "/":
                 self._send(200, server.render_storefront())
+            elif path == "/api/listings":
+                status, body = server.handle_api_listings()
+                # CORS: dashboards open from file:// (origin "null") must be
+                # able to read this endpoint.
+                self._send(status, body, "application/json", headers={
+                    "Access-Control-Allow-Origin": "*",
+                    "Cache-Control": "no-store",
+                })
             elif path == "/success":
                 self._send(200, "<h1>Payment received</h1><p>Your license key "
                                 "arrives by email; paste it into the Calibrix "

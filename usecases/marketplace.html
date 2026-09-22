@@ -483,7 +483,7 @@
 </div>
 <!-- Table Footer Status Summary -->
 <div class="p-2.5 bg-surface-container-low border-t border-outline flex items-center justify-between font-mono text-[10px] text-secondary">
-<span>Showing 4 active high-yield micro-tensor pools</span>
+<span id="bookStatus">Showing 4 active high-yield micro-tensor pools</span>
 <div class="flex items-center gap-3">
 <span class="text-tertiary">● Automated Settlement: Active</span>
 <span class="text-on-surface font-semibold">Next Clearing Epoch: 00:00 UTC</span>
@@ -604,15 +604,15 @@
 <div class="bg-surface-container-low border border-outline p-3 space-y-2 text-[11px]">
 <div class="flex justify-between">
 <span class="text-secondary">Gross Compute Cost (Uncalibrated):</span>
-<span class="text-on-surface font-semibold" id="grossCost">$38,500.00</span>
+<span class="text-on-surface font-semibold" id="grossCost">$30,000.00</span>
 </div>
 <div class="flex justify-between">
 <span class="text-secondary">Post-Decimation Compute Cost:</span>
-<span class="text-on-surface font-semibold" id="postCost">$13,860.00</span>
+<span class="text-on-surface font-semibold" id="postCost">$10,800.00</span>
 </div>
 <div class="flex justify-between border-t border-outline/60 pt-1.5">
 <span class="text-tertiary font-bold">Net Compute Arbitrage Savings:</span>
-<span class="text-tertiary font-bold text-sm" id="netSavings">+$24,640.00 /mo</span>
+<span class="text-tertiary font-bold text-sm" id="netSavings">+$19,200.00 /mo</span>
 </div>
 </div>
 <!-- Execution Button -->
@@ -637,12 +637,12 @@
 <div class="grid grid-cols-2 gap-3 my-3 font-mono">
 <div class="bg-surface border border-outline p-2.5">
 <div class="text-[10px] text-secondary">ENTERPRISE BUYER (75%)</div>
-<div class="text-lg font-bold text-tertiary mt-1" id="buyerSplit">+$18,480.00</div>
+<div class="text-lg font-bold text-tertiary mt-1" id="buyerSplit">+$14,400.00</div>
 <div class="text-[9px] text-secondary mt-0.5">Retained Cloud Cost Reduction</div>
 </div>
 <div class="bg-surface border border-outline p-2.5">
 <div class="text-[10px] text-secondary">CREATOR / CALIBRIX (25%)</div>
-<div class="text-lg font-bold text-primary mt-1" id="sellerSplit">+$6,160.00</div>
+<div class="text-lg font-bold text-primary mt-1" id="sellerSplit">+$4,800.00</div>
 <div class="text-[9px] text-secondary mt-0.5">Automated Escrow Protocol</div>
 </div>
 </div>
@@ -709,7 +709,10 @@
 </div>
 <!-- Interactive Arbitrage Calculation Script -->
 <script>
-    let currentCostPerReq = 0.0154; // $15.40 per 1k baseline
+    // B1 fix: unit cost now derives from the latched row's Ask price.
+    // Ask is quoted per 1k requests ("per seat"), so $12.00 -> $0.012/req.
+    // Default = FLUX.1-dev row (the strategy preselected in the panel).
+    let currentCostPerReq = 12.0 / 1000.0;
     let currentYieldRatio = 0.64;
 
     function formatCurrency(val) {
@@ -737,8 +740,13 @@
 
     function selectArbPair(model, yieldPct, layer, price) {
       document.getElementById('selectedModelLabel').innerText = model + ' (' + layer + ')';
-      document.getElementById('selectedYieldBadge').innerText = yieldPct + ' Yield';
+      // B2 fix: keep the + prefix so the badge matches the order-book column.
+      document.getElementById('selectedYieldBadge').innerText = '+' + yieldPct + ' Yield';
       currentYieldRatio = parseFloat(yieldPct) / 100.0;
+      // B1 fix: adopt the row's ask price as the gross-cost baseline.
+      if (isFinite(price) && price > 0) {
+        currentCostPerReq = price / 1000.0;
+      }
       const sliderVal = document.getElementById('volumeSlider').value;
       updateCalculations(sliderVal);
     }
@@ -762,5 +770,102 @@
 
     // Initialize with default 2.5M volume
     updateCalculations(2500000);
+
+    // ---- Live data wiring (audit M1 fix) -------------------------------
+    // Pulls the real order book from the UC-4 marketplace server
+    // (GET /api/listings, backed by store.json). Falls back to the demo
+    // rows below when the server is offline, so the page always renders.
+    const API_BASE = 'http://127.0.0.1:8700';
+
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;',        '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    // Derive a defensible "yield" from the listing's scoring metrics: the
+    // fraction of quality retained (refusals/drift/emptiness all subtract).
+    function yieldFromScoring(sc) {
+      const d = sc || {};
+      const retained = (d.DomainQuality ?? 1) * (1 - (d.Refusals ?? 0)) *
+        (1 - (d.LengthDrift ?? 0)) * (1 - (d.EmptyRate ?? 0)) *
+        (d.DiversityDrop === undefined ? 1 : d.DiversityDrop);
+      return Math.max(0, retained * 100).toFixed(1);
+    }
+
+    function mapLive(l) {
+      const pct = yieldFromScoring(l.scoring);
+      const scoreEntries = Object.entries(l.scoring || {})
+        .sort((a, b) => b[1] - a[1]);
+      const top = scoreEntries[0];
+      return {
+        listing_id: l.listing_id,
+        title: l.title,
+        pool: 'LIVE \u00b7 ' + l.listing_id,
+        // API sends only the module family (e.g. "attn"), never the spec.
+        vector: l.vector || 'kernel',
+        yieldPct: pct,
+        quality: top ? top[0] + ' ' + Number(top[1]).toFixed(2) : 'scored kernel',
+        qualitySub: l.model,
+        bid: Math.min(30, Math.max(10, Math.round(pct * 0.4))) + '% Gainshare',
+        ask: l.price_usd,
+        vol: '$' + (l.revenue_cents / 100).toLocaleString('en-US'),
+        orders: l.orders || 0,
+        active: l.active,
+      };
+    }
+
+    const DOT = ['bg-tertiary', 'bg-tertiary', 'bg-primary', 'bg-secondary'];
+
+    function renderLiveRows(rows) {
+      const tbody = document.querySelector('table tbody');
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr class="hover:bg-surface-container-high/40 transition-colors${i === 0 ? ' bg-surface-container/30' : ''}">
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-on-surface flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full ${DOT[i % DOT.length]}"></span>${esc(r.title)}
+            </div>
+            <div class="text-[10px] text-secondary">Pool: ${esc(r.pool)}</div>
+          </td>
+          <td class="py-2.5 px-2.5">
+            <span class="bg-surface-container-high text-primary px-1.5 py-0.5 text-[10px] border border-outline">${esc(r.vector)}</span>
+          </td>
+          <td class="py-2.5 px-2.5 text-right">
+            <span class="text-tertiary font-bold">+${esc(r.yieldPct)}%</span>
+            <div class="text-[9px] text-secondary">${esc(r.qualitySub)}</div>
+          </td>
+          <td class="py-2.5 px-2.5 text-right">
+            <span class="text-on-surface font-semibold">${esc(r.quality)}</span>
+            <div class="text-[9px] ${r.active ? 'text-tertiary' : 'text-secondary'}">${r.active ? 'ACTIVE' : 'INACTIVE'}</div>
+          </td>
+          <td class="py-2.5 px-2.5 text-right text-tertiary font-medium">${esc(r.bid)}</td>
+          <td class="py-2.5 px-2.5 text-right text-on-surface font-bold">$${Number(r.ask).toFixed(2)} <span class="text-[9px] text-secondary font-normal">/seat</span></td>
+          <td class="py-2.5 px-2.5 text-right text-secondary font-medium">${esc(r.vol)}<div class="text-[9px]">${r.orders} sold</div></td>
+          <td class="py-2.5 px-3 text-center">
+            <button class="px-2 py-1 bg-tertiary/20 text-tertiary border border-tertiary/40 hover:bg-tertiary hover:text-white transition-all text-[11px] font-bold" onclick="selectArbPair('${esc(r.title)}', '${esc(r.yieldPct)}%', '${esc(r.vector)}', ${Number(r.ask)})">
+              ARB LATCH
+            </button>
+          </td>
+        </tr>`).join('');
+      const footer = document.getElementById('bookStatus');
+      if (footer) footer.textContent = `Showing ${rows.length} live listing(s) from UC-4 store \u00b7 /api/listings`;
+    }
+
+    async function loadLiveListings() {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 3000);
+      try {
+        const res = await fetch(API_BASE + '/api/listings', { signal: ctrl.signal });
+        if (!res.ok) throw new Error('http ' + res.status);
+        const data = await res.json();
+        renderLiveRows(data.listings.map(mapLive));
+      } catch (_) {
+        /* server offline: keep the static demo rows as-is */
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    loadLiveListings();
   </script>
 </body></html>
