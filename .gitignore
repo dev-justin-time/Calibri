@@ -11,3 +11,19 @@ solo_run/
 *.dll
 *.so
 *.dylib
+
+# Historical run reports â€” kept on disk, not in git (regeneratable offline)
+usecases/1_reward_calibration/jobs/
+usecases/2_nfe_cost_reduction/savings_*/
+usecases/3_domain_kernels/kernels/
+usecases/5_abliteration_service/runs/
+usecases/6_compliance_restoration/reports/
+usecases/7_interp_reports/interp_report_*/
+# OpenWatch: keep prebuilt demo + root demo files tracked; future reports/cache stay ignored
+openwatch/*
+!openwatch/demo
+!openwatch/demo/**
+!openwatch/*.html
+!openwatch/*.json
+openwatch/cache.json
+openwatch/*.log

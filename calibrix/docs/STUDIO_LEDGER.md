@@ -1,6 +1,6 @@
 # Calibrix Logic Studio — Architecture Ledger
 
-Build digest: `3d04c884164dbfff…` · generated 2026-09-23T09:51:56Z
+Build digest: `3d04c884164dbfff…` · generated 2026-09-23T10:15:22Z
 
 ## §0 Provenance & Cleanroom Warranty
 

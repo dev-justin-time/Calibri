@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calibrix — Calibrate. Verify. Ship.</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--bad:#f85149}
+  *{box-sizing:border-box;margin:0} body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;padding:0}
+  a{color:var(--acc)} .wrap{max-width:980px;margin:0 auto;padding:28px 20px}
+  h1{font:22px/1.2 'IBM Plex Sans',sans-serif;font-weight:600;letter-spacing:-.02em}
+  h2{font:12px/1 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:28px 0 10px}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{background:var(--card);border:1px solid #30363d;border-radius:10px;padding:16px}
+  .card h3{font-size:13px;margin-bottom:6px} .mut{color:var(--mut)} .mono{font-family:'IBM Plex Mono',monospace}
+  .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.ok{background:#12351c;color:var(--ok)}.warn{background:#3a2b0e;color:var(--warn)}.bad{background:#3d1618;color:var(--bad)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:8px;padding:9px 14px;font-weight:600;text-decoration:none}
+  .btn.secondary{background:var(--card);color:var(--ink);border-color:#30363d}
+  .hero{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:18px 0 8px;border-bottom:1px solid #21262d;margin-bottom:12px}
+  .lang{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  .lang a{border:1px solid #30363d;border-radius:99px;padding:3px 9px;font-size:12px;text-decoration:none}
+  .small{font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="mut mono small">CALIBRIX · MIT · offline · no tracking</div>
+      <h1>Calibrate. Verify. Ship.</h1>
+      <div class="mut">One-file deploys for Putter & WebSim — no build, no keys, no backend to run.</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn" href="usecases/marketplace.html">Open Exchange →</a>
+      <a class="btn secondary" href="openwatch/demo/2026-09-24.html">OpenWatch Daily →</a>
+    </div>
+  </div>
+
+  <h2>One click to test</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>CALX-MKT — Yield & Compute Arbitrage Exchange</h3>
+      <div class="mut small">The canonical product. Static demo with live-API hydration (CORS <code>/api/listings</code> when seller.py is up, falls back to demo rows). 47 KB HTML, Tailwind CDN, zero build.</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn" href="usecases/marketplace.html">Open</a>
+        <a class="btn secondary" href="usecases/4_kernel_marketplace/pilot/landing.html">Pilot landing</a>
+      </div>
+      <div class="mut small" style="margin-top:8px">Server: <span class="mono">python -m calibrix.marketplace.cli serve --port 8700</span> (optional)</div>
+    </div>
+    <div class="card">
+      <h3>OpenWatch Daily — The 10-locale demo is prebuilt</h3>
+      <div class="mut small">Same rubric, same prompt pack, 10 cultural names (Beacon · Mingjing · Vela · Drishti · Noor …). Each is a static file you hold. No probe looks like a probe.</div>
+      <div class="lang mono">
+        <a href="openwatch/demo/en/2026-09-24.html">en · Beacon</a>
+        <a href="openwatch/demo/zh-Hans/2026-09-24.html">中文 · Mingjing</a>
+        <a href="openwatch/demo/es-419/2026-09-24.html">es · Vela</a>
+        <a href="openwatch/demo/hi/2026-09-24.html">हिन्दी · Drishti</a>
+        <a href="openwatch/demo/ar/2026-09-24.html">العربية · Noor</a>
+        <a href="openwatch/demo/pt-BR/2026-09-24.html">pt · Claro</a>
+        <a href="openwatch/demo/fr/2026-09-24.html">fr · Éclaire</a>
+        <a href="openwatch/demo/ru/2026-09-24.html">ru · Dozor</a>
+        <a href="openwatch/demo/ja/2026-09-24.html">ja · Akashi</a>
+        <a href="openwatch/demo/bn/2026-09-24.html">bn · Alo</a>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn" href="openwatch/demo/2026-09-24.html">Open (en)</a>
+        <a class="btn secondary" href="openwatch/2026-09-24.html">Open (root)</a>
+        <a class="btn secondary" href="openwatch/2026-09-24.json">JSON →</a>
+      </div>
+      <div class="mut small" style="margin-top:8px">
+        Stealth capture (optional): <span class="mono">obscura fetch file://… --screenshot --stealth</span> &nbsp;·&nbsp; <span class="mono">docs/OPENWATCH_DEPLOY.md</span>
+        · Sources: <span class="mono">h4ckf0r0day/obscura</span> 30 MB Rust, V8, CDP, tracker blocking.
+      </div>
+    </div>
+  </div>
+
+  <h2>Why this is tight</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>What's gone</h3>
+      <ul class="mut small" style="padding-left:16px">
+        <li><code>marketplace1.html</code> / <code>marketplace2.html</code> / <code>service.html</code> — duplicate demos</li>
+        <li>3 proof PNGs (1.5 MB) + <code>proof_*.mjs</code> — captured evidence, not product</li>
+        <li>25+ tracked job <code>report.html</code> under <code>usecases/*/jobs|savings|…</code> — regeneratable (<code>uv run</code>)</li>
+        <li><code>arewework.html</code>-class surface: none left. One entry = <code>index.html</code> → two cards.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What stays / where to verify</h3>
+      <ul class="mut small" style="padding-left:16px">
+        <li>Canonical demo: <code>usecases/marketplace.html</code> (trade desk + ledger stream)</li>
+        <li>Pilot package: <code>usecases/4_kernel_marketplace/pilot/</code></li>
+        <li>Archive: <code>docs/archive/weregoodboss.md</code> (full audit kept, not deleted)</li>
+        <li>Tests: <code>calibrix/tests/</code> 331 tests · <span class="mono">ledger scan → CLEANROOM-VERIFIED</span></li>
+        <li>Docs: <code>calibrix/docs/OPENWATCH.md</code> + <code>OPENWATCH_DEPLOY.md</code> (10 locales + Obscura sidecar)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Competitors you now cover (per region the locales touch)</h2>
+  <div class="card mono small">
+    OpenAI · Anthropic · Google · Meta · xAI · Mistral — audited on the same 6 criteria (direction, non-destruction, neutrality delta, provenance, ownership/export, cure-vs-treat). Full matrix in <code>OPENWATCH_DEPLOY.md</code>. You publish; platforms can't tag the probe (<code>--stealth</code> + per-locale residential <code>OBSCURA_PROXY_*</code>).
+  </div>
+
+  <div class="mut small" style="margin-top:18px;border-top:1px solid #21262d;padding-top:10px">
+    Putter / WebSim: just open <span class="mono">index.html</span>. No npm, no build. Marketplace and OpenWatch are both static, self-contained HTML — double-click or drop into any host.
+  </div>
+</div>
+</body>
+</html>
