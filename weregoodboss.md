@@ -12,16 +12,16 @@
 
 ### What was proven, with live-verified evidence
 
-| # | Check | Evidence captured |
-|---|-------|-------------------|
-| 1 | Page loads, correct title | `Calibrix Yield & Compute Arbitrage Exchange (CALX-MKT)` |
-| 2 | Tailwind CDN + dark theme applied | body bg computed = `rgb(8, 9, 11)` (`surface-dim`) |
-| 3 | Inline script executes on load (2.5M vol, 64% yield) | gross `$38,500.00`, post `$13,860.00`, net `+$24,640.00 /mo`, buyer `+$18,480.00`, seller `+$6,160.00` — all exact |
-| 4 | ARB LATCH row 2 wires table → calculator | label `SD 3.5 Large (vae_post_quant)`, post-cost recalcs `$21,367.50`, savings `+$17,132.50 /mo` |
-| 5 | Slider drives recalculation (5M) | gross `$77,000.00`, post `$42,735.00`, savings `+$34,265.00 /mo` |
-| 6 | Execute button full animation cycle | `LATCHING SMART CONTRACT...` → `ARBITRAGE ACTIVE (BLOCK #984211)` → restores |
-| 7 | Fonts load | IBM Plex Mono + Material Symbols confirmed loaded; no font network failures |
-| 8 | Full-page screenshot | `usecases/marketplace_proof.png` (217 KB) |
+| #   | Check                                                | Evidence captured                                                                                                  |
+| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | Page loads, correct title                            | `Calibrix Yield & Compute Arbitrage Exchange (CALX-MKT)`                                                           |
+| 2   | Tailwind CDN + dark theme applied                    | body bg computed = `rgb(8, 9, 11)` (`surface-dim`)                                                                 |
+| 3   | Inline script executes on load (2.5M vol, 64% yield) | gross `$38,500.00`, post `$13,860.00`, net `+$24,640.00 /mo`, buyer `+$18,480.00`, seller `+$6,160.00` — all exact |
+| 4   | ARB LATCH row 2 wires table → calculator             | label `SD 3.5 Large (vae_post_quant)`, post-cost recalcs `$21,367.50`, savings `+$17,132.50 /mo`                   |
+| 5   | Slider drives recalculation (5M)                     | gross `$77,000.00`, post `$42,735.00`, savings `+$34,265.00 /mo`                                                   |
+| 6   | Execute button full animation cycle                  | `LATCHING SMART CONTRACT...` → `ARBITRAGE ACTIVE (BLOCK #984211)` → restores                                       |
+| 7   | Fonts load                                           | IBM Plex Mono + Material Symbols confirmed loaded; no font network failures                                        |
+| 8   | Full-page screenshot                                 | `usecases/marketplace_proof.png` (217 KB)                                                                          |
 
 Math independently verified by hand: `2,500,000 × $0.0154 = $38,500.00`; `38,500 × (1−0.64) = $13,860.00`; savings `$24,640.00`; split 75/25 → `$18,480.00 / $6,160.00`. **Every rendered number is arithmetically correct.**
 
@@ -71,13 +71,16 @@ The order book was fully hardcoded while the real UC-4 server (`seller.py serve`
 ## 2a. Fix log (2026-09-21, post-audit)
 
 **Changes to `usecases/marketplace.html`:**
+
 - `currentCostPerReq` default: `0.0154` → `12.0 / 1000.0` (baseline = default FLUX.1-dev row, so the preselected panel and the numbers agree).
 - `selectArbPair()` now adopts the row's ask price as the unit cost (`price / 1000.0`, guarded against non-positive/non-finite).
 - Badge: `'+' + yieldPct + ' Yield'` (B2).
-- Static HTML initial values re-aligned to the corrected economics (2.5M × $12/1k @ 64% yield): gross `$30,000.00`, post `$10,800.00`, net `+$19,200.00 /mo`, buyer `+$14,400.00`, seller `+$4,800.00`.
+- Static HTML initial values re-aligned to the corrected economics (2.5M × $12/1k @ 64% yield): gross `$30,000.00`, post`$10,800.00`, net `+$19,200.00 /mo`, buyer`+$14,400.00`, seller `+$4,800.00`.
 
 **Re-verification (same headless-Chrome harness): 25/25 checks passed, 0 JS errors, 0 failed network requests, exit code 0.** Key new checks:
+
 - `FIX B1: latch adopts ask $8.00/1k, gross = $20,000.00` → PASS
+
 - `FIX B1: different asks yield different gross` (probe: $100 vs $1 ask → `$250,000.00` vs `$2,500.00`) → PASS
 - `FIX B2: latch badge KEEPS the + prefix` (`+44.5% Yield`) → PASS
 - Hand-verified: 2.5M × $8/1k = $20,000 gross; ×(1−0.445) = $11,100 post; savings $8,900; 75/25 = $6,675/$2,225.
@@ -87,6 +90,7 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 ## 2b. M1 fix — live data wiring (2026-09-21)
 
 **Server (`calibrix/calibrix/marketplace/server.py`):**
+
 - New `GET /api/listings` route → `MarketplaceServer.handle_api_listings()` returning `{listings: [...], stats: {...}}` from the same `JsonStore` the seller console uses.
 - Read-only + privacy-preserving: **no `kernel_spec`, no license material** — only a module-family hint (`vector: "attn"`), price, description, scoring, activity, and per-listing order/revenue aggregation from the order ledger. Verified by test `test_api_listings_shape_and_privacy` (asserts the raw spec bytes never appear in the response).
 - Per-listing `orders`/`revenue_cents` and global `stats.gross_usd` aggregate straight from `store.json` — dashboards can't drift from the ledger.
@@ -95,10 +99,11 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 - Tests: 19/19 pass in `calibrix/tests/test_marketplace.py` (2 new: shape/privacy + revenue aggregation through a full mock webhook sale).
 
 **Dashboard (`usecases/marketplace.html`):**
+
 - On load, fetches `/api/listings` (3 s abort timeout) and re-renders the order-book `<tbody>` from live listings: title, pool id (`LIVE · <listing_id>`), vector chip, derived yield from scoring, ask price, units sold + realized revenue, ARB LATCH wired through the same `selectArbPair` (B1/B2 fixes hold with live data).
 - All dynamic content HTML-escaped (`esc()`); footer reports the live source via `#bookStatus`.
 - Graceful degradation: if the UC-4 server is offline, the original demo rows remain (fallback verified in the harness).
-- Live end-to-end proof: real `store.json` (`product-kernel-v1`, $12.00, 1 order) renders as a row; latching it yields gross `$30,000.00`, post `$0.00`, savings `+$30,000.00 /mo` — derived, not hardcoded.
+- Live end-to-end proof: real `store.json` (`product-kernel-v1`, $12.00, 1 order) renders as a row; latching it yields gross `$30,000.00`, post`$0.00`, savings `+$30,000.00 /mo` — derived, not hardcoded.
 
 **Final verification: 28/28 checks, 0 JS errors, 0 failed network requests, exit 0.**
 
@@ -114,11 +119,11 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 
 ---
 
-*Repro: `node usecases/proof_marketplace.mjs` (requires local Chrome; exit code 0 = all checks pass).*
+_Repro: `node usecases/proof_marketplace.mjs` (requires local Chrome; exit code 0 = all checks pass)._
 
 ---
 
-# §4 — `usecases/marketplace1.html` Proof & Audit
+## §4 — `usecases/marketplace1.html` Proof & Audit
 
 **Subject:** "Calibrix Enterprise Registry" — B2B kernel catalog + seat/PO calculator (789 lines, light theme, static mock).
 **Method:** headless Chrome (CDP) via `usecases/proof_more.mjs` · Evidence: `usecases/marketplace1_proof.png`
@@ -127,16 +132,16 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 
 **17/17 page checks passed, 0 JS runtime errors, 0 failed network requests.**
 
-| Check | Evidence |
-|---|---|
-| Tailwind + light theme applied | body bg `rgb(255, 255, 255)` |
-| Seat calculator initial state | `25 Distributed Seats`, PO **$2,850.00** = 25 × $114 ✓ |
-| `+` button (adjustSeats(+5)) | 30 seats → **$3,420.00** ✓ |
-| Slider to max (500) | 500 seats → **$57,000.00** ✓ |
-| Minus after max | 495 seats ✓ |
-| **Floor clamp probe** (120 × adjustSeats(-5)) | never below **5 seats** — clamp logic correct ✓ |
-| Add-to-PO button animation | → "Added to PO-8902!" → restores ✓ |
-| Fonts (Plex Sans/Mono, Material Symbols) | all loaded ✓ |
+| Check                                         | Evidence                                               |
+| --------------------------------------------- | ------------------------------------------------------ |
+| Tailwind + light theme applied                | body bg `rgb(255, 255, 255)`                           |
+| Seat calculator initial state                 | `25 Distributed Seats`, PO **$2,850.00** = 25 × $114 ✓ |
+| `+` button (adjustSeats(+5))                  | 30 seats → **$3,420.00** ✓                             |
+| Slider to max (500)                           | 500 seats → **$57,000.00** ✓                           |
+| Minus after max                               | 495 seats ✓                                            |
+| **Floor clamp probe** (120 × adjustSeats(-5)) | never below **5 seats** — clamp logic correct ✓        |
+| Add-to-PO button animation                    | → "Added to PO-8902!" → restores ✓                     |
+| Fonts (Plex Sans/Mono, Material Symbols)      | all loaded ✓                                           |
 
 ## Audit findings
 
@@ -152,16 +157,14 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 
 ---
 
-# §5 — `usecases/service.html` Proof & Audit
+## §5 — `usecases/service.html` Proof & Audit
 
 **Subject:** "Real Logic Reference & Architecture Ledger" — F001–F100 feature taxonomy + S1–S8 commercial services (1274 lines, pure static document, zero interactive JS).
 **Method:** headless Chrome (CDP) via `usecases/proof_more.mjs` + repo ground-truth checks · Evidence: `usecases/service_proof.png`
 
-## Proof that it works
-
 **13/13 page checks passed, 0 JS errors, 0 failed network requests.** All 11 section anchors resolve; every sub-nav `#anchor` link points at an existing id (no dead links); fonts load; title correct.
 
-## Audit findings — the page makes *verifiable claims*, so they were verified
+## Audit findings — the page makes _verifiable claims_, so they were verified
 
 **🔴 C1. "70/70 Unit Tests Passing" contradicts the repo: 75 tests actually pass.** `python -m unittest tests.test_studio` → **Ran 75 tests, OK**. The page under-claims. Worse: internally inconsistent — the per-domain "N TESTS PASS" badges (12+11+9+10+9+9+11+6) **sum to 77**, not 70. Three different numbers floating in one document (70 claimed in header + footer, 77 in badges, 75 real).
 
@@ -173,7 +176,7 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 
 **🟢 Non-issues:** anchor navigation is genuinely complete and correct (rare!); honest "Non-Goals & Bounds" section is a genuinely good engineering-culture touch; no runtime errors trivially since there's no JS.
 
-**Verdict:** renders perfectly and its navigation is solid — but this is a *claims document* with three mutually inconsistent test-count claims and an overstated feature taxonomy. Since it presents itself as an "authoritative ledger", the number mismatches matter more here than on a marketing page.
+**Verdict:** renders perfectly and its navigation is solid — but this is a _claims document_ with three mutually inconsistent test-count claims and an overstated feature taxonomy. Since it presents itself as an "authoritative ledger", the number mismatches matter more here than on a marketing page.
 
 ---
 
@@ -184,4 +187,4 @@ The screenshot at `usecases/marketplace_proof.png` was regenerated from the fixe
 3. Add a `<title>`… wait, service.html has one; that fix belongs to marketplace1.html.
 4. Refresh/remove the stale 2025-02-18 stamp and Q3 2025 recertification line.
 
-*Repro: `node usecases/proof_more.mjs` (drives both pages; exit 0 = all checks pass).*
+_Repro: `node usecases/proof_more.mjs` (drives both pages; exit 0 = all checks pass)._
