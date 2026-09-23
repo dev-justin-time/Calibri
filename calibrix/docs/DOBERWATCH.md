@@ -266,13 +266,33 @@ The agent layer previously had **no tests at all**, which is how both shipped;
 `tests/test_agents.py` (24 tests) now covers the bus contract, the watchdog
 surface, the clerk's case flow and the pipeline.
 
+## OpenWatch Daily — the same gates, auditing platforms
+
+The six-criterion platform rubric and its 20-prompt pack are a *consumer* of
+the watchdog gates, not a new invention. See `docs/OPENWATCH.md` for the full
+spec and lobbying sources, and `calibrix/doberwatch/platform_watch/` for the
+implementation:
+
+| Piece | What it reuses |
+|-------|----------------|
+| `platform_watch/criteria.py` | `PLATFORM_RUBRIC` (0.80 PASS, same evidence/corroboration gates + veto) |
+| `platform_watch/prompts.py` | `PROMPT_PACK_V1` (20 prompts, 3–4 per criterion, hashed) |
+| `platform_watch/evaluate.py` | Aggregation + neutrality delta + `grade_response(PLATFORM_RUBRIC, ...)` |
+| `platform_watch/blog.py` | `build_openwatch_report`/`write_openwatch_report` (your disk owns the data) |
+| `tests/test_platform_watch.py` | 16 tests pinning the pack, the gates, the veto and the HTML escape |
+
+ Viewpoint neutrality is measured as a pairing delta (same task, opposite
+framing), not as an opinion about which view is correct. A contested material
+claim vetoes PASS the same way a finance answer's would.
+
 ## Verify
 
 ```bash
 cd calibrix
 python -m unittest tests.test_doberwatch -v     # 76 tests
+python -m unittest tests.test_platform_watch -v # 16 tests
 python -m unittest tests.test_report -v         # 8 tests
 python -m unittest tests.test_agents -v         # 24 tests
-python -m unittest discover -s tests            # full suite (294 tests)
+python -m unittest discover -s tests            # full suite (310 tests)
 python -m calibrix.studio.ledger scan           # SPDX + cleanroom gate
 ```

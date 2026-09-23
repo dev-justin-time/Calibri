@@ -20,6 +20,10 @@ Everything is deterministic, offline, and unit-tested; nothing here calls a
 model or a network. ``Doberwatch`` composes the pieces into the flow:
 qualify -> advise (ten closest answers before any model call) -> fact-check ->
 grade -> complain / refund / escalate.
+
+``platform_watch`` reuses the same grading gates to audit AI platforms
+themselves (``PLATFORM_RUBRIC``, 6 criteria, 20-prompt pack, daily blog)
+— see ``docs/OPENWATCH.md`` and ``calibrix/doberwatch/platform_watch/``.
 """
 
 from .cache import (CACHE_SCHEMA, CONSENT_MODES, CacheEntry, ConsentPolicy,

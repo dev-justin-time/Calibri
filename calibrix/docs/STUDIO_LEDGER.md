@@ -1,13 +1,13 @@
 # Calibrix Logic Studio — Architecture Ledger
 
-Build digest: `1f63f5b62cb51037…` · generated 2026-09-23T07:10:32Z
+Build digest: `3d04c884164dbfff…` · generated 2026-09-23T09:51:56Z
 
 ## §0 Provenance & Cleanroom Warranty
 
 - SPDX grants: MIT
-- Cleanroom verdict: **CLEANROOM-VERIFIED** (55 files scanned, 2 reviewed exemptions)
+- Cleanroom verdict: **CLEANROOM-VERIFIED** (62 files scanned, 2 reviewed exemptions)
 - Taxonomy coverage: 108/108 (100.0%)
-- Tests passing at build time: **294** (counts derived from test-file ASTs)
+- Tests passing at build time: **331** (counts derived from test-file ASTs)
 
 ## D1: Model Steering & Gate Hooks (`calibrix/studio/steering.py`)
 

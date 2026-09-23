@@ -1,6 +1,6 @@
 {
   "schema": "calibrix.architecture-ledger/1.0",
-  "generated_at": "2026-09-23T07:10:32Z",
+  "generated_at": "2026-09-23T09:51:56Z",
   "provenance": {
     "spdx": [
       "MIT"
@@ -13,12 +13,12 @@
         "calibrix/heretic_bridge.py",
         "calibrix/studio/governance.py"
       ],
-      "files_scanned": 55,
+      "files_scanned": 62,
       "verdict": "CLEANROOM-VERIFIED"
     }
   },
   "tests": {
-    "total": 294,
+    "total": 331,
     "per_file": {
       "test_ablation.py": 13,
       "test_agents.py": 24,
@@ -27,16 +27,18 @@
       "test_image_validation.py": 5,
       "test_kernel.py": 11,
       "test_ledger.py": 8,
+      "test_locales_obscura.py": 21,
       "test_marketplace.py": 25,
       "test_metering.py": 11,
       "test_pilot_package.py": 3,
+      "test_platform_watch.py": 16,
       "test_report.py": 8,
       "test_scorers.py": 9,
       "test_standalone.py": 12,
       "test_studio.py": 75,
       "test_xp.py": 8
     },
-    "unattributed": 219
+    "unattributed": 256
   },
   "coverage": {
     "expected": 108,
@@ -631,5 +633,5 @@
     ],
     "tests": 8
   },
-  "build_digest": "1f63f5b62cb510373cacdc0c1bb0e72c883b80d611110228d9daf6c8972afb35"
+  "build_digest": "3d04c884164dbfffdb380d334cf3a68983702b1cdd74d1dab3a53fa353e3160e"
 }
