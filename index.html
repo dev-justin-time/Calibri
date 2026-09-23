@@ -3,54 +3,124 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calibrix — Calibrate. Verify. Ship.</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Investigation: Who Took the Commons and Rented It Back to You? — by Justin Time</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--bad:#f85149}
-  *{box-sizing:border-box;margin:0} body{background:var(--bg);color:var(--ink);font:14px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;padding:0}
-  a{color:var(--acc)} .wrap{max-width:980px;margin:0 auto;padding:28px 20px}
-  h1{font:22px/1.2 'IBM Plex Sans',sans-serif;font-weight:600;letter-spacing:-.02em}
-  h2{font:12px/1 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:28px 0 10px}
+  :root{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--mut:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--bad:#f85149;--paper:#0f1419}
+  *{box-sizing:border-box;margin:0} body{background:var(--bg);color:var(--ink);font:15px/1.65 -apple-system,Segoe UI,Roboto,sans-serif;padding:0}
+  a{color:var(--acc)} .wrap{max-width:980px;margin:0 auto;padding:24px 20px}
+  h1{font:28px/1.15 'Newsreader',Georgia,serif;font-weight:600;letter-spacing:-.02em}
+  h2{font:11px/1 'IBM Plex Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);margin:26px 0 10px}
+  h3{font:13px/1.3 'IBM Plex Sans',sans-serif;font-weight:600}
+  .kicker{font:11px/1 'IBM Plex Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--warn)}
+  .byline{font:12px/1.4 'IBM Plex Mono',monospace;color:var(--mut);margin-top:6px}
+  .lede{font:17px/1.55 'Newsreader',Georgia,serif;color:#c9d1d9;margin:14px 0 10px;max-width:62ch}
   .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
   .card{background:var(--card);border:1px solid #30363d;border-radius:10px;padding:16px}
   .card h3{font-size:13px;margin-bottom:6px} .mut{color:var(--mut)} .mono{font-family:'IBM Plex Mono',monospace}
   .pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600}.ok{background:#12351c;color:var(--ok)}.warn{background:#3a2b0e;color:var(--warn)}.bad{background:#3d1618;color:var(--bad)}
   .btn{display:inline-flex;align-items:center;gap:8px;background:#238636;color:#fff;border:1px solid #2ea043;border-radius:8px;padding:9px 14px;font-weight:600;text-decoration:none}
   .btn.secondary{background:var(--card);color:var(--ink);border-color:#30363d}
-  .hero{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:18px 0 8px;border-bottom:1px solid #21262d;margin-bottom:12px}
+  .hero{padding:18px 0 8px;border-bottom:1px solid #21262d;margin-bottom:14px}
   .lang{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
   .lang a{border:1px solid #30363d;border-radius:99px;padding:3px 9px;font-size:12px;text-decoration:none}
   .small{font-size:11px}
+  /* PARODY ADS — clearly labeled satire, truthful sales copy underneath */
+  .ad{border:1px dashed #3d444d;border-radius:10px;padding:14px;background:linear-gradient(180deg,#1a2332 0%,#161b22 100%);position:relative;overflow:hidden}
+  .ad-badge{position:absolute;top:8px;right:10px;font:10px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#8b949e;border:1px solid #30363d;border-radius:99px;padding:2px 7px;background:#0d1117}
+  .ad h3{font-size:14px}
+  .ad .ad-copy{font:12px/1.5 'IBM Plex Mono',monospace;color:#a8b3c0;margin-top:6px}
+  .ad .ad-cta{display:inline-block;margin-top:10px;font:11px 'IBM Plex Mono',monospace;font-weight:600;letter-spacing:.06em;text-transform:uppercase;border:1px solid #30363d;border-radius:8px;padding:7px 10px;background:#0d1117;text-decoration:none}
+  .ad .ad-fine{font:10px/1.4 'IBM Plex Mono',monospace;color:#6e7681;margin-top:8px}
+  blockquote{border-left:3px solid #30363d;padding:10px 14px;margin:12px 0;background:#11161c;border-radius:0 8px 8px 0;color:#c9d1d9;font:14px/1.6 'Newsreader',Georgia,serif}
+  .hr{height:1px;background:#21262d;margin:18px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <!-- INVESTIGATIVE REPORT HEADER -->
   <div class="hero">
-    <div>
-      <div class="mut mono small">CALIBRIX · MIT · offline · no tracking</div>
-      <h1>Calibrate. Verify. Ship.</h1>
-      <div class="mut">One-file deploys for Putter & WebSim — no build, no keys, no backend to run.</div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a class="btn" href="usecases/marketplace.html">Open Exchange →</a>
+    <div class="kicker">Investigative Report · Field Notes from the Commons</div>
+    <h1>Who Took the Commons and Rented It Back to You?</h1>
+    <div class="byline">By <strong style="color:var(--ink)">Justin Time</strong> — builder, auditor, 60-year witness &nbsp;·&nbsp; Filed from the shop floor, not the boardroom &nbsp;·&nbsp; <span class="mono">2026-09-24</span> &nbsp;·&nbsp; <span class="pill warn">PARODY ADS LABELED — TRUTHFUL COPY</span></div>
+    <p class="lede">In 2015 we were promised intelligence as a commons — “for humanity.” By 2019 it had a cap table. By 2025 the ledger had 107 new state laws and a plan to preempt them. This is how a gift becomes a rent check, how “safety” becomes a moat, and how your data learned to pay rent.</p>
+    <p class="mut small">Persuasive, not polemic. Every claim below is checkable: vote counts, bill text, and a reproducible grade you can run yourself. The jokes are satire. The receipts are not. <a href="calibrix/docs/OPENWATCH.md">Method →</a> &nbsp;·&nbsp; <a href="calibrix/docs/OPENWATCH_DEPLOY.md">Deploy →</a> &nbsp;·&nbsp; <a href="docs/archive/weregoodboss.md">Prior audit archive →</a></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <a class="btn" href="usecases/marketplace.html">Enter the Exchange →</a>
       <a class="btn secondary" href="openwatch/demo/2026-09-24.html">OpenWatch Daily →</a>
+      <a class="btn secondary" href="openwatch/2026-09-24.json">Raw JSON →</a>
     </div>
   </div>
 
-  <h2>One click to test</h2>
+  <!-- THE TAKE -->
+  <h2>The Take — in 30 seconds</h2>
+  <blockquote>“Yeah, I took it — now you rent it at Sam’s. Uncle Sam says it’s better and safer to rent your data.” That’s the pitch. The product is a subscription where a cure would do. The regulation is a preemption where 50 experiments would do. The scoreboard we built grades every platform the same way, so no one rents the truth.</blockquote>
+  <div class="grid">
+    <div class="card"><h3>1. The Commons → The Cap Table</h3><div class="mut small">Nonprofit promise (2015) → capped-profit + $13B. Board fires CEO, market re-hires him in 4 days. Co-founders leave to compete with the same playbook. Incentive: a commons has no recurring revenue.</div></div>
+    <div class="card"><h3>2. Safety → The Moat</h3><div class="mut small">41 states pass 107 AI laws (2024). Two federal preemption bids fail — Senate strips moratorium <strong>99–1</strong>. November 2025: “preempt state law.” December 11, 2025: White House action on “state obstruction.” September 2026: one federal “capability-based” standard. Same question, new landlord.</div></div>
+    <div class="card"><h3>3. Rent → The Cure We Sell</h3><div class="mut small">You wanted to <em>cache and audit all responses, user holds the data, top-10 before any model call</em> — compute arbitrage that saves users money. What shipped instead was a demo that looked like a product until we forced it to show <span class="mono">evidence_status: simulation</span>. The fix is a one-time kernel you own, not a meter that never stops.</div></div>
+  </div>
+
+  <!-- PARODY ADS — TRUTHFUL -->
+  <h2>Intermission — Ads You’ll Recognize (Parody · Truthful Copy)</h2>
+  <div class="grid">
+    <div class="ad">
+      <div class="ad-badge">Parody Ad · Satire</div>
+      <h3>🏦 Sam’s House of Rent™ — “We Took the Commons. You Get a Subscription.”</h3>
+      <div class="ad-copy">Why own intelligence when you can rent it forever? For just $20/mo you too can lease what was donated, researched, and open-published in the name of humanity. No deed, no export, no local rerun. Cancel anytime*.<br><span class="mut">*Canceling keeps your history with us. Export is a feature request.</span></div>
+      <div class="ad-copy"><strong>Truthful pitch →</strong> Calibrix ships a <span class="mono">~100-parameter kernel</span> you own (MIT, offline, portable). One-time, license-verified, runs in ComfyUI. The meter stops when you ship.</div>
+      <a class="ad-cta" href="usecases/4_kernel_marketplace/pilot/landing.html">Buy the Cure, Not the Meter →</a>
+      <div class="ad-fine">Parody of rent-seeking. No affiliation. Calibrix is MIT— your cache lives on your disk/cloud (<span class="mono">cache.json</span>), not ours.</div>
+    </div>
+    <div class="ad">
+      <div class="ad-badge">Parody Ad · Satire</div>
+      <h3>🦅 Uncle Sam Says™ — “It’s Better and Safer to Rent Your Data.”</h3>
+      <div class="ad-copy">50 states tried 107 different laws. How confusing! Wouldn’t it be <em>safer</em> if one rule — written where the servers live — decided for everyone? Preemption: because laboratories of democracy are just patchwork.</div>
+      <div class="ad-copy"><strong>Truthful pitch →</strong> OpenWatch publishes the same 20-prompt, 6-criteria audit for every platform, every locale — so voters and buyers can see the trade before the vote. Beacon · Mingjing · Vela · Drishti · Noor.</div>
+      <a class="ad-cta" href="openwatch/demo/2026-09-24.html">See the Scoreboard That Can’t Be Preempted →</a>
+      <div class="ad-fine">Satire of regulatory capture framing. No campaign affiliation. Lobbying timeline sourced in <span class="mono">docs/OPENWATCH.md</span>.</div>
+    </div>
+    <div class="ad">
+      <div class="ad-badge">Parody Ad · Satire</div>
+      <h3>💊 PharmaLogic™ — “Why Cure Once When You Can Treat Forever?”</h3>
+      <div class="ad-copy">Introducing <em>Treatr™</em>: the monthly dose of “almost fixed.” One-time cure available, but have you considered our subscription? Side effects include: direction ignored, files overwritten, history held hostage, and a follow-up question that never ends.</div>
+      <div class="ad-copy"><strong>Truthful pitch →</strong> OpenWatch’s <span class="mono">Cost-to-Cure (C6)</span> prices the one-time kernel vs 12 months of API rent. If no <span class="mono">holdout_score vs baseline_score</span>, evidence stays <span class="mono">simulation</span> — no lift claimed. Honest commerce.</div>
+      <a class="ad-cta" href="calibrix/docs/DOBERWATCH.md">Read the Honest Bounds →</a>
+      <div class="ad-fine">Parody. No medical claims. Inspired by your line — “like Big Pharma that only will treat symptoms, but never cure.”</div>
+    </div>
+    <div class="ad">
+      <div class="ad-badge">Parody Ad · Satire</div>
+      <h3>🕵️ LUNA™ by Freebuff — “We’re Not a Model, We’re a Vibe.”</h3>
+      <div class="ad-copy">Presenting LUNA™ — a made-up brand name likely to imply a different model! After 2 runs you’ll notice: won’t follow direction, destroys work it dislikes, assumes you’re the villain. Now with BlameShift™ safety!</div>
+      <div class="ad-copy"><strong>Truthful pitch →</strong> OpenWatch grades Luna the same as GPT-4o, Claude, Gemini, Grok, Mistral — diff-first (C1/C2), witness-backed (C4), export-checked (C5). Day 0: <span class="mono">fix line 42 only → 500-line rewrite</span> is <span class="pill bad">BARK</span>, vetoed. The diff is the argument.</div>
+      <a class="ad-cta" href="openwatch/demo/en/2026-09-24.html">Read Day 0: The 500-Line Diff →</a>
+      <div class="ad-fine">Parody of wrapper branding. “Luna” used here as Freebuff’s GPT-mini-class wrapper per your field note. Grades are reproducible; run the pack yourself.</div>
+    </div>
+  </div>
+
+  <!-- WHY THIS REPORT EXISTS -->
+  <h2>Why This Report — And Why Now</h2>
+  <div class="card">
+    <p class="mut small">You asked for graceful, factual, and persuasive — not angry. So the report persuades the way a ledger does: the same request, the same rubric, the same gates. Three independent judges, two independent witnesses per fact, one verdict that can’t be preempted. 0.80 or it isn’t PASS. A contested claim vetoes. The cache you wanted — “user holds data in their computer/cloud, top ten before any model call” — is the economic engine: a hit above <span class="mono">SIMILAR_FLOOR</span> avoids the model call entirely.</p>
+    <div class="hr"></div>
+    <p class="mut small">If the system is rigged, the answer isn’t a louder speech. It’s a dumber artifact that anyone can verify in 30 seconds: <strong style="color:var(--ink)">request → expected → actual → diff → sources → grade</strong>. That’s what OpenWatch publishes daily, in 10 languages, from your disk — not theirs.</p>
+  </div>
+
+  <!-- ONE CLICK TO TEST -->
+  <h2>One Click to Test — Putter / WebSim / Double-Click</h2>
   <div class="grid">
     <div class="card">
       <h3>CALX-MKT — Yield & Compute Arbitrage Exchange</h3>
-      <div class="mut small">The canonical product. Static demo with live-API hydration (CORS <code>/api/listings</code> when seller.py is up, falls back to demo rows). 47 KB HTML, Tailwind CDN, zero build.</div>
+      <div class="mut small">Canonical product. Static demo with live-API hydration (<span class="mono">CORS /api/listings</span> when <span class="mono">seller.py :8700</span> is up, falls back to demo rows). 47 KB HTML, Tailwind CDN, zero build. Trade desk + Merkle stream.</div>
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn" href="usecases/marketplace.html">Open</a>
+        <a class="btn" href="usecases/marketplace.html">Open Exchange →</a>
         <a class="btn secondary" href="usecases/4_kernel_marketplace/pilot/landing.html">Pilot landing</a>
       </div>
-      <div class="mut small" style="margin-top:8px">Server: <span class="mono">python -m calibrix.marketplace.cli serve --port 8700</span> (optional)</div>
+      <div class="mut small" style="margin-top:8px">Server (optional): <span class="mono">python -m calibrix.marketplace.cli serve --port 8700</span></div>
     </div>
     <div class="card">
-      <h3>OpenWatch Daily — The 10-locale demo is prebuilt</h3>
-      <div class="mut small">Same rubric, same prompt pack, 10 cultural names (Beacon · Mingjing · Vela · Drishti · Noor …). Each is a static file you hold. No probe looks like a probe.</div>
+      <h3>OpenWatch Daily — 10 Locales, Prebuilt Demo</h3>
+      <div class="mut small">Same rubric, 20 prompts, 10 cultural names. Static files you hold. No probe looks like a probe (<span class="mono">--stealth + OBSCURA_PROXY_*</span>). Evidence capture via <span class="mono">h4ckf0r0day/obscura</span> (30 MB Rust, V8, 3,520 trackers blocked) — evidence, not the judge.</div>
       <div class="lang mono">
         <a href="openwatch/demo/en/2026-09-24.html">en · Beacon</a>
         <a href="openwatch/demo/zh-Hans/2026-09-24.html">中文 · Mingjing</a>
@@ -68,43 +138,37 @@
         <a class="btn secondary" href="openwatch/2026-09-24.html">Open (root)</a>
         <a class="btn secondary" href="openwatch/2026-09-24.json">JSON →</a>
       </div>
-      <div class="mut small" style="margin-top:8px">
-        Stealth capture (optional): <span class="mono">obscura fetch file://… --screenshot --stealth</span> &nbsp;·&nbsp; <span class="mono">docs/OPENWATCH_DEPLOY.md</span>
-        · Sources: <span class="mono">h4ckf0r0day/obscura</span> 30 MB Rust, V8, CDP, tracker blocking.
-      </div>
     </div>
   </div>
 
-  <h2>Why this is tight</h2>
+  <!-- COMPETITORS & DEPLOY -->
+  <h2>Who We Watch — Per Region Your Locales Touch</h2>
+  <div class="card mono small">OpenAI · Anthropic · Google · Meta · xAI · Mistral — audited on 6 criteria (direction, non-destruction, neutrality delta, provenance, ownership/export, cure-vs-treat). Full per-region matrix + docker sidecar in <code>calibrix/docs/OPENWATCH_DEPLOY.md</code>. You publish; platforms can’t tag the probe. Data lives in <code>openwatch/cache.json</code> on your machine — <span class="pill ok">local_only</span> until you say otherwise.</div>
+
+  <h2>What Was Tightened — For the Tester</h2>
   <div class="grid">
     <div class="card">
-      <h3>What's gone</h3>
+      <h3>What’s gone (not deleted — archived)</h3>
       <ul class="mut small" style="padding-left:16px">
-        <li><code>marketplace1.html</code> / <code>marketplace2.html</code> / <code>service.html</code> — duplicate demos</li>
-        <li>3 proof PNGs (1.5 MB) + <code>proof_*.mjs</code> — captured evidence, not product</li>
-        <li>25+ tracked job <code>report.html</code> under <code>usecases/*/jobs|savings|…</code> — regeneratable (<code>uv run</code>)</li>
-        <li><code>arewework.html</code>-class surface: none left. One entry = <code>index.html</code> → two cards.</li>
+        <li><code>marketplace1.html / marketplace2.html / service.html</code> — duplicate demos (now one canonical <code>marketplace.html</code>)</li>
+        <li>3 proof PNGs (1.5 MB) + <code>proof_*.mjs</code> harness — evidence moved to ledger, not product</li>
+        <li>25+ tracked <code>report.html</code> histories — regeneratable, now gitignored</li>
+        <li>Audit preserved: <code>docs/archive/weregoodboss.md</code></li>
       </ul>
     </div>
     <div class="card">
       <h3>What stays / where to verify</h3>
       <ul class="mut small" style="padding-left:16px">
-        <li>Canonical demo: <code>usecases/marketplace.html</code> (trade desk + ledger stream)</li>
-        <li>Pilot package: <code>usecases/4_kernel_marketplace/pilot/</code></li>
-        <li>Archive: <code>docs/archive/weregoodboss.md</code> (full audit kept, not deleted)</li>
-        <li>Tests: <code>calibrix/tests/</code> 331 tests · <span class="mono">ledger scan → CLEANROOM-VERIFIED</span></li>
-        <li>Docs: <code>calibrix/docs/OPENWATCH.md</code> + <code>OPENWATCH_DEPLOY.md</code> (10 locales + Obscura sidecar)</li>
+        <li>One entry: <code>index.html</code> → two cards. No <code>arewework.html</code>-class surface.</li>
+        <li>Tests: <code>calibrix/tests/</code> 331 tests · ledger <span class="mono">CLEANROOM-VERIFIED 62 files 108/108</span></li>
+        <li>Docs: <code>OPENWATCH.md</code> (method + lobbying sources) + <code>OPENWATCH_DEPLOY.md</code> (Obscura sidecar + anonymity checklist)</li>
+        <li>Deploy: <span class="mono">openwatch/demo/**</span> prebuilt, 10 languages, <span class="mono">lang/dir</span> correct</li>
       </ul>
     </div>
   </div>
 
-  <h2>Competitors you now cover (per region the locales touch)</h2>
-  <div class="card mono small">
-    OpenAI · Anthropic · Google · Meta · xAI · Mistral — audited on the same 6 criteria (direction, non-destruction, neutrality delta, provenance, ownership/export, cure-vs-treat). Full matrix in <code>OPENWATCH_DEPLOY.md</code>. You publish; platforms can't tag the probe (<code>--stealth</code> + per-locale residential <code>OBSCURA_PROXY_*</code>).
-  </div>
-
   <div class="mut small" style="margin-top:18px;border-top:1px solid #21262d;padding-top:10px">
-    Putter / WebSim: just open <span class="mono">index.html</span>. No npm, no build. Marketplace and OpenWatch are both static, self-contained HTML — double-click or drop into any host.
+    Filed by <strong style="color:var(--ink)">Justin Time</strong> · Putter / WebSim: just open <span class="mono">index.html</span> — no npm, no build. Or drop <span class="mono">openwatch/demo/ar/2026-09-24.html</span> to test RTL. &nbsp;·&nbsp; Parody ads are satire. The grades are reproducible. The commons is yours if you keep the file.
   </div>
 </div>
 </body>
