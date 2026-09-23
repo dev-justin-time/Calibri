@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "scope": {
+    "checkpoint": "One customer-supplied FLUX-compatible ComfyUI checkpoint",
+    "resolution": "512x512 unless customer requests a different fixed resolution",
+    "sampler_steps": 15,
+    "prompt_pack": "baseline_prompts.jsonl",
+    "split": "16 train prompts / 8 blind holdout prompts",
+    "seed_policy": "Same deterministic seed sequence for baseline and kernel; record seed in validation.json",
+    "comparison": "Unmodified checkpoint versus CalibrixKernelScale with the exact same prompts and seeds"
+  },
+  "required_evidence": [
+    "ComfyUI /system_stats response",
+    "CalibrixKernelScale present in /object_info",
+    "Queued workflow contains the custom node",
+    "Baseline and kernel PNGs for every prompt",
+    "SHA-256 image hashes and kernel checksum",
+    "Train and holdout score tables",
+    "Human reviewer sheet with prompt-level decisions"
+  ],
+  "gates": {
+    "technical": {
+      "all_prompts_render": true,
+      "one_image_per_prompt": true,
+      "runtime_errors": 0,
+      "custom_node_confirmed": true
+    },
+    "machine_quality": {
+      "primary_metric": "OfflineImageQuality or an agreed real image reward",
+      "minimum_primary_holdout_delta": 0.01,
+      "maximum_non_primary_holdout_regression": 0.01,
+      "maximum_train_holdout_delta_gap": 0.20,
+      "interpretation": "These are artifact-quality gates, not claims about sales or conversion lift."
+    },
+    "human_quality": {
+      "review_mode": "blind paired comparison; reviewer sees baseline and kernel without labels",
+      "minimum_kernel_win_or_tie_rate": 0.80,
+      "maximum_critical_defects": 0,
+      "required_checks": [
+        "subject is present and recognizable",
+        "requested color/material/background is preserved",
+        "no unacceptable anatomy or geometry defect for the product",
+        "no distracting crop, duplicate, text, logo, or watermark artifact",
+        "image is usable for the customer's stated catalog placement"
+      ],
+      "reviewers": "At least one buyer-side reviewer plus one Calibrix reviewer; record disagreements."
+    },
+    "business": {
+      "customer_roi_proven": false,
+      "production_rollout": "Customer decides after testing its own real catalog and conversion metrics.",
+      "verified_badge": "Only after technical, machine, and human gates pass and the artifact is reviewed."
+    }
+  },
+  "acceptance_outcomes": {
+    "accepted": "Kernel passes all declared gates; deliver kernel license and validation bundle.",
+    "review": "Kernel produces real artifacts but misses a gate; deliver report, do not issue a verified marketplace badge.",
+    "blocked": "ComfyUI/checkpoint/node unavailable or artifacts incomplete; do not present a quality result."
+  },
+  "failure_policy": {
+    "quality_gate_failure": "Customer receives the evidence report and one prompt-pack adjustment/retest at no additional service fee; no verified badge or production claim is issued.",
+    "customer_change_request": "New checkpoint, new vertical, or new scoring target is a new pilot scope.",
+    "refund_boundary": "Payment and refund terms are agreed before work begins; this package does not promise a commercial outcome."
+  }
+}

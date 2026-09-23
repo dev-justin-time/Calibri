@@ -100,45 +100,48 @@ def main() -> int:
         sweep.append({"nfe": nfe, "quality": round(quality, 4),
                       "steps_used": result["best"].steps_used})
 
-    # largest NFE cut with quality >= 97% of baseline
+    # The default adapter is synthetic and does not receive the candidate NFE.
+    # A flat sweep therefore cannot establish a real quality-equal speedup.
+    # Keep the modeled curve for engineering inspection, but never turn it
+    # into a production recommendation or a customer invoice.
+    adapter_is_synthetic = True
     eligible = [s for s in sweep if s["quality"] >= 0.97 * baseline_reward]
     best_cut = max(eligible, key=lambda s: s["nfe"]) if eligible else None
-    # Offline scripted adapter is NFE-invariant, so a flat sweep can't
-    # measure the cut; fall back to the documented Calibri results
-    # (FLUX 15 NFE / SD3.5 30 NFE vs ~50 baseline) and label the source.
-    if best_cut is None:
-        best_cut = {"nfe": min(grid), "quality": baseline_reward}
-        source = "documented_calibri"
-    else:
-        source = "measured"
+    source = "simulation_only" if adapter_is_synthetic else "measured"
 
     current_spend = args.monthly_steps / 1000.0 * PRICE_PER_1K_STEPS
+    modeled_savings = None
+    if best_cut is not None:
+        modeled_savings = round(
+            current_spend * (1 - (best_cut["nfe"] / args.baseline_nfe)), 2
+        )
     report = {
         "generated_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "price_per_1k_steps": PRICE_PER_1K_STEPS,
         "baseline_reward": round(baseline_reward, 4),
         "sweep": sweep,
         "baseline_nfe": args.baseline_nfe,
-        "recommended_nfe": best_cut["nfe"],
+        "recommended_nfe": None if adapter_is_synthetic else best_cut["nfe"],
         "recommendation_source": source,
+        "evidence_status": "simulation",
+        "quality_gate": "REVIEW",
+        "evidence_note": "ScriptedAdapter does not vary inference NFE; this sweep is not evidence of real-model quality or customer savings.",
         "overfit_flagged": base["overfit"]["flagged"],
         "monthly_steps": args.monthly_steps,
         "current_monthly_spend": round(current_spend, 2),
-        "projected_monthly_savings": round(
-            current_spend * (1 - (best_cut["nfe"] / args.baseline_nfe)), 2
-        ),
+        "modeled_monthly_savings": modeled_savings,
+        "customer_validated_monthly_savings": None,
         "consultant_share": args.share,
-        "billed_monthly": round(
-            current_spend * (1 - (best_cut["nfe"] / args.baseline_nfe)) * args.share, 2
-        ),
+        "billed_monthly": 0.0,
     }
     path = os.path.join(out_dir, "savings_report.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
 
     print(json.dumps({k: report[k] for k in
-                      ("baseline_reward", "recommended_nfe", "overfit_flagged",
-                       "current_monthly_spend", "projected_monthly_savings",
+                      ("baseline_reward", "recommended_nfe", "evidence_status",
+                       "overfit_flagged", "current_monthly_spend",
+                       "modeled_monthly_savings", "customer_validated_monthly_savings",
                        "billed_monthly")}, indent=2))
     print(f"report: {path}")
     return 0

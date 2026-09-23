@@ -90,6 +90,49 @@ class TestStore(unittest.TestCase):
 
         os.unlink(self.tmp.name)
 
+    def test_simulation_evidence_is_explicit(self):
+        self.assertEqual(self.listing.evidence_status, "simulation")
+        html = MarketplaceServer(self.store, MockStripeProvider()).render_storefront()
+        self.assertIn("SIMULATION", html)
+        self.assertIn("Synthetic adapter only", html)
+
+    def test_verified_listing_requires_reviewed_artifacts(self):
+        with self.assertRaises(ValueError):
+            self.store.add_listing(Listing(
+                listing_id="unproven-verified",
+                title="Unproven",
+                model="FLUX.1-dev",
+                kernel_spec=SPEC,
+                price_cents=100,
+                evidence_status="verified",
+            ))
+
+    def test_verified_promotion_requires_matching_kernel_and_persists(self):
+        report_path = "validation_runs/validation.json"
+        promoted = self.store.promote_verified_listing("test-kernel", {
+            "status": "verified",
+            "quality_gate": "PASS",
+            "kernel_checksum": checksum_spec(SPEC),
+            "report_path": report_path,
+            "holdout_score": 0.61,
+            "baseline_score": 0.55,
+            "scoring": {"OfflineImageQuality": 0.61},
+        })
+        self.assertEqual(promoted.evidence_status, "verified")
+        self.assertEqual(self.store.get_listing("test-kernel").quality_gate, "PASS")
+        self.assertEqual(self.store.get_listing("test-kernel").holdout_score, 0.61)
+
+    def test_invalid_evidence_status_rejected(self):
+        with self.assertRaises(ValueError):
+            self.store.add_listing(Listing(
+                listing_id="bad-evidence",
+                title="Bad",
+                model="FLUX.1-dev",
+                kernel_spec=SPEC,
+                price_cents=100,
+                evidence_status="marketing",
+            ))
+
     def test_listing_checksum_filled(self):
         self.assertEqual(self.listing.spec_checksum, checksum_spec(SPEC))
         again = self.store.get_listing("test-kernel")
@@ -192,10 +235,48 @@ class TestServer(unittest.TestCase):
         self.assertEqual(json.loads(body1)["license_id"],
                          json.loads(body2)["license_id"])
 
-    def test_storefront_renders(self):
+    def test_storefront_renders_focused_product_photo_catalog(self):
+        self.store.add_listing(Listing(
+            listing_id="anime-kernel", title="Anime Kernel", model="FLUX.1-dev",
+            kernel_spec="attn:1", price_cents=700, category="anime",
+            tags=["illustration"],
+        ))
         html = self.server.render_storefront()
         self.assertIn("Server Test", html)
         self.assertIn("$5.00", html)
+        self.assertNotIn("Anime Kernel", html)
+        all_html = self.server.render_storefront(category="all")
+        self.assertIn("Anime Kernel", all_html)
+
+    def test_storefront_filters_search_and_evidence(self):
+        self.store.add_listing(Listing(
+            listing_id="verified-product", title="Verified Product", model="FLUX.1-dev",
+            kernel_spec="attn:1", price_cents=1500, category="product-photo",
+            evidence_status="verified", quality_gate="PASS",
+            report_path="validation.json", holdout_score=0.7, baseline_score=0.6,
+            tags=["catalog"],
+        ))
+        html = self.server.render_storefront(query="verified", evidence="verified")
+        self.assertIn("Verified Product", html)
+        self.assertNotIn("Server Test", html)
+        self.assertIn("Holdout", html)
+
+    def test_listing_detail_and_success_onboarding(self):
+        detail = self.server.render_listing_detail("srv-kernel")
+        self.assertIn("Before you buy", detail)
+        self.assertIn("calibrix_node.py", detail)
+        self.assertNotIn("kernel_spec", detail)
+        order = self.store.create_order(self.listing, "buyer@example.com", "mock")
+        session = self.provider.create_checkout(self.listing, order, "http://x/success", "http://x/")
+        self.store.attach_session(order, session["session_id"])
+        pending = self.server.render_success(order.order_id)[1]
+        self.assertIn("still processing", pending)
+        payload, signature = build_mock_event(session["session_id"])
+        self.server.handle_webhook(payload, signature)
+        fulfilled = self.server.render_success(order.order_id)[1]
+        self.assertIn("license key", fulfilled.lower())
+        self.assertIn("CBX1.", fulfilled)
+        self.assertNotIn("arrives by email", fulfilled)
 
     def test_api_listings_shape_and_privacy(self):
         status, body = self.server.handle_api_listings()
@@ -207,6 +288,10 @@ class TestServer(unittest.TestCase):
         self.assertEqual(l0["price_usd"], 5.00)
         # module-family hint present, full spec never exposed
         self.assertEqual(l0["vector"], "attn")
+        self.assertEqual(l0["evidence_status"], "simulation")
+        self.assertEqual(l0["quality_gate"], "REVIEW")
+        self.assertEqual(l0["category"], "product-photo")
+        self.assertEqual(l0["compatible_models"], ["Qwen-Image"])
         self.assertNotIn("kernel_spec", l0)
         self.assertNotIn("attn:1.14", body)
 

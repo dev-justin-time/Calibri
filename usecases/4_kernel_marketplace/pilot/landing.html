@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product Photo Kernel Pilot · Calibrix</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2b;--panel2:#18233a;--ink:#edf3ff;--muted:#a7b5cc;--blue:#86bcff;--green:#6be0a2;--yellow:#f5cf76;--line:#2b3a58}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#1b3760 0,#0b1020 42%);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1080px;margin:auto;padding:52px 22px 80px}a{color:var(--blue)}h1{font-size:clamp(38px,6vw,70px);line-height:1.02;letter-spacing:-.055em;margin:12px 0 18px;max-width:850px}h2{font-size:28px;letter-spacing:-.025em;margin:0 0 10px}h3{margin:0 0 5px}.eyebrow{text-transform:uppercase;letter-spacing:.14em;color:var(--blue);font-size:12px;font-weight:800}.lead{font-size:21px;max-width:720px;color:#d9e5f8}.muted{color:var(--muted)}.hero{padding:20px 0 48px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.button{display:inline-block;background:var(--blue);color:#07101e;text-decoration:none;border-radius:7px;padding:12px 18px;font-weight:850}.button.secondary{background:transparent;color:var(--blue);border:1px solid var(--blue)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.card{background:rgba(18,26,43,.94);border:1px solid var(--line);border-radius:11px;padding:20px}.section{margin-top:48px}.price{font-size:42px;font-weight:850;color:var(--green)}.price small{font-size:15px;color:var(--muted);font-weight:500}.badge{display:inline-block;padding:4px 9px;border-radius:20px;background:#123d2b;color:var(--green);font-size:12px;font-weight:800}.warning{border-left:3px solid var(--yellow);padding:10px 14px;background:#28200d;color:#f7e0a0}.steps{counter-reset:item;list-style:none;padding:0;margin:0}.steps li{counter-increment:item;display:flex;gap:12px;margin:13px 0}.steps li:before{content:counter(item);min-width:26px;height:26px;border-radius:50%;background:var(--blue);color:#07101e;text-align:center;font-weight:800}.checklist{padding-left:20px}.checklist li{margin:8px 0}.request{background:linear-gradient(135deg,#152a49,#121a2b);border-color:#416b9e}.small{font-size:13px}@media(max-width:700px){main{padding-top:30px}.lead{font-size:18px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+  <div class="eyebrow">Calibrix · ComfyUI · ecommerce imagery</div>
+  <h1>A focused product-photo pilot for your existing checkpoint.</h1>
+  <p class="lead">Get one portable kernel that targets cleaner, more consistent catalog images—without retraining the base model. We compare it against your unmodified workflow on the same prompts and seeds.</p>
+  <div class="hero-actions"><a class="button" href="#request">Request the pilot</a><a class="button secondary" href="http://127.0.0.1:8700/">Browse the kernel catalog</a></div>
+</section>
+<section class="grid">
+  <article class="card"><span class="badge">FIXED SCOPE</span><h3>One checkpoint</h3><p class="muted">Your FLUX-compatible ComfyUI checkpoint, one product-photo objective, one portable kernel.</p></article>
+  <article class="card"><span class="badge">MEASURED</span><h3>24 fixed prompts</h3><p class="muted">16 train prompts plus 8 blind holdout prompts, with paired baseline/kernel images and hashes.</p></article>
+  <article class="card"><span class="badge">HONEST GATE</span><h3>No invented ROI</h3><p class="muted">The report can verify image evidence. It does not claim conversion lift or production savings before your own test.</p></article>
+</section>
+<section class="section grid">
+  <article class="card"><div class="price">$295 <small>fixed pilot</small></div><p>Target delivery: 3–5 business days after checkpoint access and intake.</p><ul class="checklist"><li>Baseline and kernel ComfyUI runs</li><li>Machine-readable validation report</li><li>Human acceptance review</li><li>One prompt-pack retest if the quality gate is missed</li><li>CBX1 license if all declared gates pass</li></ul></article>
+  <article class="card"><h2>What is not included</h2><ul class="checklist"><li>Base checkpoint or model license</li><li>GPU hosting after the pilot</li><li>Custom workflow engineering outside the test graph</li><li>Guaranteed sales, conversion, or ROI outcomes</li><li>New checkpoint or new vertical scope</li></ul></article>
+</section>
+<section class="section"><h2>How the pilot works</h2><div class="card"><ol class="steps"><li><div><b>Intake</b><br><span class="muted">You provide the checkpoint, ComfyUI details, catalog objective, and acceptance reviewer.</span></div></li><li><div><b>Baseline</b><br><span class="muted">We render the fixed prompt pack with your unmodified workflow and record the protocol.</span></div></li><li><div><b>Kernel run</b><br><span class="muted">We run the CalibrixKernelScale node with the same prompts and seed sequence.</span></div></li><li><div><b>Review</b><br><span class="muted">Holdout metrics and a blind human comparison determine ACCEPTED, REVIEW, or BLOCKED.</span></div></li></ol></div></section>
+<section class="section grid">
+  <article class="card"><h2>Acceptance gates</h2><ul class="checklist"><li>Every requested image renders without runtime errors.</li><li>ComfyUI confirms the Calibrix node is installed and used.</li><li>Primary holdout score improves by at least 0.01 under the agreed scorer.</li><li>No secondary holdout metric regresses beyond 0.01.</li><li>Kernel wins or ties at least 80% of blinded buyer/reviewer comparisons.</li><li>Zero critical defects under the buyer's declared product checklist.</li></ul></article>
+  <article class="card"><h2>Deliverables</h2><ul class="checklist"><li>Portable kernel spec</li><li>Baseline/kernel image folders</li><li><code>validation.json</code> with scores, hashes, and seeds</li><li><code>validation.html</code> for review</li><li>Install checklist and license key when accepted</li></ul></article>
+</section>
+<section class="section card request" id="request"><h2>Request the pilot</h2><p>Use the included <a href="buyer_questionnaire.md">buyer questionnaire</a> and send these five items to your Calibrix sales contact:</p><ol class="checklist"><li>Checkpoint filename and commercial-use license link</li><li>ComfyUI version, GPU, and required custom nodes</li><li>Product category and image acceptance requirements</li><li>Buyer-side reviewer name</li><li>Completed questionnaire and preferred start date</li></ol><p class="warning"><b>Important:</b> the pilot starts only after the checkpoint and acceptance criteria are confirmed. Payment terms are fixed at $295 upfront; a missed quality gate is reported as REVIEW, not relabeled as success.</p><p class="small muted">This page is intentionally contact-neutral so it can be deployed with your actual sales email or CRM link. The local catalog button works when the UC-4 server is running.</p></section>
+<footer class="section muted small">Calibrix Product Photo Kernel Pilot · v1 · Evidence is not customer ROI.</footer>
+</main>
+</body>
+</html>

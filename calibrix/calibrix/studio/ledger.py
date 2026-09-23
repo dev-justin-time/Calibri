@@ -98,16 +98,33 @@ def _ast_symbols(src: str) -> Dict[str, int]:
     return {"functions": fns, "classes": cls}
 
 
-def _is_test_class(node: ast.AST) -> bool:
-    """unittest-style TestCase class: subclasses TestCase or *Test named."""
+def _is_test_class(node: ast.AST, known: Optional[Dict[str, ast.ClassDef]] = None,
+                   _memo: Optional[Dict[str, bool]] = None,
+                   _stack: Optional[frozenset] = None) -> bool:
+    """unittest-style TestCase class: subclasses TestCase or *Test named.
+
+    Base classes are resolved *within the module* (``known``), because a test
+    file may share one: ``class AgentCase(unittest.TestCase)`` and then
+    ``class TestBus(AgentCase)``. Checking only the immediate base skips every
+    subclass, and the ledger would then publish an undercount of the suite it
+    is supposed to be auditing.
+    """
     if not isinstance(node, ast.ClassDef):
         return False
     if node.name.endswith("Test"):
         return True
+    known = known or {}
+    _memo = _memo if _memo is not None else {}
+    _stack = _stack if _stack is not None else frozenset()
     for base in node.bases:
-        if isinstance(base, ast.Name) and base.id in ("TestCase", "UnitTest"):
-            return True
-        if isinstance(base, ast.Attribute) and base.attr == "TestCase":
+        if isinstance(base, ast.Name):
+            if base.id in ("TestCase", "UnitTest"):
+                return True
+            parent = known.get(base.id)
+            if (parent is not None and base.id not in _stack
+                    and _is_test_class(parent, known, _memo, _stack | {node.name})):
+                return True
+        elif isinstance(base, ast.Attribute) and base.attr == "TestCase":
             return True
     return False
 
@@ -131,9 +148,10 @@ def _count_tests(tests_root: Path) -> Dict[str, Any]:
             tree = ast.parse(_read(tf))
         except SyntaxError:
             continue
+        known = {n.name: n for n in tree.body if isinstance(n, ast.ClassDef)}
         count = 0
         for node in tree.body:
-            if not _is_test_class(node):
+            if not _is_test_class(node, known):
                 continue
             methods = [n for n in node.body
                        if isinstance(n, ast.FunctionDef) and n.name.startswith("test")]

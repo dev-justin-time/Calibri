@@ -18,6 +18,9 @@ from typing import Any, Dict, List, Optional
 from .licenses import issue_license
 
 
+EVIDENCE_STATUSES = ("simulation", "reference_only", "measured", "verified")
+
+
 @dataclass
 class Listing:
     listing_id: str
@@ -26,8 +29,19 @@ class Listing:
     kernel_spec: str                # compact spec consumed by the ComfyUI node
     price_cents: int
     description: str = ""
+    category: str = "product-photo"
+    tags: List[str] = field(default_factory=list)
+    compatible_models: List[str] = field(default_factory=list)
     spec_checksum: str = ""         # filled on save via checksum_spec
     scoring: Dict[str, float] = field(default_factory=dict)   # report metrics
+    # Evidence is intentionally explicit: a listing must not imply that an
+    # offline demo or paper result is a customer-validated outcome.
+    evidence_status: str = "simulation"  # simulation | reference_only | measured | verified
+    evidence_note: str = ""
+    report_path: str = ""
+    holdout_score: Optional[float] = None
+    baseline_score: Optional[float] = None
+    quality_gate: str = "REVIEW"
     active: bool = True
     created_at: int = field(default_factory=lambda: int(time.time()))
 
@@ -102,10 +116,49 @@ class JsonStore(MarketplaceStore):
     def add_listing(self, listing: Listing) -> Listing:
         from .licenses import checksum_spec
 
+        if listing.evidence_status not in EVIDENCE_STATUSES:
+            raise ValueError(
+                f"evidence_status must be one of {EVIDENCE_STATUSES}, "
+                f"got {listing.evidence_status!r}"
+            )
+        if listing.evidence_status == "verified":
+            missing = []
+            if listing.quality_gate != "PASS":
+                missing.append("quality_gate=PASS")
+            if not listing.report_path:
+                missing.append("report_path")
+            if listing.holdout_score is None or listing.baseline_score is None:
+                missing.append("holdout_score and baseline_score")
+            if missing:
+                raise ValueError(
+                    "verified listings require reviewed evidence: " + ", ".join(missing)
+                )
         listing.spec_checksum = checksum_spec(listing.kernel_spec)
         self._data["listings"][listing.listing_id] = asdict(listing)
         self._flush()
         return listing
+
+    def promote_verified_listing(self, listing_id: str, evidence: Dict[str, Any]) -> Listing:
+        """Promote a listing only from a matching, passing validation artifact."""
+        listing = self.get_listing(listing_id)
+        if listing is None:
+            raise KeyError(f"unknown listing {listing_id!r}")
+        if evidence.get("status") != "verified" or evidence.get("quality_gate") != "PASS":
+            raise ValueError("only a passing verified validation can be promoted")
+        if evidence.get("kernel_checksum") != listing.spec_checksum:
+            raise ValueError("validation artifact does not match listing kernel checksum")
+        required = ("report_path", "holdout_score", "baseline_score")
+        missing = [key for key in required if evidence.get(key) in (None, "")]
+        if missing:
+            raise ValueError("verified promotion missing: " + ", ".join(missing))
+        listing.evidence_status = "verified"
+        listing.evidence_note = str(evidence.get("note", "Reviewed real-model holdout validation."))
+        listing.report_path = str(evidence["report_path"])
+        listing.holdout_score = float(evidence["holdout_score"])
+        listing.baseline_score = float(evidence["baseline_score"])
+        listing.quality_gate = "PASS"
+        listing.scoring = {str(k): float(v) for k, v in (evidence.get("scoring") or {}).items()}
+        return self.add_listing(listing)
 
     def get_listing(self, listing_id: str) -> Optional[Listing]:
         d = self._data["listings"].get(listing_id)

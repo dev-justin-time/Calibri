@@ -1,0 +1,24 @@
+{
+  "package_id": "calibrix-product-photo-pilot-v1",
+  "name": "Product Photo Kernel Pilot",
+  "positioning": "Improve consistency in ComfyUI product imagery without retraining the base checkpoint.",
+  "status": "pilot_offer",
+  "vertical": "ecommerce-product-photography",
+  "files": {
+    "baseline_prompts": "baseline_prompts.jsonl",
+    "acceptance_criteria": "acceptance_criteria.json",
+    "pricing": "pricing.json",
+    "buyer_questionnaire": "buyer_questionnaire.md",
+    "sales_page": "landing.html"
+  },
+  "delivery": {
+    "model_surface": "one customer-supplied FLUX-compatible ComfyUI checkpoint",
+    "kernel": "one portable CalibrixKernelScale spec",
+    "prompt_count": 24,
+    "train_count": 16,
+    "holdout_count": 8,
+    "reports": ["paired baseline/kernel images", "validation.json", "validation.html"],
+    "license": "one CBX1 ComfyUI/commercial license bound to the verified kernel checksum"
+  },
+  "claim_boundary": "The pilot can establish measured image-quality evidence under the declared protocol. It does not promise conversion lift, lower production spend, or customer ROI before the buyer runs its own acceptance sample."
+}

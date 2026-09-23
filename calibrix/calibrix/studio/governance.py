@@ -138,7 +138,10 @@ def provenance_digest(prompts: Sequence[str], dataset_id: str,
 # F083 — SOC2-style Audit Log Chain ------------------------------------------------------------
 class AuditChain:
     """Hash-linked, append-only event log (tamper-evident, the core of SOC2
-    log-integrity controls). Each entry seals the previous digest."""
+    log-integrity controls). Each entry seals the previous digest.
+
+    Histories survive a restart: ``from_export`` restores a chain written by
+    ``export`` without recomputing (so ``verify`` remains valid)."""
 
     def __init__(self, actor: str = "system") -> None:
         self.actor = actor
@@ -170,6 +173,16 @@ class AuditChain:
 
     def export(self) -> List[Dict[str, Any]]:
         return list(self._chain)
+
+    @classmethod
+    def from_export(cls, entries: Sequence[Dict[str, Any]],
+                    actor: str = "system") -> "AuditChain":
+        """Rebuild a chain from a prior ``export()`` so persisted owners keep
+        their tamper-evident history across restarts (verify() still holds)."""
+        chain = cls(actor=actor)
+        chain._chain = [dict(e) for e in entries]
+        chain._head = chain._chain[-1]["digest"] if chain._chain else "0" * 64
+        return chain
 
 
 # F086 — Adversarial Prompt Sanitizer ---------------------------------------------------------------

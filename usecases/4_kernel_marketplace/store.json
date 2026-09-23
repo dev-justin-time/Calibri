@@ -7,6 +7,12 @@
       "kernel_spec": "attn:1.073@0.823:1.067:1000000.154|mlp:0.906@1.088:0.825:1000000.695",
       "price_cents": 1200,
       "description": "E-commerce product photography: clean backgrounds, accurate color, sharp subject",
+      "category": "product-photo",
+      "tags": ["ecommerce", "catalog", "studio", "clean-background"],
+      "compatible_models": ["FLUX.1-dev"],
+      "evidence_status": "simulation",
+      "evidence_note": "Generated with ScriptedAdapter; real ComfyUI holdout required before verification.",
+      "quality_gate": "REVIEW",
       "spec_checksum": "f3e05b025080fef1b7f8e75ff045ff861aec621fba0dd767369fa409e6117514",
       "scoring": {
         "DomainQuality": 1.0,

@@ -123,7 +123,19 @@ def main() -> int:
         "kernel_spec": spec_str,
         "price_cents": pack["price_cents"],
         "description": pack["description"],
+        "category": "product-photo" if args.domain == "product" else args.domain,
+        "tags": ["ecommerce", "catalog", "studio"] if args.domain == "product" else [args.domain],
+        "compatible_models": ["FLUX.1-dev"],
         "scoring": {k: round(v, 3) for k, v in holdout.items()},
+        # This vertical currently uses ScriptedAdapter. Marking it as a
+        # simulation prevents the marketplace from implying real image-model
+        # or customer ROI evidence.
+        "evidence_status": "simulation",
+        "evidence_note": "Generated with ScriptedAdapter; replace with a real image adapter and reviewed holdout before claiming quality gains.",
+        "report_path": paths["json"],
+        "holdout_score": round(holdout.get("DomainQuality", 0.0), 3),
+        "baseline_score": round(result.get("baseline_holdout", {}).get("DomainQuality", 0.0), 3),
+        "quality_gate": "REVIEW",
         "overfit_flagged": result["overfit"]["flagged"],
     }
     with open(os.path.join(out_dir, "listing.json"), "w", encoding="utf-8") as f:

@@ -50,7 +50,8 @@ from .optimizers import make_optimizer
 from .metering import Meter, CostModel, plan_budget, quote_job, quote_from_preset, format_quote_text, QuoteConfig, MODEL_PRESETS
 from .events import EventLog
 from .engine import SearchEngine, SearchConfig, TrialResult
-from .report import build_report, write_report
+from .report import build_report, build_verification_section, write_report
+from .image_validation import ValidationConfig, validate_real_kernel
 
 __all__ = [
     "__version__",
@@ -75,5 +76,7 @@ __all__ = [
     # engine
     "SearchEngine", "SearchConfig", "TrialResult",
     # report
-    "build_report", "write_report",
+    "build_report", "write_report", "build_verification_section",
+    # real image validation
+    "ValidationConfig", "validate_real_kernel",
 ]

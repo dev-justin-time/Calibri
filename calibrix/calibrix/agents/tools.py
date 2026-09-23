@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: MIT
 """Tool surfaces the agents drive.
 
-Three surfaces, deliberately mirroring the deployment topologies:
+Four surfaces, deliberately mirroring the deployment topologies:
 
   * ``offline``  — calibration, proof, profile fitting. No network, no GPU.
   * ``comfy``    — ComfyUI artifact verification/export + Rust accel parity.
   * ``online``   — the marketplace (listings, orders, fulfillment, licenses).
+  * ``watchdog`` — Doberwatch: advise before a model call, grade what came
+    back, fact-check it, and file the complaint when it fails.
 
 Every method is thin: it composes existing, individually-tested platform
 primitives and returns plain dicts so agents (and tests) never poke at
@@ -18,9 +20,10 @@ import json
 import hashlib
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 from ..adapters import Prompt, ScriptedAdapter
+from ..doberwatch import Doberwatch, Source
 from ..engine import SearchConfig, SearchEngine
 from ..heretic_bridge import fit_kernel_profile, probe as bridge_probe
 from ..kernel import parse_kernel_spec
@@ -32,6 +35,32 @@ from ..studio.runtime import export_comfyui_workflow
 from ..scorers import KeywordRate, LengthDrift
 
 
+def _as_sources(raw: Any) -> Optional[List[Source]]:
+    """Accept ``Source`` objects or plain ``{source_id, text, kind}`` dicts.
+
+    Bus payloads must stay JSON-serializable, so a role can hand over dicts
+    and the surface converts them; unknown shapes are dropped rather than
+    guessed at.
+    """
+    if not raw:
+        return None
+    sources: List[Source] = []
+    for item in raw:
+        if isinstance(item, Source):
+            sources.append(item)
+        elif isinstance(item, dict):
+            sources.append(Source(
+                source_id=str(item.get("source_id", "")),
+                text=str(item.get("text", "")),
+                kind=str(item.get("kind", "document")),
+                trust=item.get("trust"),
+                independent=bool(item.get("independent", True)),
+                url=str(item.get("url", "")),
+                derived_from=str(item.get("derived_from", "")),
+            ))
+    return sources or None
+
+
 class ToolSurface:
     """All agent-callable platform operations, grouped by surface."""
 
@@ -41,6 +70,7 @@ class ToolSurface:
         self.work.mkdir(parents=True, exist_ok=True)
         self.secret = secret
         self.bridge_status = bridge_probe()
+        self._doberwatch: Optional[Doberwatch] = None
         # Audit chain lives on the surface (not an agent) so ANY role's
         # actions are sealable and the chain survives agent replacement.
         self.chain: List[Dict[str, Any]] = []
@@ -68,6 +98,31 @@ class ToolSurface:
             if expect != e["digest"] or (i and e["prev"] != self.chain[i - 1]["digest"]):
                 return {"valid": False, "broken_at": i}
         return {"valid": True, "length": len(self.chain)}
+
+    def audit_bus(self, messages: Sequence[Any]) -> Dict[str, Any]:
+        """Cross-check the sealed chain against the routed traffic.
+
+        ``Auditor`` subscribes to ``"*"`` and appends every message, so "the
+        bus traffic is audited" is checkable rather than asserted: the sealed
+        topics must match the routed topics, in order.
+        """
+        sealed = [e.get("topic") for e in self.chain
+                  if e.get("actor") == "auditor"]
+        routed = [getattr(m, "topic", None) for m in list(messages)]
+        # Divergence is measured along the *routed* traffic: a message the
+        # auditor never saw is the first divergence, not a no-op comparison.
+        divergence = next((i for i, topic in enumerate(routed)
+                           if i >= len(sealed) or sealed[i] != topic), None)
+        if divergence is None and len(sealed) > len(routed):
+            divergence = len(routed)
+        return {
+            "chain_valid": self.audit_verify()["valid"],
+            "routed": len(routed),
+            "sealed": len(sealed),
+            "unsealed": routed[len(sealed):] if len(sealed) < len(routed) else [],
+            "order_matches": divergence is None and len(sealed) == len(routed),
+            "first_divergence": divergence,
+        }
 
     # ------------------------------------------------------------------
     # OFFLINE surface
@@ -191,3 +246,65 @@ class ToolSurface:
         store = self._store(store_name)
         return {"orders": len(store._data.get("orders", {})),
                 "listings": len(store._data.get("listings", {}))}
+
+    # ------------------------------------------------------------------
+    # DOBERWATCH surface (advise -> grade -> fact-check -> complain)
+    # ------------------------------------------------------------------
+    @property
+    def doberwatch(self) -> Doberwatch:
+        """The watchdog, rooted in this surface's work dir so its cache, its
+        complaint ladder and its audit chain persist across missions."""
+        if self._doberwatch is None:
+            self._doberwatch = Doberwatch(
+                cache_path=str(self.work / "doberwatch_cache.json"))
+        return self._doberwatch
+
+    def _seal(self, topic: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Seal a watchdog event into the surface chain as well, so a direct
+        tool call leaves the same trace a routed message would."""
+        return self.audit_append("doberwatch", topic, payload)
+
+    def doberwatch_advise(self, request: str, domain: str,
+                          k: int = 10) -> Dict[str, Any]:
+        """The closest answers BEFORE any model call, plus the qualifying
+        questions that must be asked first."""
+        advice = self.doberwatch.advise(request, domain, k=k)
+        self._seal("doberwatch.advise", {
+            "domain": domain, "decision": advice["decision"],
+            "model_call_needed": advice["model_call_needed"]})
+        return advice
+
+    def doberwatch_submit(self, request: str, response: str, domain: str,
+                          criterion_scores: Dict[str, float],
+                          **kwargs: Any) -> Dict[str, Any]:
+        """Grade a received response, cache it, and complain if it fails.
+
+        ``kwargs`` are forwarded to ``Doberwatch.submit`` (``sources``,
+        ``evidence``, ``consent``, ``price_paid_usd``, ...); ``sources`` may
+        be dicts so the whole payload stays JSON-serializable.
+        """
+        kwargs["sources"] = _as_sources(kwargs.get("sources"))
+        outcome = self.doberwatch.submit(request, response, domain,
+                                         criterion_scores, **kwargs)
+        grade = outcome["grade"]
+        self._seal("doberwatch.submit", {
+            "domain": domain, "rubric_id": grade["rubric_id"],
+            "verdict": grade["verdict"], "score": grade["score"],
+            "complaint": bool(outcome["complaint"]),
+            "contradiction_veto": bool(grade.get("contradiction_veto"))})
+        return outcome
+
+    def doberwatch_verify(self, response: str, sources: Any,
+                          domain: Optional[str] = None) -> Dict[str, Any]:
+        """Fact-check a response against independent sources/models."""
+        result = self.doberwatch.verify(response, _as_sources(sources) or [],
+                                        domain=domain)
+        self._seal("doberwatch.verify", {
+            "claims": result["claim_count"],
+            "material_grade": round(result["material_grade"], 6),
+            "contradictions": len(result["contradictions"])})
+        return result
+
+    def doberwatch_audit(self) -> Dict[str, Any]:
+        """The watchdog's own chain (verified) beside the surface chain."""
+        return {**self.doberwatch.audit(), "surface_chain": self.audit_verify()}

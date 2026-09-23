@@ -72,7 +72,7 @@ from calibrix.engine import SearchEngine, SearchConfig
 
 adapter = ComfyUIAdapter(
     checkpoint="sd_xl_base_1.0.safetensors",
-    modulation_mode="conditioning",   # inject per-block gains into the graph
+    modulation_mode="calibrix_node",  # invoke the installed FLUX gate node
 )
 prompts = seed_prompts(["a red boat on a blue lake", "a green forest at dawn"])
 
@@ -89,3 +89,23 @@ result = engine.run()
 
 `workflow_example.json` is a ready-to-load ComfyUI workflow containing the
 Calibrix Kernel Scale node between the checkpoint loader and the sampler.
+
+## Real validation (required before a verified listing)
+
+The validation runner uses identical prompts and seeds for an unmodified
+baseline and a kernel run, saves both image sets, scores train and holdout
+splits, hashes the artifacts, and refuses promotion unless the installed
+`CalibrixKernelScale` node actually executes:
+
+```bash
+cd usecases/3_domain_kernels
+python validate_real.py \
+  --store ../4_kernel_marketplace/store.json \
+  --listing-id product-kernel-v1 \
+  --checkpoint FLUX.1-dev.safetensors \
+  --comfy-url http://127.0.0.1:8188
+```
+
+Add `--promote` only after reviewing the generated `validation.json` and
+`validation.html`. A passing run can mark the matching listing `verified`;
+a failed or missing-node run can never do so.

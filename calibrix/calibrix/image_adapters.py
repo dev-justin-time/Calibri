@@ -12,8 +12,7 @@
 #   ComfyUIAdapter         - full ComfyUI integration over the HTTP API:
 #                            queue workflows, poll history, fetch images,
 #                            and apply Calibrix kernels by scaling the
-#                            per-block conditioning that ComfyUI exposes
-#                            (ModelSamplingFlux / conditioning weights).
+#                            the installed CalibrixKernelScale FLUX node.
 #                            https://github.com/comfyanonymous/ComfyUI
 #
 # All implement the same Adapter contract: spec_sites / apply_modulation /
@@ -287,12 +286,11 @@ class ComfyUIAdapter(Adapter):
       * queues the standard CheckpointLoader -> CLIPTextEncode -> KSampler
         -> VAEDecode -> SaveImage workflow via POST /prompt,
       * polls /history until the job finishes, then downloads images from
-        /view,
-      * exposes modulatable channels by patching per-block scale nodes:
-        when `modulation_mode=" conditioning"`, kernel gains are written as
-        per-block conditioning strength multipliers (a small graph patch on
-        the conditioning nodes); when "latent", they scale the initial
-        latent noise per channel-group. Default "none" = eval-only client.
+        /view,        * exposes a real modulation mode, `calibrix_node`, which inserts the
+        installed CalibrixKernelScale custom node and lets that node hook FLUX
+        norm gate tuples. Default "none" = baseline/eval-only client. Older
+        metadata-only conditioning/latent modes are rejected.
+
 
     Requires a running ComfyUI: `python main.py` (default 127.0.0.1:8188).
     """
@@ -309,7 +307,7 @@ class ComfyUIAdapter(Adapter):
         cfg: float = 7.0,
         sampler: str = "dpmpp_2m",
         scheduler: str = "karras",
-        modulation_mode: str = "none",   # "none" | "conditioning" | "latent"
+        modulation_mode: str = "none",   # "none" | "calibrix_node"
         n_blocks: int = 9,
         timeout_s: float = 600.0,
     ) -> None:
@@ -326,6 +324,7 @@ class ComfyUIAdapter(Adapter):
         self.timeout_s = timeout_s
         self.client_id = str(uuid.uuid4())
         self._last_gains: Optional[List[float]] = None
+        self._last_kernel_spec: str = ""
 
     # -- HTTP helpers -------------------------------------------------------
     def _post_json(self, path: str, payload: dict) -> dict:
@@ -357,6 +356,11 @@ class ComfyUIAdapter(Adapter):
     def spec_sites(self) -> List[ModulationSpec]:
         if self.modulation_mode == "none":
             return [ModulationSpec(component="remote", n_sites=1)]
+        if self.modulation_mode != "calibrix_node":
+            raise ValueError(
+                "modulation_mode must be 'none' or 'calibrix_node'; "
+                "conditioning/latent metadata is not a real FLUX intervention"
+            )
         return [
             ModulationSpec(component="attn", n_sites=self.n_blocks,
                            metadata={"mode": self.modulation_mode}),
@@ -368,9 +372,23 @@ class ComfyUIAdapter(Adapter):
         if self.modulation_mode == "none":
             self._last_gains = None
             return
-        # Store the materialized gains; they are applied per generation by
-        # injecting per-block scale constants into the workflow graph.
+        if self.modulation_mode != "calibrix_node":
+            raise ValueError(
+                "only the installed CalibrixKernelScale node can apply "
+                "real ComfyUI modulation"
+            )
+        # Keep the declarative specs; _workflow serializes the exact kernel
+        # string so the custom node, not metadata, performs the intervention.
+        required = {s.component for s in specs}
+        if not {"attn", "mlp"}.issubset(required):
+            raise ValueError("calibrix_node mode requires attn and mlp channels")
         self._last_gains = [g for s in specs for g in s.gains()]
+        self._last_kernel_spec = "|".join(
+            f"{s.component}:{s.kernel.weight:.9g}@{s.kernel.position:.9g}:"
+            f"{s.kernel.floor:.9g}:{s.kernel.focus:.9g}:"
+            f"{s.kernel.ripple:.9g}:{s.kernel.phase:.9g}"
+            for s in specs
+        )
 
     # -- workflow construction --------------------------------------------
     def _workflow(self, prompt_text: str, seed: int,
@@ -401,25 +419,23 @@ class ComfyUIAdapter(Adapter):
                              "filename_prefix": "calibrix"}},
         }
 
-        if gains and self.modulation_mode == "conditioning":
-            # Per-block conditioning strength: add a scale constant node per
-            # block and multiply the positive embedding by (gain) before the
-            # sampler. ComfyUI evaluates graphs dynamically, so extra nodes
-            # are accepted without server-side changes.
-            for i, g in enumerate(gains[: self.n_blocks]):
-                wf[f"100+i{i}"] = {
-                    "class_type": "ConditioningCombine",
-                    "inputs": {"conditioning_1": ["2", 0],
-                               "conditioning_2": ["3", 0]},
-                    "_calibrix_gain": float(g),   # metadata for awareness
-                    "_calibrix_block": i,
-                }
-        elif gains and self.modulation_mode == "latent":
-            # Scale initial latent variance per block-group: implemented as
-            # per-group BatchLatentScale-ish constants recorded on node 4.
-            wf["4"]["inputs"]["_calibrix_gains"] = [
-                round(float(g), 6) for g in gains
-            ]
+        if self.modulation_mode == "calibrix_node":
+            if not gains:
+                raise ValueError("calibrix_node mode requires a kernel")
+            # This is the only supported ComfyUI modulation path: the
+            # installed CalibrixKernelScale node hooks the loaded FLUX model.
+            # The kernel spec is kept separately so the node evaluates it,
+            # rather than hiding gains in ignored workflow metadata.
+            wf["8"] = {
+                "class_type": "CalibrixKernelScale",
+                "inputs": {
+                    "model": ["1", 0],
+                    "kernel_spec": self._last_kernel_spec,
+                    "n_blocks": self.n_blocks,
+                    "license_key": "",
+                },
+            }
+            wf["5"]["inputs"]["model"] = ["8", 0]
         return wf
 
     def generate_images(
@@ -477,3 +493,7 @@ class ComfyUIAdapter(Adapter):
     def system_stats(self) -> dict:
         """GET /system_stats — verify the ComfyUI instance is reachable."""
         return self._get_json("/system_stats")
+
+    def object_info(self) -> dict:
+        """GET /object_info — confirm required custom nodes are installed."""
+        return self._get_json("/object_info")

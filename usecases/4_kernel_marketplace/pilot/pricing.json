@@ -1,0 +1,34 @@
+{
+  "currency": "USD",
+  "offer": {
+    "name": "Product Photo Kernel Pilot",
+    "pilot_price": 295,
+    "price_unit": "fixed project",
+    "target_delivery": "3-5 business days after receiving checkpoint access and buyer questionnaire",
+    "payment_terms": "100% before the pilot starts",
+    "capacity": "one checkpoint, one product-photo objective, one validation cycle plus one prompt-pack retest"
+  },
+  "included": [
+    "24-prompt baseline pack: 16 train and 8 holdout prompts",
+    "ComfyUI baseline run and Calibrix kernel run",
+    "One portable kernel spec for the tested checkpoint",
+    "Paired baseline/kernel image bundle",
+    "Machine-readable validation.json and reviewer-friendly validation.html",
+    "Acceptance review and one prompt-pack adjustment/retest if the quality gate is not met",
+    "One CBX1 ComfyUI/commercial license if the declared gates pass"
+  ],
+  "not_included": [
+    "FLUX or other base-model checkpoint license",
+    "GPU hosting after the pilot",
+    "Custom ComfyUI workflow engineering beyond the validation graph",
+    "Guarantee of conversion lift, sales lift, or production cost savings",
+    "New checkpoint, new vertical, or a custom reward model"
+  ],
+  "follow_on": {
+    "verified_marketplace_license": 12,
+    "custom_checkpoint_validation": 750,
+    "production_calibration_and_acceptance": "quoted after pilot evidence",
+    "note": "Follow-on prices are anchors for discussion, not proof of demand or a binding quote."
+  },
+  "commercial_rule": "Do not charge a customer for a verified outcome that was not produced and reviewed. A failed gate is reported as REVIEW, not relabeled as success."
+}

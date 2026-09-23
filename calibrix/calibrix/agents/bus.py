@@ -58,17 +58,24 @@ class Bus:
         return msg
 
     def _deliver(self) -> int:
-        """Deliver one wave; returns messages queued by handlers."""
+        """Deliver one wave; returns messages queued by handlers.
+
+        A message reaches the handlers registered for its own topic, then the
+        wildcard observers — a fixed order, so the run is replayable rather
+        than dependent on dict/subscription order. (Both keys used to be
+        iterated together and the *subscriber list* was indexed with ``.get``,
+        which raised AttributeError and took the whole pipeline down the
+        moment anything subscribed to ``"*"``.)
+
+        Handler lists are copied before dispatch, so a handler may subscribe
+        during delivery without mutating the loop it is in.
+        """
         wave, self._queue = self._queue, []
-        queued = 0
         for msg in wave:
-            for topic, handlers in list(self._subs.items()):
-                if topic != "*" and topic != msg.topic:
-                    continue
-                for h in handlers.get("*", []) if topic == "*" else handlers:
-                    h(msg, self)
-                    queued = len(self._queue)
-        return queued
+            for h in (list(self._subs.get(msg.topic, ()))
+                      + list(self._subs.get("*", ()))):
+                h(msg, self)
+        return len(self._queue)
 
     def drain(self, max_rounds: int = 64) -> int:
         """Run waves until quiet; returns rounds used (0 remaining messages

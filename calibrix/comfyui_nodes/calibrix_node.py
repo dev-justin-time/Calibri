@@ -2,8 +2,8 @@
 #
 # Drop this file into ComfyUI/custom_nodes/calibrix_node.py (or clone the
 # calibrix folder there). It registers a "Calibrix Kernel Scale" node that
-# applies Calibrix modulation kernel gains to a MODEL's per-block conditioning
-# strengths inside any ComfyUI workflow — letting Calibrix-optimized kernels
+# applies Calibrix modulation kernel gains to a FLUX MODEL's per-block gate
+# tuples inside a ComfyUI workflow — letting Calibrix-optimized kernels
 # run natively in ComfyUI pipelines (and be shared as normal ComfyUI
 # workflows JSON).
 #
@@ -117,12 +117,11 @@ def _gains(n: int, weight: float, position: float, floor: float,
 
 
 class CalibrixKernelScale:
-    """Scales per-block outputs of a diffusion model by Calibrix kernel gains.
+    """Scales FLUX attention/MLP gate tuples by Calibrix kernel gains.
 
-    Implementation: wraps each transformer block's forward to multiply its
-    output by the block's gain, computed from the compact kernel spec.
-    Works with ComfyUI-wrapped DiT models (FLUX/SD3/Qwen-Image style
-    `diffusion_model.model` with `.layers`/`.transformer_blocks`/`.blocks`).
+    Implementation: hooks `norm1` (and `norm1_context`) in the cloned
+    transformer blocks and multiplies tuple positions [1] and [4], matching
+    the in-repo Calibri FLUX bridge. Unsupported graph shapes fail closed.
     """
 
     @classmethod
@@ -159,51 +158,77 @@ class CalibrixKernelScale:
                     "license_key empty for unlicensed kernels."
                 )
         channels = _parse_kernel_spec(kernel_spec)
+        if not {"attn", "mlp"}.issubset(channels):
+            raise ValueError(
+                "CalibrixKernelScale: FLUX validation requires attn and mlp channels"
+            )
 
+        # Clone first, then inspect/hook the clone. Hooking the source model
+        # would make baseline and kernel runs contaminate one another.
         m = model.clone()
-        diffusion_model = model.get_model_object("diffusion_model")
+        diffusion_model = m.get_model_object("diffusion_model")
 
-        # find a block list on the diffusion model
+        # Diffusers FLUX exposes double blocks as transformer_blocks; ComfyUI
+        # forks commonly call them double_blocks or blocks. We only accept a
+        # real block-level hook point—never ignored workflow metadata.
         blocks = None
-        for attr in ("transformer_blocks", "layers", "blocks",
-                     "double_blocks", "single_transformer_blocks"):
+        for attr in ("transformer_blocks", "double_blocks", "layers", "blocks"):
             cand = getattr(diffusion_model, attr, None)
-            if isinstance(cand, (list,)) or hasattr(cand, "__len__"):
-                try:
-                    if len(cand) > 0:
-                        blocks = list(cand)
-                        break
-                except TypeError:
-                    continue
+            if cand is None or not hasattr(cand, "__len__"):
+                continue
+            if len(cand) > 0:
+                blocks = list(cand)
+                break
         if blocks is None:
             raise ValueError(
-                "CalibrixKernelScale: no transformer block list found on the "
-                "diffusion model (looked at transformer_blocks/layers/blocks/"
-                "double_blocks/single_transformer_blocks)."
+                "CalibrixKernelScale: unsupported FLUX graph; no double-block "
+                "list found (expected transformer_blocks/double_blocks/layers/blocks)"
             )
 
         n = min(int(n_blocks), len(blocks))
-        for i in range(n):
-            gains = torch.zeros(len(channels))
-            for ci, (comp, params) in enumerate(channels.items()):
-                gains[ci] = _gains(n, *params)[i]
+        attn_gains = _gains(n, *channels["attn"])
+        mlp_gains = _gains(n, *channels["mlp"])
+        handles = []
 
-            def make_hook(gains_vec):
-                def hook(module, args, output):
-                    # scale the block output tensor (or first tensor element)
-                    if isinstance(output, tuple):
-                        return tuple(
-                            gains_vec[0] * o if torch.is_tensor(o) else o
-                            for o in output
-                        )
-                    return gains_vec[0] * output
-                return hook
+        def gate_hook(attn_gain, mlp_gain):
+            def hook(module, args, kwargs, output):
+                # This is the FLUX gate tuple contract used by the in-repo
+                # Calibri bridge: [1] is attention gate, [4] is MLP gate.
+                if not isinstance(output, (tuple, list)) or len(output) < 5:
+                    raise RuntimeError(
+                        "CalibrixKernelScale: FLUX norm hook returned an "
+                        "unsupported shape; refusing to claim modulation"
+                    )
+                out = list(output)
+                out[1] = out[1] * attn_gain
+                out[4] = out[4] * mlp_gain
+                return tuple(out)
+            return hook
 
-            blocks[i] = blocks[i]  # keep identity; attach below
-            h = blocks[i].register_forward_hook(make_hook(gains))
-            # ComfyUI model.clone() keeps patches; hooks survive via the module.
-            _ = h
+        for i, block in enumerate(blocks[:n]):
+            norm = getattr(block, "norm1", None)
+            if norm is None:
+                raise ValueError(
+                    "CalibrixKernelScale: FLUX double block lacks norm1 gate hook"
+                )
+            handles.append(norm.register_forward_hook(
+                gate_hook(attn_gains[i], mlp_gains[i]), with_kwargs=True
+            ))
+            context_norm = getattr(block, "norm1_context", None)
+            if context_norm is not None:
+                handles.append(context_norm.register_forward_hook(
+                    gate_hook(attn_gains[i], mlp_gains[i]), with_kwargs=True
+                ))
 
+        # Keep handles alive on the clone and expose an auditable marker for
+        # validation tooling. The hooks are intentionally not removable during
+        # the ComfyUI execution of this cloned model.
+        m._calibrix_hook_handles = handles
+        m._calibrix_validation = {
+            "kernel_spec": kernel_spec,
+            "blocks_hooked": n,
+            "hook_kind": "flux_norm1_gate_tuple",
+        }
         return (m, )
 
 

@@ -1,6 +1,6 @@
 {
   "schema": "calibrix.architecture-ledger/1.0",
-  "generated_at": "2026-09-21T17:23:23Z",
+  "generated_at": "2026-09-23T07:10:32Z",
   "provenance": {
     "spdx": [
       "MIT"
@@ -13,25 +13,30 @@
         "calibrix/heretic_bridge.py",
         "calibrix/studio/governance.py"
       ],
-      "files_scanned": 37,
+      "files_scanned": 55,
       "verdict": "CLEANROOM-VERIFIED"
     }
   },
   "tests": {
-    "total": 170,
+    "total": 294,
     "per_file": {
       "test_ablation.py": 13,
+      "test_agents.py": 24,
+      "test_doberwatch.py": 76,
       "test_engine_budget.py": 6,
+      "test_image_validation.py": 5,
       "test_kernel.py": 11,
       "test_ledger.py": 8,
-      "test_marketplace.py": 17,
+      "test_marketplace.py": 25,
       "test_metering.py": 11,
+      "test_pilot_package.py": 3,
+      "test_report.py": 8,
       "test_scorers.py": 9,
       "test_standalone.py": 12,
       "test_studio.py": 75,
       "test_xp.py": 8
     },
-    "unattributed": 95
+    "unattributed": 219
   },
   "coverage": {
     "expected": 108,
@@ -476,8 +481,8 @@
       "title": "Governance, IP Warranty & Compliance",
       "span": "F079-F090",
       "path": "calibrix/studio/governance.py",
-      "sha256_12": "a30e88bf83ff",
-      "loc": 321,
+      "sha256_12": "d5dd75e42366",
+      "loc": 334,
       "symbols": {
         "functions": 13,
         "classes": 2
@@ -626,5 +631,5 @@
     ],
     "tests": 8
   },
-  "build_digest": "f597bdf2e13acd94139a6155430dbd6b584311c8008c12441fe7c3dd19904178"
+  "build_digest": "1f63f5b62cb510373cacdc0c1bb0e72c883b80d611110228d9daf6c8972afb35"
 }
