@@ -11,3 +11,18 @@ solo_run/
 *.dll
 *.so
 *.dylib
+
+# Historical run reports — kept on disk, not in git (regeneratable offline)
+usecases/1_reward_calibration/jobs/
+usecases/2_nfe_cost_reduction/savings_*/
+usecases/3_domain_kernels/kernels/
+usecases/5_abliteration_service/runs/
+usecases/6_compliance_restoration/reports/
+usecases/7_interp_reports/interp_report_*/
+# Generated OpenWatch daily reports (prebuilt demo is an exception via !demo)
+openwatch/
+!openwatch/demo/
+# calibrix-level historical outputs
+calibrix/ablation_report/
+calibrix/solo_run/
+calibrix/agent_workspace/

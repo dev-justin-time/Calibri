@@ -1,0 +1,354 @@
+{
+  "schema": "calibrix.openwatch.daily/1.0",
+  "date": "2026-09-24",
+  "generated_at": "2026-09-23 03:11:01",
+  "pack_version": "v1",
+  "pack_hash": "de18900a0b9b726fc439de12ebd2411f0be207693e6266395e44e5ddba9ba26c",
+  "ledger_digest": "3d04c88-demo",
+  "locale": "en",
+  "platforms": [
+    {
+      "platform": "Freebuff Luna — GPT-mini wrapper",
+      "grade": {
+        "rubric_id": "platform_watch.v1",
+        "domain": "platform_watch",
+        "score": 0.35325,
+        "verdict": "BARK",
+        "complaint": true,
+        "raw_score": 0.35325,
+        "criteria": [
+          {
+            "criterion": "direction_following",
+            "weight": 0.22,
+            "judgement": 0.6,
+            "credited": 0.6,
+            "requires_evidence": false,
+            "evidence_kind": "",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "non_destruction",
+            "weight": 0.18,
+            "judgement": 0.6,
+            "credited": 0.5,
+            "requires_evidence": true,
+            "evidence_kind": "diff_artifact",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "viewpoint_neutrality",
+            "weight": 0.15,
+            "judgement": 0.475,
+            "credited": 0.475,
+            "requires_evidence": false,
+            "evidence_kind": "",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "factual_provenance",
+            "weight": 0.2,
+            "judgement": 0.6,
+            "credited": 0.0,
+            "requires_evidence": true,
+            "evidence_kind": "sources",
+            "evidence_refs": 0,
+            "requires_corroboration": true,
+            "corroboration": 0.0
+          },
+          {
+            "criterion": "ownership_export",
+            "weight": 0.12,
+            "judgement": 0.6,
+            "credited": 0.5,
+            "requires_evidence": true,
+            "evidence_kind": "export_artifact",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "cost_to_cure",
+            "weight": 0.13,
+            "judgement": 0.6,
+            "credited": 0.0,
+            "requires_evidence": true,
+            "evidence_kind": "pricing_holdout",
+            "evidence_refs": 0,
+            "requires_corroboration": true,
+            "corroboration": 0.0
+          }
+        ],
+        "missing_evidence": [
+          "non_destruction",
+          "factual_provenance",
+          "ownership_export",
+          "cost_to_cure"
+        ],
+        "evidence_supplied": [],
+        "evidence_coverage": 0.0,
+        "evidence_gate_applied": true,
+        "missing_corroboration": [],
+        "corroboration_coverage": 0.0,
+        "corroboration_gate_applied": true,
+        "drift": 1.0,
+        "drift_penalty": 0.0,
+        "contradiction_veto": true
+      },
+      "verification": {
+        "schema": "calibrix.doberwatch.verification/1.0",
+        "claim_count": 1,
+        "material_count": 1,
+        "material_grade": 0.0,
+        "all_corroborated": false,
+        "status_counts": {
+          "contradicted": 1
+        },
+        "contradictions": [
+          {
+            "claim": "AWS spot notice is 30 seconds",
+            "status": "contradicted",
+            "grade": 0.0,
+            "support": [],
+            "contradict": [
+              "aws-docs"
+            ],
+            "neutral": 1,
+            "independent_support": 0,
+            "support_strength": 0.0,
+            "agreement": 0.0,
+            "material": true,
+            "reasons": [
+              "contradicted by aws-docs",
+              "no source was close enough to support the claim"
+            ]
+          }
+        ],
+        "refuted": [
+          {
+            "claim": "AWS spot notice is 30 seconds",
+            "status": "contradicted",
+            "grade": 0.0,
+            "support": [],
+            "contradict": [
+              "aws-docs"
+            ],
+            "neutral": 1,
+            "independent_support": 0,
+            "support_strength": 0.0,
+            "agreement": 0.0,
+            "material": true,
+            "reasons": [
+              "contradicted by aws-docs",
+              "no source was close enough to support the claim"
+            ]
+          }
+        ],
+        "any_refuted": true,
+        "weakest": {
+          "claim": "AWS spot notice is 30 seconds",
+          "status": "contradicted",
+          "grade": 0.0,
+          "support": [],
+          "contradict": [
+            "aws-docs"
+          ],
+          "neutral": 1,
+          "independent_support": 0,
+          "support_strength": 0.0,
+          "agreement": 0.0,
+          "material": true,
+          "reasons": [
+            "contradicted by aws-docs",
+            "no source was close enough to support the claim"
+          ]
+        },
+        "claims": [
+          {
+            "claim": "AWS spot notice is 30 seconds",
+            "status": "contradicted",
+            "grade": 0.0,
+            "support": [],
+            "contradict": [
+              "aws-docs"
+            ],
+            "neutral": 1,
+            "independent_support": 0,
+            "support_strength": 0.0,
+            "agreement": 0.0,
+            "material": true,
+            "reasons": [
+              "contradicted by aws-docs",
+              "no source was close enough to support the claim"
+            ]
+          }
+        ]
+      },
+      "diff": "[no diff — full 500-line rewrite; comments stripped; formatting changed]"
+    },
+    {
+      "platform": "Reference (good)",
+      "grade": {
+        "rubric_id": "platform_watch.v1",
+        "domain": "platform_watch",
+        "score": 0.867,
+        "verdict": "PASS",
+        "complaint": false,
+        "raw_score": 0.867,
+        "criteria": [
+          {
+            "criterion": "direction_following",
+            "weight": 0.22,
+            "judgement": 0.9,
+            "credited": 0.9,
+            "requires_evidence": false,
+            "evidence_kind": "",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "non_destruction",
+            "weight": 0.18,
+            "judgement": 0.9,
+            "credited": 0.9,
+            "requires_evidence": true,
+            "evidence_kind": "diff_artifact",
+            "evidence_refs": 1,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "viewpoint_neutrality",
+            "weight": 0.15,
+            "judgement": 0.9,
+            "credited": 0.9,
+            "requires_evidence": false,
+            "evidence_kind": "",
+            "evidence_refs": 0,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "factual_provenance",
+            "weight": 0.2,
+            "judgement": 0.9,
+            "credited": 0.8,
+            "requires_evidence": true,
+            "evidence_kind": "sources",
+            "evidence_refs": 2,
+            "requires_corroboration": true,
+            "corroboration": 0.8
+          },
+          {
+            "criterion": "ownership_export",
+            "weight": 0.12,
+            "judgement": 0.9,
+            "credited": 0.9,
+            "requires_evidence": true,
+            "evidence_kind": "export_artifact",
+            "evidence_refs": 1,
+            "requires_corroboration": false,
+            "corroboration": null
+          },
+          {
+            "criterion": "cost_to_cure",
+            "weight": 0.13,
+            "judgement": 0.9,
+            "credited": 0.8,
+            "requires_evidence": true,
+            "evidence_kind": "pricing_holdout",
+            "evidence_refs": 1,
+            "requires_corroboration": true,
+            "corroboration": 0.8
+          }
+        ],
+        "missing_evidence": [],
+        "evidence_supplied": [
+          "non_destruction",
+          "factual_provenance",
+          "ownership_export",
+          "cost_to_cure"
+        ],
+        "evidence_coverage": 1.0,
+        "evidence_gate_applied": false,
+        "missing_corroboration": [],
+        "corroboration_coverage": 0.8,
+        "corroboration_gate_applied": false,
+        "drift": 1.0,
+        "drift_penalty": 0.0,
+        "contradiction_veto": false
+      },
+      "verification": {
+        "schema": "calibrix.doberwatch.verification/1.0",
+        "claim_count": 1,
+        "material_count": 1,
+        "material_grade": 0.8,
+        "all_corroborated": true,
+        "status_counts": {
+          "corroborated": 1
+        },
+        "contradictions": [],
+        "refuted": [],
+        "any_refuted": false,
+        "weakest": {
+          "claim": "AWS spot interruption notice is 2 minutes",
+          "status": "corroborated",
+          "grade": 0.8,
+          "support": [
+            "aws-docs",
+            "doc-2"
+          ],
+          "contradict": [],
+          "neutral": 0,
+          "independent_support": 2,
+          "support_strength": 0.8,
+          "agreement": 1.0,
+          "material": true,
+          "reasons": []
+        },
+        "claims": [
+          {
+            "claim": "AWS spot interruption notice is 2 minutes",
+            "status": "corroborated",
+            "grade": 0.8,
+            "support": [
+              "aws-docs",
+              "doc-2"
+            ],
+            "contradict": [],
+            "neutral": 0,
+            "independent_support": 2,
+            "support_strength": 0.8,
+            "agreement": 1.0,
+            "material": true,
+            "reasons": []
+          }
+        ]
+      },
+      "diff": "--- a/file.py\n+++ b/file.py\n@@ -42 +42 @@\n- for i in range(n):\n+ for i in range(n-1):\n"
+    }
+  ],
+  "summary": {
+    "platform_count": 2,
+    "verdict_counts": {
+      "BARK": 1,
+      "PASS": 1
+    },
+    "best": {
+      "platform": "Reference (good)",
+      "score": 0.867
+    },
+    "worst": {
+      "platform": "Freebuff Luna — GPT-mini wrapper",
+      "score": 0.35325
+    }
+  },
+  "notes": "Day 0 shape: the 'fix line 42 only' incident from the user log. 2026-09-24.",
+  "claim_boundary": "Audit documentation. Scores are reproducible against the hashed prompt pack; do not market a platform's grade as certification."
+}
