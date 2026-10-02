@@ -1,3 +1,7 @@
 [submodule "fast-stable-diffusion"]
 	path = fast-stable-diffusion
 	url = https://github.com/TheLastBen/fast-stable-diffusion.git
+
+[submodule "heritic"]
+	path = heretic/heretic
+	url = https://github.com/p-e-w/heretic.git
