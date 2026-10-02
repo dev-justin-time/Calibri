@@ -1,0 +1,3 @@
+[submodule "fast-stable-diffusion"]
+	path = fast-stable-diffusion
+	url = https://github.com/TheLastBen/fast-stable-diffusion.git
