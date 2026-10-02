@@ -118,15 +118,19 @@ class ScriptedImageAdapter(Adapter):
         prompts: List[Prompt],
         batch_size: int = 8,
         ctx: Optional[ScorerContext] = None,
+        seed: Optional[int] = None,
     ) -> List[Any]:
         from PIL import Image
 
+        # Use instance seed by default; allow override for validation/testing.
+        # Validation may pass seed as a kwarg for paired testing consistency.
+        generation_seed = self.seed if seed is None else seed
         sig = self._signature()
         images = []
         for p in prompts:
             rng = random.Random(
                 int(hashlib.sha256(p.user.encode("utf-8")).hexdigest()[:12], 16)
-                + self.seed
+                + generation_seed
             )
             images.append(self._render(p, rng, sig))
         if ctx is not None:
